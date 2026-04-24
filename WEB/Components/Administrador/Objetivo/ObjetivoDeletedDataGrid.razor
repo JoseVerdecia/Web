@@ -1,0 +1,52 @@
+﻿@using WEB.Components.Shared
+@using WEB.Features.Objetivo.Dto
+<FluentDataGrid Items="@FilteredObjetivos.AsQueryable()"
+                Pagination="@paginationState"
+                ResizableColumns="true"
+                MultiLine="true"
+                Style="width: 100%;">
+    <ChildContent>
+        <SelectColumn TGridItem="ObjetivoDto"
+                      SelectMode="DataGridSelectMode.Multiple"
+                      @bind-SelectedItems="SelectedObjetivos"
+                      SelectAll="SelectAllCheckbox"/>
+
+        <PropertyColumn Align="Align.Center" Property="@(o => o.Nombre)" Title="Nombre" Sortable="true"
+                        Filtered="!string.IsNullOrWhiteSpace(nameFilter)">
+            <ColumnOptions>
+                <FluentSearch @bind-Value="nameFilter"
+                              Placeholder="Filtrar por nombre..."
+                              Immediate="true" />
+            </ColumnOptions>
+        </PropertyColumn>
+
+        <TemplateColumn Title="Número" Align="Align.Center">
+            OBJETIVO#@context.NumeroObjetivo
+        </TemplateColumn>
+
+        <TemplateColumn Title="Eliminado" Align="Align.Center">
+            @context.DeleteAt?.ToString("dd/MM/yyyy")
+        </TemplateColumn>
+
+        <TemplateColumn Title="Acciones" Align="Align.Center">
+            <FluentStack HorizontalAlignment="HorizontalAlignment.Center"
+                         Orientation="Orientation.Horizontal"
+                         VerticalAlignment="VerticalAlignment.Center">
+                <FluentButton Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size20.ArrowSync())"
+                              OnClick="() => OnRestore.InvokeAsync(context)"
+                              Title="Restaurar" />
+                <FluentButton Appearance="Appearance.Outline"
+                              IconStart="@(new Icons.Regular.Size20.Delete())"
+                              OnClick="() => OnDeletePermanently.InvokeAsync(context)"
+                              Title="Eliminar permanentemente" />
+            </FluentStack>
+        </TemplateColumn>
+    </ChildContent>
+
+    <EmptyContent>
+        <EmptyDataGridContent Mensaje="No hay objetivos eliminados" />
+    </EmptyContent>
+</FluentDataGrid>
+
+<FluentPaginator State="@paginationState" />

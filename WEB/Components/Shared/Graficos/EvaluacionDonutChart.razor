@@ -1,0 +1,104 @@
+﻿@using ApexCharts
+@using Color = Microsoft.FluentUI.AspNetCore.Components.Color
+
+<FluentCard Appearance="Appearance.Filled" Style="padding: 20px; background: var(--neutral-layer-2);">
+    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold" Style="margin-bottom: 4px;">@Title</FluentLabel>
+    @if (!string.IsNullOrEmpty(Subtitle))
+    {
+        <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="display: block; margin-bottom: 8px;">@Subtitle</FluentLabel>
+    }
+
+    @if (Total == 0)
+    {
+        <div style="display: flex; align-items: center; justify-content: center; height: 200px; color: var(--neutral-foreground-hint);">
+            <FluentLabel>Sin datos</FluentLabel>
+        </div>
+    }
+    else
+    {
+        <ApexChart TItem="DonutData" Options="@ChartOptions">
+            <ApexPointSeries TItem="DonutData"
+                             Items="@ChartData"
+                             SeriesType="SeriesType.Donut"
+                             Name="Evaluaciones"
+                             XValue="@(e => e.Label)"
+                             YValue="@(e => e.Value)" />
+        </ApexChart>
+
+        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 8px;">
+            @foreach (var item in ChartData.Where(x => x.Value > 0))
+            {
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 12px;">
+                    <span style="width: 10px; height: 10px; border-radius: 50%; background: @item.Color;"></span>
+                    <span>@item.Label: <strong>@item.Value</strong></span>
+                </div>
+            }
+        </div>
+    }
+</FluentCard>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Distribución de Evaluaciones";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public int Sobrecumplidos { get; set; }
+    [Parameter] public int Cumplidos { get; set; }
+    [Parameter] public int ParcialmenteCumplidos { get; set; }
+    [Parameter] public int Incumplidos { get; set; }
+    [Parameter] public int NoEvaluados { get; set; }
+
+    private int Total => Sobrecumplidos + Cumplidos + ParcialmenteCumplidos + Incumplidos + NoEvaluados;
+
+    private List<DonutData> ChartData => new()
+    {
+        new(Label: "Sobrecumplidos", Value : Sobrecumplidos, Color : "#037036"),
+        new(Label : "Cumplidos", Value : Cumplidos, Color : "#05B353" ),
+        new(Label : "Parciales", Value : ParcialmenteCumplidos, Color : "#f97316"),
+        new(Label : "Incumplidos", Value : Incumplidos, Color : "#dc2626") ,
+        new(Label : "No Evaluados", Value : NoEvaluados, Color : "#9C9C9C")
+    };
+
+    private ApexChartOptions<DonutData> ChartOptions { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ChartOptions = new ApexChartOptions<DonutData>
+        {
+            Chart = new Chart
+            {
+                Height = "250",
+                FontFamily = "inherit"
+            },
+            PlotOptions = new PlotOptions
+            {
+                Pie = new PlotOptionsPie
+                {
+                    Donut = new PlotOptionsDonut
+                    {
+                        Size = "70%",
+                        Labels = new DonutLabels
+                        {
+                            Total = new DonutLabelTotal
+                            {
+                                Show = true,
+                                Label = "Total",
+                                FontSize = "20px",
+                                FontWeight = "600",
+                                Color = "#333",
+                                Formatter = @"function(w) { 
+                                    return w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                                }"
+                            }
+                        }
+                    }
+                }
+            },
+            Colors = new List<string> { "#037036", "#05B353", "#f97316", "#dc2626", "#9C9C9C" },
+            DataLabels = new DataLabels { Enabled = false },
+            Legend = new Legend { Show = false },
+            Stroke = new Stroke { Show = true, Width = 2, Colors = new List<string> { "#fff" } },
+            Tooltip = new Tooltip { Theme = Mode.Dark }
+        };
+    }
+
+    private record DonutData(string Label, int Value, string Color);
+}

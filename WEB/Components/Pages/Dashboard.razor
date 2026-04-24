@@ -1,0 +1,279 @@
+﻿@page "/dashboard"
+@using ApexCharts
+@using WEB.Components.Shared
+@using WEB.Components.Shared.Graficos
+@using WEB.Core.Mediator
+@using WEB.Features.Dashboard
+@using WEB.Features.Dashboard.Dto
+@* Se eliminó @using WEB.Features.Dashboard.Dto.story; para evitar conflictos *@
+@using Align = ApexCharts.Align
+@using AreaConteoDto = WEB.Features.Dashboard.Dto.AreaConteoDto
+@using Color = Microsoft.FluentUI.AspNetCore.Components.Color
+@using ObjetivoRankingDto = WEB.Features.Dashboard.Dto.ObjetivoRankingDto
+@using Orientation = Microsoft.FluentUI.AspNetCore.Components.Orientation
+@rendermode InteractiveServer
+<style>
+    .dashboard-container { max-width: 1680px; margin: 0 auto; padding: 16px; width: 100%; box-sizing: border-box; }
+    .dashboard-card { padding: 20px; background: var(--neutral-layer-2); border-radius: 8px; border: 1px solid var(--neutral-stroke-2); height: 100%; box-sizing: border-box; }
+    .dashboard-card-title { font-size: 14px; font-weight: 600; color: var(--neutral-foreground-rest); margin-bottom: 4px; }
+    .dashboard-card-subtitle { font-size: 12px; color: var(--neutral-foreground-hint); margin-bottom: 12px; line-height: 1.4; }
+    .dashboard-section { display: grid; gap: 16px; }
+    .dashboard-section.cols-2 { grid-template-columns: 1fr; }
+    .dashboard-section.cols-2 > .col-left, .dashboard-section.cols-2 > .col-right { min-width: 0; }
+    .dashboard-section.cols-2-7 { grid-template-columns: 1fr; }
+    .kpi-badge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .chart-wrapper { width: 100%; min-height: 280px; overflow: visible; }
+    .criticos-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 16px; }
+    .criticos-table th { text-align: left; padding: 6px 8px; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--neutral-foreground-hint); border-bottom: 1px solid var(--neutral-stroke-2); }
+    .criticos-table th.text-center, .criticos-table td.text-center { text-align: center; }
+    .criticos-table td { padding: 6px 8px; border-bottom: 1px solid var(--neutral-stroke-1); color: var(--neutral-foreground-rest); }
+    .criticos-table tr:last-child td { border-bottom: none; }
+    .criticos-table .indicator-name { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .veredicto-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 12px; }
+    .veredicto-badge { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #fff; }
+    .veredicto-badge.excelente { background: #16a34a; }
+    .veredicto-badge.bueno { background: #0078D4; }
+    .veredicto-badge.alerta { background: #ea580c; }
+    .veredicto-badge.critico { background: #dc2626; }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @@media (min-width: 576px) { .kpi-badge-grid { grid-template-columns: repeat(3, 1fr); } }
+    @@media (min-width: 768px) { 
+        .kpi-badge-grid { grid-template-columns: repeat(4, 1fr); }
+        .dashboard-section.cols-2 { grid-template-columns: 1fr 1fr; }
+        .dashboard-section.cols-2-7 { grid-template-columns: 2fr 3fr; }
+    }
+</style>
+
+<FluentLayout>
+    <div class="dashboard-container">
+        @if (Cargando)
+        {
+            <div style="display: flex; align-items: center; justify-content: center; height: 80vh; flex-direction: column; gap: 16px;">
+                <FluentProgressRing Style="width: 48px; height: 48px;" />
+                <FluentLabel>Cargando panel ejecutivo...</FluentLabel>
+            </div>
+        }
+        else if (Error != null)
+        {
+            <FluentMessageBar Intent="MessageIntent.Error">@Error</FluentMessageBar>
+        }
+        else if (Datos == null || Datos.TotalIndicadores == 0)
+        {
+            <div style="display: flex; align-items: center; justify-content: center; height: 80vh; flex-direction: column; gap: 16px; color: var(--neutral-foreground-hint);">
+                <FluentLabel>Dashboard vacío. No hay indicadores registrados.</FluentLabel>
+            </div>
+        }
+        else
+        {
+            <div class="fade-in">
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="24">
+                    <Title ValueTitle="Dashboard" Icono="@(new Icons.Regular.Size24.ChartMultiple())" />
+                    <FluentDivider />
+
+                    @* ── SECCIÓN 1: GAUGE + DONUT + KPIs ── *@
+                    <div class="dashboard-section cols-2-7">
+                        <div class="col-left">
+                            <div class="dashboard-card">
+                                <div class="dashboard-card-title">Veredicto Global</div>
+                                <div class="dashboard-card-subtitle">@(Datos.TotalIndicadores - Datos.ConteoEvaluaciones.NoEvaluados) de @Datos.TotalIndicadores evaluados</div>
+                                <ApexChart TItem="WEB.Features.Dashboard.Dto.story.GaugeItem" Options="@GaugeOptions">
+                                    <ApexPointSeries TItem="WEB.Features.Dashboard.Dto.story.GaugeItem"
+                                                     Items="@GaugeData"
+                                                     Name="Cumplimiento"
+                                                     XValue="@(e => e.Label)"
+                                                     YValue="@(e => e.Value)" />
+                                </ApexChart>
+                                <div class="veredicto-row">
+                                    <span class="veredicto-badge @(VeredictoClass)">@VeredictoLabel</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-right" style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="kpi-badge-grid">
+                                <StatCard Value="@Datos.TotalIndicadores.ToString()" Label="Total" />
+                                <StatCard Value="@Datos.ConteoEvaluaciones.Sobrecumplidos.ToString()" Label="Sobrecumplidos" Color="Color.Success" />
+                                <StatCard Value="@Datos.ConteoEvaluaciones.Cumplidos.ToString()" Label="Cumplidos" Color="Color.Success" />
+                                <StatCard Value="@Datos.ConteoEvaluaciones.ParcialmenteCumplidos.ToString()" Label="Parciales" Color="Color.Warning" />
+                                <StatCard Value="@Datos.ConteoEvaluaciones.Incumplidos.ToString()" Label="Incumplidos" Color="Color.Error" />
+                                <StatCard Value="@Datos.ConteoEvaluaciones.NoEvaluados.ToString()" Label="No Evaluados" />
+                            </div>
+                            <EvaluacionDonutChart Title="Distribución"
+                                                  Sobrecumplidos="@Datos.ConteoEvaluaciones.Sobrecumplidos"
+                                                  Cumplidos="@Datos.ConteoEvaluaciones.Cumplidos"
+                                                  ParcialmenteCumplidos="@Datos.ConteoEvaluaciones.ParcialmenteCumplidos"
+                                                  Incumplidos="@Datos.ConteoEvaluaciones.Incumplidos"
+                                                  NoEvaluados="@Datos.ConteoEvaluaciones.NoEvaluados" />
+                        </div>
+                    </div>
+
+                    @* ── SECCIÓN 2: RANKING OBJETIVOS + ÁREAS ── *@
+                    <div class="dashboard-section cols-2">
+                        <div class="col-left">
+                            <RankingBarChart TItem="ObjetivoRankingDto"
+                                             Title="Rendimiento por Objetivo"
+                                             Subtitle="Porcentaje de cumplimiento por objetivo estratégico."
+                                             Items="@Datos.ObjetivosRanking"
+                                             XLabel="@(e => e.Label)"
+                                             YPorcentaje="@(e => e.PorcentajeCumplimiento)" />
+                        </div>
+                        <div class="col-right">
+                            <RankingBarChart TItem="AreaConteoDto"
+                                             Title="Rendimiento por Área"
+                                             Subtitle="Porcentaje de cumplimiento por área."
+                                             Items="@Datos.AreasConteo"
+                                             XLabel="@(e => e.Label)"
+                                             YPorcentaje="@(e => e.PorcentajeCumplimiento)"
+                                             AccentColor="#05B353" />
+                        </div>
+                    </div>
+
+                    @* ── SECCIÓN 3: CRÍTICOS ── *@
+                    <div class="dashboard-section cols-2">
+                        <div class="col-left">
+                            <CriticosBarChart TItem="IndicadorCriticoDto"
+                                              Title="Top 5 Indicadores Críticos"
+                                              Subtitle="Mayor brecha entre meta y resultado."
+                                              Items="@Datos.TopCincoCriticos.OrderBy(c => c.PorcentajeReal)"
+                                              XLabel="@(e => e.Nombre.Length > 40 ? e.Nombre.Substring(0, 40) + "..." : e.Nombre)"
+                                              YMeta="@(e => decimal.TryParse((string?)e.MetaCumplir?.Replace("%", ""), out var m) ? m : 100)"
+                                              YReal="@(e => e.MetaRealDecimal)"
+                                              YPorcentaje="@(e => e.PorcentajeReal)"
+                                              MaxItems="5" />
+                        </div>
+                        <div class="col-right">
+                            <OrigenComparativoChart Data="@Datos.OrigenComparativo" />
+                        </div>
+                    </div>
+
+                    @* ── SECCIÓN 4: CRÍTICOS POR ENTIDAD ── *@
+                    <div class="dashboard-section cols-2">
+                        <div class="col-left">
+                            <EntidadesCriticasChart TItem="EntidadCriticaDto"
+                                                    Title="Objetivos Críticos"
+                                                    Subtitle="Objetivos con más indicadores incumplidos/parciales."
+                                                    Items="@Datos.ObjetivosCriticos"
+                                                    XLabel="@(e => e.Nombre)"
+                                                    YIncumplidos="@(e => e.Incumplidos)"
+                                                    YParciales="@(e => e.ParcialmenteCumplidos)" />
+                        </div>
+                        <div class="col-right">
+                            <EntidadesCriticasChart TItem="EntidadCriticaDto"
+                                                    Title="Áreas Críticas"
+                                                    Subtitle="Áreas con más indicadores incumplidos/parciales."
+                                                    Items="@Datos.AreasCriticas"
+                                                    XLabel="@(e => e.Nombre)"
+                                                    YIncumplidos="@(e => e.Incumplidos)"
+                                                    YParciales="@(e => e.ParcialmenteCumplidos)" />
+                        </div>
+                    </div>
+
+                    @* ── SECCIÓN 5: FILTROS INTERACTIVOS ── *@
+                    <div class="dashboard-section cols-2">
+                        <div class="col-left">
+                            <EvaluacionPorAreaChart Areas="@Datos.AreasConIndicadores" />
+                        </div>
+                        <div class="col-right">
+                            <ProcesosPorObjetivoChart Objetivos="@Datos.ObjetivosConProcesos" />
+                        </div>
+                    </div>
+
+                    @* ── SECCIÓN 6: BARRAS APILADAS ── *@
+                    <div class="dashboard-section cols-2">
+                        <div class="col-left">
+                            @if (Datos.ProcesosConteo.Any())
+                            {
+                                <EvaluacionBarChart TItem="ProcesoConteoDto"
+                                                    Title="Indicadores por Proceso"
+                                                    Items="@Datos.ProcesosConteo"
+                                                    XValue="@(e => e.Nombre)"
+                                                    YSobrecumplidos="@(e => e.Sobrecumplidos)"
+                                                    YCumplidos="@(e => e.Cumplidos)"
+                                                    YParcialmente="@(e => e.ParcialmenteCumplidos)"
+                                                    YIncumplidos="@(e => e.Incumplidos)"
+                                                    YNoEvaluados="@(e => e.NoEvaluados)" />
+                            }
+                        </div>
+                        <div class="col-right">
+                            @if (Datos.ObjetivosConteo.Any())
+                            {
+                                <EvaluacionBarChart TItem="ObjetivoConteoDto"
+                                                    Title="Indicadores por Objetivo"
+                                                    Items="@Datos.ObjetivosConteo"
+                                                    XValue="@(e => e.NumeroObjetivoString)"
+                                                    YSobrecumplidos="@(e => e.Sobrecumplidos)"
+                                                    YCumplidos="@(e => e.Cumplidos)"
+                                                    YParcialmente="@(e => e.ParcialmenteCumplidos)"
+                                                    YIncumplidos="@(e => e.Incumplidos)"
+                                                    YNoEvaluados="@(e => e.NoEvaluados)" />
+                            }
+                        </div>
+                    </div>
+                </FluentStack>
+            </div>
+        }
+    </div>
+</FluentLayout>
+
+@code {
+    [Inject] private IMediator Mediator { get; set; } = null!;
+    [Inject] private NavigationManager NavigationManager { get; set; } = null!;
+    
+    // ❌ ELIMINADA LA LÍNEA: [Parameter] public OrigenComparativoDto Data { get; set; } = new();
+    
+    private bool Cargando { get; set; } = true;
+    private string? Error { get; set; }
+    private DashboardUnificadoDto? Datos { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var result = await Mediator.Send(new GetDashboardUnificadoRequest());
+            if (result.IsFailure)
+            {
+                Error = string.Join(", ", result.Errors);
+                return;
+            }
+            Datos = result.Value;
+        }
+        catch (Exception ex)
+        {
+            Error = $"Error al cargar el dashboard: {ex.Message}";
+        }
+        finally
+        {
+            Cargando = false;
+        }
+    }
+
+    private void NavigateToIndicadores() => NavigationManager.NavigateTo("/indicadores");
+
+    private string VeredictoLabel => Datos?.PorcentajeGlobal switch { >= 90m => "Excelente", >= 70m => "Bueno", >= 50m => "En Alerta", _ => "Critico" };
+    private string VeredictoClass => Datos?.PorcentajeGlobal switch { >= 90m => "excelente", >= 70m => "bueno", >= 50m => "alerta", _ => "critico" };
+
+    private List<WEB.Features.Dashboard.Dto.story.GaugeItem> GaugeData => new() { new() { Value = Datos?.PorcentajeGlobal ?? 0 } };
+
+    private ApexChartOptions<WEB.Features.Dashboard.Dto.story.GaugeItem> GaugeOptions { get; set; } = new()
+    {
+        Chart = new Chart { Height = "280", DropShadow = new DropShadow { Enabled = false } },
+        PlotOptions = new PlotOptions
+        {
+            RadialBar = new PlotOptionsRadialBar
+            {
+                StartAngle = -135, EndAngle = 135,
+                Hollow = new Hollow { Size = "65%" },
+                Track = new Track { Background = "#e0e0e0", StrokeWidth = "100%", Margin = 5 },
+                DataLabels = new RadialBarDataLabels
+                {
+                    Name = new RadialBarDataLabelsName { Show = false },
+                    Total = new RadialBarDataLabelsTotal { Show = true, Label = "Global", FontSize = "22px", FontWeight = "600", Color = "#333", Formatter = @"function(w) { return w.globals.seriesTotals.reduce(function(a, b) { return a + b; }, 0).toFixed(1) + '%'; }" },
+                    Value = new RadialBarDataLabelsValue { Show = false }
+                }
+            }
+        },
+        Labels = new List<string> { "Cumplimiento" },
+        Colors = new List<string> { "#0078D4" },
+        Stroke = new Stroke { LineCap = LineCap.Round }
+    };
+}

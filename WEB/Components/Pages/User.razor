@@ -1,0 +1,19 @@
+﻿@page "/admin/users"
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Administrador.User
+@using WEB.Components.Shared
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+<FluentLayout>
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+         <Title Icono="@(new Icons.Filled.Size24.People().WithColor(Color.Accent))" ValueTitle="Usuarios"></Title>
+    </FluentStack>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="20" Style="padding: 20px;">
+        <div style="overflow-x: auto; width: 100%;">
+        <div style="min-width: 700px;">
+        <UserDataGrid/>
+        </div>
+        </div>
+    </FluentStack>
+</FluentLayout>

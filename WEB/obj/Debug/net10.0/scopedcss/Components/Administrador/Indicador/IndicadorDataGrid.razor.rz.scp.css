@@ -1,0 +1,50 @@
+
+.parent-name[b-ri3mfqrt4f] {
+    font-weight: 700; 
+    font-size: 12px;  
+    line-height: 1.4;
+}
+.parent-name-normal[b-ri3mfqrt4f] {
+    font-weight: 480; 
+    font-size: 12px;
+    line-height: 1.4;
+}
+.child-name[b-ri3mfqrt4f] {
+    padding-left: 24px;
+    color: var(--neutral-foreground-hint);
+}
+.objetivos-badge[b-ri3mfqrt4f] {
+    font-family: monospace;
+    background: var(--neutral-layer-3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+.empty-cell[b-ri3mfqrt4f] {
+    color: var(--neutral-stroke-focus);
+
+}
+
+.objetivos-badge[b-ri3mfqrt4f] {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.4;
+    display: inline-block;
+}
+
+[b-ri3mfqrt4f] fluent-data-grid-row {
+    overflow: hidden !important;
+}
+
+[b-ri3mfqrt4f] fluent-data-grid-cell {
+    overflow: hidden !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+
+.objetivos-badge[b-ri3mfqrt4f] {
+    display: inline-block;
+    line-height: 1.4;
+}
+

@@ -1,0 +1,160 @@
+﻿@using WEB.Common
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Enums
+@using WEB.Features.Notificacion.Delete
+@using WEB.Features.Notificacion.Dto
+@using WEB.Features.Notificacion.GetByUser
+@using WEB.Features.Notificacion.MarcarLeida
+@using WEB.Features.Notificacion.Responder
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IDialogService DialogService
+@inject IMediator Mediator
+@inject NotificacionStateService NotificacionState
+
+<div style="width: 100%; display: flex; flex-direction: column;">
+    @if (_isLoading)
+    {
+        <div style="display: flex; justify-content: center; padding: 40px;">
+            <FluentProgressRing />
+        </div>
+    }
+    else if (!NotificacionState.Notificaciones.Any())
+    {
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px;">
+            <FluentIcon Value="@(new Icons.Regular.Size24.MailRead())" Size="48" Color="Color.Neutral" />
+            <FluentLabel Typo="Typography.HeroTitle" Color="Color.Neutral" Style="margin-top: 16px;">
+                Vacío
+            </FluentLabel>
+        </div>
+    }
+    else
+    {
+        @foreach (var notificacion in NotificacionState.Notificaciones)
+        {
+            <NotificacionItem Notificacion="@notificacion"
+                              OnClick="HandleClickAsync"
+                              OnDelete="HandleDeleteAsync" />
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public int RefreshKey { get; set; }
+
+    private bool _isLoading = true;
+    private string _usuarioId = string.Empty;
+    private string _usuarioRol = string.Empty;
+    private CancellationTokenSource _cancellationTokenSource = new();
+    private int _lastRefreshKey;
+
+    protected override async Task OnInitializedAsync()
+    {
+        NotificacionState.OnChange += StateHasChanged;
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        _usuarioId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value ?? "";
+        _usuarioRol = authState.User.Claims
+            .FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.Role)?.Value ?? "";
+
+        await LoadNotificacionesAsync(_cancellationTokenSource.Token);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (RefreshKey != _lastRefreshKey)
+        {
+            _lastRefreshKey = RefreshKey;
+            await LoadNotificacionesAsync(_cancellationTokenSource.Token);
+        }
+    }
+
+    private async Task LoadNotificacionesAsync(CancellationToken cancellationToken)
+    {
+        _isLoading = true;
+
+        try
+        {
+            var result = await Mediator.Send(
+                new GetNotificacionesByUsuarioRequest(_usuarioId),
+                cancellationToken);
+
+            if (result.IsSuccess && result.Value != null)
+            {
+                NotificacionState.SetNotificaciones(result.Value);
+            }
+        }
+        finally
+        {
+            _isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleDeleteAsync(int notificacionId)
+    {
+        var result = await Mediator.Send(
+            new DeleteNotificacionRequest(notificacionId, _usuarioId));
+
+        if (result.IsSuccess)
+        {
+            NotificacionState.RemoveNotificacion(notificacionId);
+        }
+    }
+    
+    private async Task HandleClickAsync(int notificacionId)
+    {
+        var notificacion = NotificacionState.Notificaciones
+            .FirstOrDefault(n => n.Id == notificacionId);
+
+        if (notificacion == null) return;
+
+        if (!notificacion.Leida)
+        {
+            await Mediator.Send(
+                new MarcarNotificacionLeidaRequest(notificacionId, _usuarioId));
+
+            notificacion = notificacion with { Leida = true };
+
+            NotificacionState.UpdateNotificacion(notificacion);
+            await Task.Delay(100);
+        }
+
+        var dialogData = new NotificacionDetalleData
+        {
+            Notificacion = notificacion,
+            UsuarioId = _usuarioId,
+            UsuarioRol = _usuarioRol
+        };
+
+        var parameters = new DialogParameters<NotificacionDetalleData>()
+        {
+            Content = dialogData,
+            Title = dialogData.Notificacion.Cabecera,
+            ShowDismiss = true,
+            Modal = true,
+            TrapFocus = true,
+            PreventScroll = true,
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<NotificacionDetalleDialog>(dialogData, parameters);
+        var result = await dialog.Result;
+        
+        if (!result.Cancelled && result.Data is int notifId)
+        {
+            var notif = NotificacionState.Notificaciones
+                .FirstOrDefault(n => n.Id == notifId);
+
+            if (notif != null)
+            {
+                var updated = notif with
+                {
+                    Estado = EstadoNotificacion.Aceptada 
+                };
+
+                NotificacionState.UpdateNotificacion(updated);
+            }
+        }
+    }
+}

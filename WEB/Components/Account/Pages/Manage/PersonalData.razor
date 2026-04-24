@@ -1,0 +1,47 @@
+﻿@page "/Account/Manage/PersonalData"
+
+@using Microsoft.AspNetCore.Identity
+@using WEB.Interfaces
+@using WEB.Data
+@inject ICurrentUser CurrentUser
+@inject UserManager<ApplicationUser> UserManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Personal Data</PageTitle>
+
+<StatusMessage/>
+<h3>Personal Data</h3>
+
+<FluentGrid>
+    <FluentGridItem xs="12" sm="6">
+        <p>Tu cuenta contiene datos personales que nos has proporcionado. Esta página te permite descargar o eliminar dichos datos.</p>
+        <p>
+            <strong>Eliminar estos datos supondrá la eliminación permanente de su cuenta, y esta no podrá recuperarse.</strong>
+        </p>
+        <form action="Account/Manage/DownloadPersonalData" method="post">
+            <AntiforgeryToken/>
+            <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent" Style="width:20%;">Download</FluentButton>
+        </form>
+
+        <hr/>
+
+        <p style="margin-top: 10px; text-align: end;">
+            <FluentAnchor Href="Account/Manage/DeletePersonalData" Appearance="Appearance.Hypertext">Delete your personal data</FluentAnchor>
+        </p>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+    private CancellationTokenSource _cancellationToken = new(); 
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await CurrentUser.GetUserAsync(_cancellationToken.Token);
+        if (user is null)
+        {
+            RedirectManager.RedirectToInvalidUser(UserManager, HttpContext);
+        }
+    }
+
+}

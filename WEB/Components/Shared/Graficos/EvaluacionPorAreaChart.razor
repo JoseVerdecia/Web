@@ -1,0 +1,247 @@
+﻿@using ApexCharts
+@using WEB.Common
+@using WEB.Features.Dashboard.Dto
+@using Align = ApexCharts.Align
+@using Color = Microsoft.FluentUI.AspNetCore.Components.Color
+@using Orientation = Microsoft.FluentUI.AspNetCore.Components.Orientation
+
+<FluentCard Appearance="Appearance.Filled" Style="padding: 20px; background: var(--neutral-layer-2); height: 100%;">
+    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@Title</FluentLabel>
+    <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="display: block; margin-top: 2px; margin-bottom: 12px;">
+        Seleccione un área para ver el rendimiento de sus indicadores.
+    </FluentLabel>
+
+    <FluentSelect Items="@AreaOptions"
+                  Value="@SelectedAreaIdStr"
+                  ValueChanged="HandleAreaChanged"
+                  OptionValue="@(opt => opt.Value)"
+                  OptionText="@(opt => opt.Text)"
+                  Placeholder="Seleccionar área..."
+                  Style="margin-bottom: 16px; max-width: 400px;" />
+
+    @if (SelectedAreaId == null)
+    {
+        <div style="display: flex; align-items: center; justify-content: center; height: 250px; color: var(--neutral-foreground-hint);">
+            <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" VerticalGap="8">
+                <FluentIcon Value="@(new Icons.Regular.Size24.Building())" Color="Color.Neutral" />
+                <FluentLabel>Seleccione un área para visualizar</FluentLabel>
+            </FluentStack>
+        </div>
+    }
+    else if (!CurrentIndicadores.Any())
+    {
+        <div style="display: flex; align-items: center; justify-content: center; height: 250px; color: var(--neutral-foreground-hint);">
+            <FluentLabel>Esta área no tiene indicadores registrados</FluentLabel>
+        </div>
+    }
+    else
+    {
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <FluentBadge Appearance="Appearance.Neutral" Style="font-size: 11px;">
+                @CurrentIndicadores.Count indicadores
+            </FluentBadge>
+            <FluentBadge Appearance="Appearance.Neutral" Color="@CumplimientoColor" Style="font-size: 11px;">
+                Cumplimiento: @PorcentajeArea.ToString("F1")%
+            </FluentBadge>
+        </div>
+
+        <div class="chart-wrapper" style="min-height: 220px;">
+            <ApexChart TItem="IndicadorAreaEvaluacionDto" Options="@ChartOptions">
+                <ApexPointSeries TItem="IndicadorAreaEvaluacionDto"
+                                 Items="@CurrentIndicadores"
+                                 SeriesType="SeriesType.Area"
+                                 Name="Cumplimiento %"
+                                 XValue="@(e => TruncateName(e.Nombre, 35))"
+                                 YValue="@(e => e.PorcentajeCumplimiento)" />
+            </ApexChart>
+        </div>
+
+        @* ✅ TABLA MEJORADA: Solo muestra el Top 5 mejores *@
+        <div style="overflow-x: auto; margin-top: 12px; border-top: 1px solid var(--neutral-stroke-2); padding-top: 8px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold" Style="color: var(--neutral-foreground-hint);">
+                    Top 5 Mejores
+                </FluentLabel>
+                @if (CurrentIndicadores.Count > 5)
+                {
+                    <FluentLabel Typo="Typography.Subject" Style="color: var(--neutral-foreground-hint);">
+                        y @(CurrentIndicadores.Count - 5) más
+                    </FluentLabel>
+                }
+            </div>
+            <table class="criticos-table">
+                <thead>
+                    <tr>
+                        <th>Indicador</th>
+                        <th class="text-center">Meta</th>
+                        <th class="text-center">Real</th>
+                        <th class="text-center">%</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var ind in TopIndicadores)
+                    {
+                        <tr>
+                            <td class="indicator-name" title="@ind.Nombre">@ind.Nombre</td>
+                            <td class="text-center">@ind.MetaCumplir</td>
+                            <td class="text-center">@ind.MetaReal</td>
+                            <td class="text-center">
+                                <span style="color: @(GetEvalColor(ind.PorcentajeCumplimiento)); font-weight: 600;">
+                                    @ind.PorcentajeCumplimiento.ToString("F1")%
+                                </span>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</FluentCard>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Evaluación por Área";
+    [Parameter] public List<AreaConIndicadoresDto> Areas { get; set; } = new();
+
+    private string? SelectedAreaIdStr { get; set; }
+    private int? SelectedAreaId { get; set; }
+    private List<IndicadorAreaEvaluacionDto> CurrentIndicadores { get; set; } = new();
+
+    // ✅ NUEVO: Propiedad que obtiene solo los 5 con mayor porcentaje (de mayor a menor)
+    private List<IndicadorAreaEvaluacionDto> TopIndicadores => CurrentIndicadores
+        .OrderByDescending(x => x.PorcentajeCumplimiento)
+        .Take(5)
+        .ToList();
+
+    private List<SelectOption<string>> AreaOptions => Areas
+        .Select(a => new SelectOption<string>
+        {
+            Value = a.AreaId.ToString(),
+            Text = a.Nombre
+        })
+        .ToList();
+
+    private decimal PorcentajeArea => CurrentIndicadores.Any()
+        ? CurrentIndicadores.Average(x => x.PorcentajeCumplimiento)
+        : 0;
+
+    private string CumplimientoColor => PorcentajeArea switch
+    {
+        >= 90 => "Color.Success",
+        >= 70 => "Color.Info",
+        >= 50 => "Color.Warning",
+        _ => "Color.Error"
+    };
+
+    private ApexChartOptions<IndicadorAreaEvaluacionDto> ChartOptions { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ChartOptions = new ApexChartOptions<IndicadorAreaEvaluacionDto>
+        {
+            Chart = new Chart
+            {
+                Height = "220",
+                Toolbar = new Toolbar { Show = false },
+                FontFamily = "inherit"
+            },
+            Colors = new List<string> { "#0078D4" },
+            Fill = new Fill
+            {
+                Type = new List<FillType> { FillType.Gradient },
+                Gradient = new FillGradient
+                {
+                    ShadeIntensity = 1,
+                    OpacityFrom = 0.4,
+                    OpacityTo = 0.05
+                }
+            },
+            
+            Stroke = new Stroke
+            {
+                Width = new List<double> { 2 },
+                Curve = new CurveSelections(Curve.Smooth)
+            },
+            Xaxis = new XAxis
+            {
+                Labels = new XAxisLabels
+                {
+                    Style = new AxisLabelStyle { FontSize = "10px" },
+                    Rotate = -30,
+                    HideOverlappingLabels = true
+                }
+            },
+            Yaxis = new List<YAxis>
+            {
+                new()
+                {
+                    Max = 120,
+                    Labels = new YAxisLabels
+                    {
+                        Formatter = @"function(val) { return val.toFixed(0) + '%'; }",
+                        Style = new AxisLabelStyle { FontSize = "11px" }
+                    }
+                }
+            },
+            Grid = new Grid
+            {
+                Padding = new Padding { Left = 0, Right= 10 }
+            },
+            DataLabels = new DataLabels { Enabled = false },
+            Tooltip = new Tooltip
+            {
+                Theme = Mode.Dark,
+                Y = new TooltipY
+                {
+                    Formatter = @"function(val) { return val.toFixed(1) + '%'; }"
+                }
+            },
+         
+            Annotations = new Annotations
+            {
+                Yaxis = new List<AnnotationsYAxis>
+                {
+                    new()
+                    {
+                        Y = 100,
+                        StrokeDashArray = 4,
+                        Label = new Label
+                        {
+                            Text = "Meta 100%",
+                            Style = new Style
+                            {
+                                Background = "#16a34a",
+                                Color = "#fff",
+                                FontSize = "10px"
+                            }
+                        }
+                    }
+                }
+            }
+        };
+    }
+    
+    private void HandleAreaChanged(string? value)
+    {
+        SelectedAreaIdStr = value;
+        SelectedAreaId = int.TryParse(value, out var id) ? id : null;
+        
+        CurrentIndicadores = SelectedAreaId.HasValue
+            ? Areas.FirstOrDefault(a => a.AreaId == SelectedAreaId.Value)?.Indicadores ?? new()
+            : new();
+        
+        StateHasChanged();
+    }
+
+    private static string TruncateName(string name, int maxLen)
+    {
+        return name.Length > maxLen ? name.Substring(0, maxLen) + "..." : name;
+    }
+
+    private static string GetEvalColor(decimal porcentaje) => porcentaje switch
+    {
+        >= 100 => "#16a34a",
+        >= 80 => "#0078D4",
+        >= 50 => "#ea580c",
+        _ => "#dc2626"
+    };
+}

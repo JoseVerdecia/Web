@@ -1,0 +1,109 @@
+﻿@using Microsoft.AspNetCore.SignalR.Client
+@using WEB.Common
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Features.Notificacion.GetCount
+@using WEB.Interfaces
+@using WEB.Models
+@inject INotificationService NotificationService
+@inject ICurrentUser CurrentUser
+@inject NavigationManager Navigation
+@inject NotificacionStateService NotificacionState
+@inject IMediator Mediator
+@inject AuthenticationStateProvider AuthStateProvider
+@implements IDisposable
+@inject IDialogService DialogService
+
+<FluentAnchor href="javascript:void(0)"
+              aria-label="Notificaciones"
+              OnClick="OpenPanelAsync">
+    <FluentCounterBadge Count="@NotificacionState.CountNoLeidas"
+                        Appearance="Appearance.Accent"
+                        Max="99"
+                        ShowOverflow="true">
+        <FluentIcon Value="@(new Icons.Regular.Size24.Alert())"
+                    Size="20"
+                    Color="Color.Neutral" />
+    </FluentCounterBadge>
+</FluentAnchor>
+
+@code {
+    private string _usuarioId = string.Empty;
+    private CancellationTokenSource _cancellationTokenSource = new();
+    private IDialogReference? _panelReference;
+    private bool _countLoaded;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        _usuarioId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
+                     ?? string.Empty;
+
+        NotificacionState.OnCountChanged += StateHasChanged;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender || string.IsNullOrEmpty(_usuarioId) || _countLoaded)
+            return;
+
+        try
+        {
+            await LoadCountAsync(_cancellationTokenSource.Token);
+            _countLoaded = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error cargando notificaciones: {ex.Message}");
+        }
+    }
+
+    private async Task LoadCountAsync(CancellationToken cancellationToken)
+    {
+        var result = await Mediator.Send(new GetNotificacionCountRequest(_usuarioId), cancellationToken);
+        if (result.IsSuccess && result.Value != null)
+        {
+            NotificacionState.UpdateCount(result.Value.TotalNoLeidas);
+        }
+    }
+
+    private async Task OpenPanelAsync()
+    {
+        if (_panelReference != null)
+            return;
+
+        var data = new NotificacionPanelData
+        {
+            UsuarioId = _usuarioId,
+            CountNoLeidas = NotificacionState.CountNoLeidas
+        };
+
+        var parameters = new DialogParameters<NotificacionPanelData>()
+        {
+            Content = data,
+            Alignment = HorizontalAlignment.Right,
+            Title = "Notificaciones",
+            ShowDismiss = true,
+            ShowTitle = true,
+            PrimaryAction = null,
+            SecondaryAction = null,
+            Modal = false,
+            TrapFocus = false,
+            PreventScroll = false,
+            Width = "350px",
+        };
+
+        _panelReference = await DialogService.ShowPanelAsync<NotificacionPanelContent>(data, parameters);
+
+        var result = await _panelReference.Result;
+        _panelReference = null;
+
+        await LoadCountAsync(_cancellationTokenSource.Token);
+    }
+
+    public void Dispose()
+    {
+        NotificacionState.OnCountChanged -= StateHasChanged;
+        _cancellationTokenSource.Dispose();
+    }
+}

@@ -1,0 +1,59 @@
+﻿@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Interfaces
+@inject IDialogService DialogService
+@inject IMediator Mediator
+@inject INotificationService NotificationService
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+    @if (Content == null)
+    {
+        <FluentProgressRing />
+    }
+    else
+    {
+        <!-- Header con avatar y nombre -->
+        <FluentStack Orientation="Orientation.Horizontal" VerticalGap="10" 
+                      Style="padding-bottom: 16px; border-bottom: 1px solid var(--neutral-stroke-divider-rest);">
+            <FluentAvatar Size="AvatarSize.Size56" Color="Color.Accent" Name="@Content.FullName" />
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="4">
+                <FluentLabel Typo="Typography.H3">@Content.FullName</FluentLabel>
+                <FluentLabel Typo="Typography.Body" Style="color: var(--neutral-foreground-4);">@Content.Email</FluentLabel>
+                <FluentBadge Appearance="@GetBadgeAppearance(Content.Role)">@Content.Role</FluentBadge>
+            </FluentStack>
+        </FluentStack>
+
+        <!-- Datos del usuario -->
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" Style="padding: 8px 0;">
+            <FluentLabel><b>Email confirmado:</b> @(Content.EmailConfirmed ? "✅ Sí" : "❌ No")</FluentLabel>
+
+            @if (Content.Role == AppRoles.JefeProceso && !string.IsNullOrEmpty(Content.ProcesoNombre))
+            {
+                <FluentLabel><b>Proceso asignado:</b> @Content.ProcesoNombre</FluentLabel>
+            }
+            else if (Content.Role == AppRoles.JefeArea && !string.IsNullOrEmpty(Content.AreaNombre))
+            {
+                <FluentLabel><b>Área asignada:</b> @Content.AreaNombre</FluentLabel>
+            }
+            else if (Content.Role == AppRoles.Administrador)
+            {
+                <FluentLabel><i>Administrador con acceso total al sistema</i></FluentLabel>
+            }
+            else if (Content.Role == AppRoles.UsuarioNormal)
+            {
+                <FluentMessageBar Intent="MessageIntent.Info">
+                    Este usuario es <b>Usuario Normal</b>. Puedes asignarle un rol.
+                </FluentMessageBar>
+            }
+        </FluentStack>
+
+        <!-- Acciones según rol -->
+        <FluentDivider Role="DividerRole.Presentation" />
+        
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" HorizontalGap="8">
+            
+            <FluentButton Appearance="Appearance.Lightweight" OnClick="Close">
+                Cerrar
+            </FluentButton>
+        </FluentStack>
+    }
+</FluentStack>

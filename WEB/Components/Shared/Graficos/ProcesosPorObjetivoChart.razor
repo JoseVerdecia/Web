@@ -1,0 +1,193 @@
+﻿@using ApexCharts
+@using WEB.Common
+@using WEB.Features.Dashboard.Dto
+@using Color = Microsoft.FluentUI.AspNetCore.Components.Color
+@using Orientation = Microsoft.FluentUI.AspNetCore.Components.Orientation
+@using Align = ApexCharts.Align
+
+<FluentCard Style="padding: 20px; background: var(--neutral-layer-2); height: 100%;">
+    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@Title</FluentLabel>
+    <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="display: block; margin-top: 2px; margin-bottom: 12px;">
+        Seleccione un objetivo para ver el cumplimiento de sus procesos.
+    </FluentLabel>
+
+    <FluentSelect Items="@ObjetivoOptions"
+                  Value="@SelectedObjetivoIdStr"
+                  ValueChanged="HandleObjetivoChanged"
+                  OptionValue="@(opt => opt.Value)"
+                  OptionText="@(opt => opt.Text)"
+                  Placeholder="Seleccionar objetivo..."
+                  Style="margin-bottom: 16px; max-width: 500px;" />
+
+    @if (SelectedObjetivoId == null)
+    {
+    <div style="display: flex; align-items: center; justify-content: center; height: 250px; color: var(--neutral-foreground-hint);">
+        <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" VerticalGap="8">
+            <FluentIcon Value="@(new Icons.Regular.Size24.Target())" Color="Color.Accent" />
+            <FluentLabel>Seleccione un objetivo para visualizar</FluentLabel>
+        </FluentStack>
+    </div>
+    }
+    else if (!CurrentProcesos.Any())
+    {
+    <div style="display: flex; align-items: center; justify-content: center; height: 250px; color: var(--neutral-foreground-hint);">
+        <FluentLabel>Este objetivo no tiene procesos asociados</FluentLabel>
+    </div>
+    }
+    else
+    {
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <FluentBadge Appearance="Appearance.Neutral" Style="font-size: 11px;">
+            @CurrentProcesos.Count procesos
+        </FluentBadge>
+        <FluentBadge Appearance="Appearance.Neutral" Color="@CumplimientoColor" Style="font-size: 11px;">
+            Promedio: @PromedioProcesos.ToString("F1")%
+        </FluentBadge>
+    </div>
+
+    <div class="chart-wrapper" style="min-height: 220px;">
+        <ApexChart TItem="ProcesoCumplimientoDto" Options="@ChartOptions">
+            <ApexPointSeries TItem="ProcesoCumplimientoDto"
+                             Items="@CurrentProcesos"
+                             Name="Cumplimiento %"
+                             XValue="@(e => e.Nombre)"
+                             YValue="@(e => e.PorcentajeCumplimiento)" />
+        </ApexChart>
+    </div>
+
+    @* Resumen de procesos *@
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 8px; margin-top: 12px; border-top: 1px solid var(--neutral-stroke-2); padding-top: 12px;">
+        @foreach (var proc in CurrentProcesos.OrderBy(p => p.PorcentajeCumplimiento))
+        {
+        <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; border-radius: 6px; background: var(--neutral-layer-1); font-size: 12px;">
+            <span style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100px;" title="@proc.Nombre">@proc.Nombre</span>
+            <span style="font-weight: 600;">@proc.PorcentajeCumplimiento.ToString("F0")%</span>
+        </div>
+        }
+    </div>
+    }
+</FluentCard>
+
+
+@code {
+[Parameter] public string Title { get; set; } = "Procesos por Objetivo";
+[Parameter] public List<ObjetivoConProcesosDto> Objetivos { get; set; } = new();
+
+private string? SelectedObjetivoIdStr { get; set; }
+private int? SelectedObjetivoId { get; set; }
+private List<ProcesoCumplimientoDto> CurrentProcesos { get; set; } = new();
+
+
+private List<SelectOption<string>> ObjetivoOptions => Objetivos
+.Select(o => new SelectOption<string>
+{
+Value = o.ObjetivoId.ToString(),
+Text = o.Label
+})
+.ToList();
+
+private decimal PromedioProcesos => CurrentProcesos.Any()
+? CurrentProcesos.Average(x => x.PorcentajeCumplimiento)
+: 0;
+
+private string CumplimientoColor => PromedioProcesos switch
+{
+>= 90 => "Color.Success",
+>= 70 => "Color.Info",
+>= 50 => "Color.Warning",
+_ => "Color.Error"
+};
+
+private ApexChartOptions<ProcesoCumplimientoDto> ChartOptions { get; set; }
+
+protected override void OnInitialized()
+{
+ChartOptions = new ApexChartOptions<ProcesoCumplimientoDto>
+{
+Chart = new Chart
+{
+Height = "250",
+Toolbar = new Toolbar { Show = false },
+FontFamily = "inherit"
+},
+PlotOptions = new PlotOptions
+{
+Bar = new PlotOptionsBar
+{
+Horizontal = true,
+BorderRadius = 6,
+BarHeight = "60%",
+Distributed = true
+}
+},
+Colors = new List<string>
+{
+"#0078D4", "#05B353", "#f97316", "#dc2626", "#8B5CF6",
+"#06B6D4", "#EC4899", "#84CC16", "#F59E0B", "#6366F1"
+},
+DataLabels = new DataLabels
+{
+Enabled = true,
+Formatter = @"function(val) { return val.toFixed(1) + '%'; }",
+TextAnchor = TextAnchor.Start,
+OffsetX = 4,
+Style = new DataLabelsStyle { FontSize = "11px", FontWeight = "600" }
+},
+Xaxis = new XAxis
+{
+Max = 120,
+Labels = new XAxisLabels
+{
+Formatter = @"function(val) { return val.toFixed(0) + '%'; }",
+Style = new AxisLabelStyle { FontSize = "11px" }
+}
+},
+Yaxis = new List<YAxis>
+{
+new()
+{
+Labels = new YAxisLabels
+{
+Style = new AxisLabelStyle { FontSize = "11px" },
+OffsetX = -5
+}
+}
+},
+Grid = new Grid
+{
+Xaxis = new GridXAxis { Lines = new Lines { Show = false } },
+Padding = new Padding { Left = 10, Right = 20 }
+},
+Legend = new Legend { Show = false },
+Tooltip = new Tooltip
+{
+Theme = Mode.Dark,
+Y = new TooltipY
+{
+Formatter = @"function(val) { return val.toFixed(1) + '% de cumplimiento'; }"
+}
+}
+};
+}
+
+
+private void HandleObjetivoChanged(string? value)
+{
+SelectedObjetivoIdStr = value;
+SelectedObjetivoId = int.TryParse(value, out var id) ? id : null;
+
+CurrentProcesos = SelectedObjetivoId.HasValue
+? Objetivos.FirstOrDefault(o => o.ObjetivoId == SelectedObjetivoId.Value)?.Procesos ?? new()
+: new();
+
+StateHasChanged();
+}
+
+private static string GetEvalColor(decimal porcentaje) => porcentaje switch
+{
+>= 100 => "#16a34a",
+>= 80 => "#0078D4",
+>= 50 => "#ea580c",
+_ => "#dc2626"
+};
+}

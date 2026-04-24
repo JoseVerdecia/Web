@@ -1,0 +1,22 @@
+﻿    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; text-align: center;">
+        <FluentIcon Value="@Icon" Size="48" Color="Color.Neutral" />
+        <FluentLabel Typo="Typography.H4" Style="margin-top: 16px; margin-bottom: 8px;">@Title</FluentLabel>
+        <FluentLabel Typo="Typography.Body" Color="Color.Neutral" Style="max-width: 400px;">
+            @Message
+        </FluentLabel>
+        @if (ActionButtonVisible)
+        {
+            <FluentButton Appearance="Appearance.Accent" OnClick="@OnAction" Style="margin-top: 20px;">
+                @ActionText
+            </FluentButton>
+        }
+    </div>
+
+    @code {
+        [Parameter] public Icon Icon { get; set; } = new Icons.Regular.Size24.DataBarVertical();
+        [Parameter] public string Title { get; set; } = "No hay datos disponibles";
+        [Parameter] public string Message { get; set; } = "Aún no se han registrado indicadores para mostrar estadísticas.";
+        [Parameter] public bool ActionButtonVisible { get; set; } = false;
+        [Parameter] public string ActionText { get; set; } = "Crear indicador";
+        [Parameter] public EventCallback OnAction { get; set; }
+    }

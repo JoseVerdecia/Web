@@ -1,0 +1,142 @@
+﻿@using WEB.Core.Mediator
+@using WEB.Features.Notificacion.Crear
+<FluentDialog Open="@Visible" 
+              Modal="true"
+              TrapFocus="true"
+              Blocking="@_isSubmitting">
+    <FluentDialogHeader>
+        <FluentStack Horizontal Gap="8" VerticalAlignment="VerticalAlignment.Center">
+            <FluentIcon Value="@(new Icons.Filled.Size20.ArrowSplit())" Size="20" />
+            <span>Solicitar cambio de meta</span>
+        </FluentStack>
+    </FluentDialogHeader>
+    <FluentDialogBody>
+        <FluentStack Vertical Gap="16" Style="width: 400px;">
+            
+            <!-- Info del indicador -->
+            <FluentCard Appearance="Appearance.Filled" Style="background: var(--neutral-fill-stealth);">
+                <FluentStack Vertical Gap="4" Style="padding: 12px;">
+                    <FluentTextField Typography="Typography.BodyStrong">@IndicadorNombre</FluentTextField>
+                    <FluentTextField Typography="Typography.Caption" Color="Color.NeutralForeground3">@AreaNombre</FluentTextField>
+                    <FluentStack Horizontal Gap="8" Style="margin-top: 8px;">
+                        <FluentTextField Typography="Typography.Body">Meta actual:</FluentTextField>
+                        <FluentBadge Appearance="Appearance.Filled" Color="Color.BrandPrimary">
+                            @MetaActual
+                        </FluentBadge>
+                    </FluentStack>
+                </FluentStack>
+            </FluentCard>
+
+            <!-- Nueva meta -->
+            <FluentTextField Label="Nueva meta propuesta" Required="true" ValidationMessage="@_metaError">
+                <FluentTextField @bind-Value="_nuevaMeta" 
+                                 Placeholder="Ej: 95% o 95.5" />
+            </FluentTextField>
+
+            <!-- Mensaje personalizado -->
+            <FluentTextField Label="Motivo del cambio">
+                <FluentTextArea @bind-Value="_mensaje" 
+                                Rows="3"
+                                Placeholder="Explique por qué solicita este cambio..." />
+            </FluentTextField>
+
+            <!-- Error general -->
+            @if (!string.IsNullOrEmpty(_errorGeneral))
+            {
+                <FluentMessageBar Intent="MessageIntent.Error" 
+                                  DismissIcon="true"
+                                  OnDismiss="() => _errorGeneral = null">
+                    @_errorGeneral
+                </FluentMessageBar>
+            }
+        </FluentStack>
+    </FluentDialogBody>
+    <FluentDialogFooter>
+        <FluentButton Appearance="Appearance.Filled" 
+                      OnClick="Close"
+                      Disabled="@_isSubmitting">
+            Cancelar
+        </FluentButton>
+        <FluentButton Appearance="Appearance.Accent" 
+                      OnClick="SubmitAsync"
+                      Disabled="@_isSubmitting">
+            @if (_isSubmitting)
+            {
+                <FluentProgressRing Size="16" Style="margin-right: 8px;" />
+            }
+            Enviar solicitud
+        </FluentButton>
+    </FluentDialogFooter>
+</FluentDialog>
+
+@code {
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+    [Parameter] public int IndicadorDeAreaId { get; set; }
+    [Parameter] public string IndicadorNombre { get; set; } = "";
+    [Parameter] public string AreaNombre { get; set; } = "";
+    [Parameter] public string MetaActual { get; set; } = "";
+    [Parameter] public EventCallback OnSuccess { get; set; }
+
+    [Inject] private IMediator Mediator { get; set; } = null!;
+    [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
+
+    private string _nuevaMeta = "";
+    private string _mensaje = "";
+    private string _metaError = "";
+    private string _errorGeneral = "";
+    private bool _isSubmitting;
+
+    private async Task Close()
+    {
+        ResetForm();
+        await VisibleChanged.InvokeAsync(false);
+    }
+
+    private void ResetForm()
+    {
+        _nuevaMeta = "";
+        _mensaje = "";
+        _metaError = "";
+        _errorGeneral = "";
+        _isSubmitting = false;
+    }
+
+    private async Task SubmitAsync()
+    {
+        _metaError = "";
+        _errorGeneral = "";
+        _isSubmitting = true;
+
+        // Validación básica
+        if (string.IsNullOrWhiteSpace(_nuevaMeta))
+        {
+            _metaError = "La nueva meta es requerida";
+            _isSubmitting = false;
+            return;
+        }
+
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var userId = authState.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value 
+                    ?? string.Empty;
+
+        var request = new CrearSolicitudCambioMetaRequest(
+            IndicadorDeAreaId,
+            _nuevaMeta,
+            _mensaje,
+            userId
+        );
+
+        var result = await Mediator.Send(request);
+
+        if (result.IsFailure)
+        {
+            _errorGeneral = string.Join("|",result.Errors.Select(m => m.Message));
+            _isSubmitting = false;
+            return;
+        }
+
+        await Close();
+        await OnSuccess.InvokeAsync();
+    }
+}

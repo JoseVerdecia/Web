@@ -1,0 +1,147 @@
+﻿@using ApexCharts
+@using Color = Microsoft.FluentUI.AspNetCore.Components.Color
+@using Align = ApexCharts.Align
+@typeparam TItem where TItem : class
+
+<FluentCard Appearance="Appearance.Filled" Style="padding: 20px; background: var(--neutral-layer-2); height: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+        <div>
+            <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@Title</FluentLabel>
+            @if (!string.IsNullOrEmpty(Subtitle))
+            {
+                <FluentLabel Typo="Typography.Subject" Color="Color.Accent" Style="display: block; margin-top: 2px;">@Subtitle</FluentLabel>
+            }
+        </div>
+        @if (ShowAverage)
+        {
+            <FluentBadge Appearance="Appearance.Neutral" Style="font-size: 12px;">
+                Promedio: @AverageValue.ToString("F1")%
+            </FluentBadge>
+        }
+    </div>
+    <div class="chart-wrapper">
+        <ApexChart TItem="TItem" Options="@ChartOptions">
+            <ApexPointSeries TItem="TItem"
+                             Items="@FilteredItems"
+                             Name="Cumplimiento %"
+                             XValue="@XLabel"
+                             YValue="@YPorcentaje" />
+        </ApexChart>
+    </div>
+</FluentCard>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Rendimiento";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
+    [Parameter] public Func<TItem, string> XLabel { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal?> YPorcentaje { get; set; } = null!;
+    [Parameter] public bool ShowAverage { get; set; } = true;
+    [Parameter] public string? AccentColor { get; set; }
+    [Parameter] public int? MaxItems { get; set; }
+
+    private IEnumerable<TItem> FilteredItems => MaxItems.HasValue 
+        ? Items.OrderBy(XLabel).Take(MaxItems.Value) 
+        : Items.OrderBy(XLabel);
+
+    private decimal AverageValue => FilteredItems.Any() 
+        ? FilteredItems.Average(YPorcentaje).Value 
+        : 0;
+
+    private ApexChartOptions<TItem> ChartOptions { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var color = AccentColor ?? "#0078D4";
+        
+        ChartOptions = new ApexChartOptions<TItem>
+        {
+            Chart = new Chart
+            {
+                Height = "320",
+                Toolbar = new Toolbar { Show = false },
+                FontFamily = "inherit"
+            },
+            PlotOptions = new PlotOptions
+            {
+                Bar = new PlotOptionsBar
+                {
+                    Horizontal = true,
+                    BorderRadius = 6,
+                    BarHeight = "65%",
+                    Distributed = false
+                }
+            },
+            Xaxis = new XAxis
+            {
+                Max = 120,
+                TickAmount = 6,
+                Labels = new XAxisLabels
+                {
+                    Formatter = @"function(val) { return val.toFixed(0) + '%'; }",
+                    Style = new AxisLabelStyle { FontSize = "11px" }
+                }
+            },
+            Yaxis = new List<YAxis>
+            {
+                new()
+                {
+                    Labels = new YAxisLabels
+                    {
+                        Style = new AxisLabelStyle { FontSize = "12px", FontWeight = "500" },
+                        OffsetX = -5
+                    }
+                }
+            },
+            Grid = new Grid
+            {
+                Xaxis = new GridXAxis { Lines = new Lines { Show = false } },
+                Padding = new Padding { Left = 10, Right = 20 }
+            },
+            Colors = new List<string> { color },
+            DataLabels = new DataLabels
+            {
+                Enabled = true,
+                Formatter = @"function(val) { return val.toFixed(1) + '%'; }",
+                TextAnchor = TextAnchor.Start,
+                OffsetX = 4,
+                Style = new DataLabelsStyle 
+                { 
+                    FontSize = "11px", 
+                    FontWeight = "600",
+                    Colors = new List<string> { "#333" }
+                }
+            },
+            Legend = new Legend { Show = false },
+            Tooltip = new Tooltip
+            {
+                Theme = Mode.Dark,
+                Y = new TooltipY
+                {
+                    Formatter = @"function(val) { return val.toFixed(1) + '% de cumplimiento'; }"
+                }
+            },
+            Annotations = ShowAverage ? new Annotations
+            {
+                Xaxis = new List<AnnotationsXAxis>
+                {
+                    new()
+                    {
+                        X = AverageValue,
+                        StrokeDashArray = 0,
+                        Label = new Label
+                        {
+                            Text = $"Prom: {AverageValue:F1}%",
+                            Style = new Style
+                            {
+                                Background = "#9C9C9C",
+                                Color = "#fff",
+                                FontSize = "11px"
+                            }
+                        }
+                    }
+                }
+            } : null
+        };
+    }
+}

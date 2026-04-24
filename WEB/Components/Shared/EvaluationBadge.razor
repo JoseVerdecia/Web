@@ -1,0 +1,15 @@
+﻿@using WEB.Core.Extensions
+@using WEB.Enums
+<FluentBadge Fill="custom" 
+             Color="#ffffff" 
+             BackgroundColor="@BackgroundColor">
+    @DisplayText
+</FluentBadge>
+
+@code {
+    [Parameter, EditorRequired]
+    public Evaluacion Value { get; set; }
+
+    private string DisplayText => Value.GetDisplayName();
+    private string BackgroundColor => Value.GetBadgeColor();
+}

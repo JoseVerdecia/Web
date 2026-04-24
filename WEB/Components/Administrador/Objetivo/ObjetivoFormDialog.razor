@@ -1,0 +1,34 @@
+﻿@using WEB.Core.Mediator
+@using WEB.Interfaces
+@implements IDialogContentComponent<object>
+@inject INotificationService  _notificacion
+@inject IMediator Mediator
+
+
+
+
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="15" Style="width: 100%;">
+        <FluentLabel Typo="Typography.PaneHeader">@TitleText</FluentLabel>
+        <FluentTextArea @bind-Value="nombre"
+                        Label="Nombre del objetivo"
+                        Resize="TextAreaResize.Both"
+                        Autofocus="true"
+                        Style="width: 100%;height: 200px;"
+                        Required="true"
+                        Rows="12"
+                        Placeholder="LOGRAR LA PREPARACIÓN Y EL COMPLETAMIENTO DEL CLAUSTRO Y DE LOS CUADROS, CON UN ALTO POR CIENTO DE DOCTORES...."/>
+        
+        <FluentNumberField Min="1"  @bind-Value="numeroObjetivo"
+                         Label="Numero del Objetivo"
+                         Required="true"
+                         Placeholder="Ej: 1, 2, 3"/>
+    </FluentStack>
+</FluentDialogBody>
+
+<FluentDialogFooter>
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Right">
+        <FluentButton Appearance="Appearance.Stealth" OnClick="@Cancel">Cancelar</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="@Save" Disabled="!IsValid">@ButtonText</FluentButton>
+    </FluentStack>
+</FluentDialogFooter>

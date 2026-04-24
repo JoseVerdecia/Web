@@ -1,0 +1,201 @@
+﻿@using WEB.Common
+@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Features.Notificacion.Responder
+@using WEB.Features.Notificacion.Delete
+@using WEB.Enums
+@inject IMediator Mediator
+@inject IDialogService DialogService
+@implements IDialogContentComponent<NotificacionDetalleData>
+
+
+<FluentDialogBody Style="min-width: 420px;">
+    
+    <FluentStack Horizontal Gap="12" VerticalAlignment="VerticalAlignment.Center" Style="margin-bottom: 16px;">
+        <div style="width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: @GetEstadoColorFondo();">
+            <FluentIcon Value="@GetIconoPrincipal()" Size="20" Color="Color.Fill" />
+        </div>
+        <FluentStack Orientation="Orientation.Vertical" Gap="2" Style="flex: 1;">
+            <FluentStack Horizontal Gap="8" VerticalAlignment="VerticalAlignment.Center">
+                <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="margin: 0;">
+                    De: @Content.Notificacion.RemitenteNombre
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="margin: 0;">
+                    @Content.Notificacion.TiempoTranscurrido
+                </FluentLabel>
+            </FluentStack>
+        </FluentStack>
+    </FluentStack>
+
+    <FluentDivider Style="margin-bottom: 16px;" />
+
+    @if (Content.Notificacion.Tipo == TipoNotificacion.SolicitudCambioMeta
+         || Content.Notificacion.Tipo == TipoNotificacion.RespuestaAceptada
+         || Content.Notificacion.Tipo == TipoNotificacion.RespuestaRechazada)
+    {
+        <FluentCard Height="70%" Style="padding: 16px; margin-bottom: 16px; background: var(--neutral-layer-1);">
+           
+            <FluentStack Orientation="Orientation.Vertical" Gap="12">
+                <FluentStack Horizontal Gap="12" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Stretch">
+                    <FluentStack Vertical Gap="2" Style="flex: 1; text-align: center;">
+                        <FluentCard>
+                            <FluentStack Orientation="Orientation.Horizontal">
+                                <FluentLabel Typo="Typography.Subject" Color="Color.Neutral">Anterior:</FluentLabel>
+                                <FluentLabel Typo="Typography.Subject" Color="Color.Warning" Style="margin: 0;">@Content.Notificacion.MetaAnterior</FluentLabel>
+                            </FluentStack>
+                        </FluentCard>
+                        
+                    </FluentStack>
+                    <FluentIcon Value="@(new Icons.Regular.Size20.ArrowRight())" Size="18" Color="Color.Neutral" />
+                    <FluentStack Vertical Gap="2" Style="flex: 1; text-align: center;">
+                        <FluentCard>
+                            <FluentStack Orientation="Orientation.Horizontal">
+                                <FluentLabel Typo="Typography.Subject" Color="Color.Neutral">Propuesta:</FluentLabel>
+                                <FluentLabel Typo="Typography.Subject" Color="Color.Success" Style="margin: 0;">@Content.Notificacion.NuevaMetaPropuesta</FluentLabel>
+                            </FluentStack>
+                        </FluentCard>
+                       
+                    </FluentStack>
+                </FluentStack>
+                
+
+                <FluentStack Orientation="Orientation.Vertical" VerticalGapGap="6">
+                    @if (!string.IsNullOrEmpty(Content.Notificacion.AreaNombre))
+                    {
+                        <FluentStack Horizontal Gap="8" VerticalAlignment="VerticalAlignment.Center">
+                            <FluentIcon Value="@(new Icons.Regular.Size16.Building())" Size="14" Color="Color.Neutral" />
+                            <FluentLabel Typo="Typography.Body" Color="Color.Neutral" Style="margin: 0;">
+                                Área: <strong>@Content.Notificacion.AreaNombre</strong>
+                            </FluentLabel>
+                        </FluentStack>
+                    }
+                    @if (!string.IsNullOrEmpty(Content.Notificacion.IndicadorNombre))
+                    {
+                        <FluentStack Horizontal Gap="8" VerticalAlignment="VerticalAlignment.Center">
+                            <FluentIcon Value="@(new Icons.Regular.Size16.DataBarVertical())" Size="14" Color="Color.Neutral" />
+                            <FluentLabel Typo="Typography.Body" Color="Color.Neutral" Style="margin: 0;">
+                                Indicador: <strong>@Content.Notificacion.IndicadorNombre</strong>
+                            </FluentLabel>
+                        </FluentStack>
+                    }
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+    }
+
+    
+    @if (!string.IsNullOrEmpty(Content.Notificacion.MensajePersonalizado))
+    {
+        <FluentStack Horizontal Gap="8" Style="margin-bottom: 16px; padding: 12px 16px; border-left: 3px solid var(--accent-fill-rest); background: var(--neutral-layer-1); border-radius: 0 4px 4px 0;">
+            <FluentIcon Value="@(new Icons.Regular.Size16.Comment())" Size="14" Color="Color.Success" Style="margin-top: 2px;" />
+            <FluentLabel Typo="Typography.Body" Color="Color.Neutral" Style="margin: 0; font-style: italic;">
+                "@Content.Notificacion.MensajePersonalizado"
+            </FluentLabel>
+        </FluentStack>
+    }
+
+   
+    @if (Content.Notificacion.Tipo == TipoNotificacion.RespuestaAceptada
+         || Content.Notificacion.Tipo == TipoNotificacion.RespuestaRechazada)
+    {
+        <FluentMessageBar Intent="@(Content.Notificacion.Tipo == TipoNotificacion.RespuestaAceptada ? MessageIntent.Success : MessageIntent.Error)">
+            @(Content.Notificacion.Tipo == TipoNotificacion.RespuestaAceptada
+                ? "La solicitud fue aprobada exitosamente. La meta ha sido actualizada."
+                : "La solicitud de cambio de meta fue rechazada. No se realizaron cambios.")
+        </FluentMessageBar>
+    }
+</FluentDialogBody>
+<FluentDialogFooter>
+    
+    @if (_showActions)
+    {
+        <FluentDivider Style="margin-top: 16px;" />
+        <FluentStack Horizontal Gap="8" HorizontalAlignment="HorizontalAlignment.End" Style="margin-top: 16px;">
+            <FluentButton Appearance="Appearance.Outline"
+                          IconStart="@(new Icons.Filled.Size16.DismissCircle())"
+                          OnClick="@HandleRechazarAsync"
+                          Disabled="@_isProcessing">
+                Rechazar
+            </FluentButton>
+            <FluentButton Appearance="Appearance.Accent"
+                          IconStart="@(new Icons.Filled.Size16.Checkmark())"
+                          OnClick="@HandleAceptarAsync"
+                          Disabled="@_isProcessing">
+                Aceptar
+            </FluentButton>
+        </FluentStack>
+    }
+</FluentDialogFooter>
+
+@code {
+    [Parameter]
+    public NotificacionDetalleData Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog Dialog { get; set; }
+
+    private bool _isProcessing;
+    private bool _showActions => Content.UsuarioRol == AppRoles.JefeProceso
+        && Content.Notificacion.Tipo == TipoNotificacion.SolicitudCambioMeta
+        && Content.Notificacion.Estado == EstadoNotificacion.Pendiente;
+
+    private Icon GetIconoPrincipal() => Content.Notificacion.Tipo switch
+    {
+        TipoNotificacion.SolicitudCambioMeta => new Icons.Regular.Size20.ArrowSwap(),
+        TipoNotificacion.RespuestaAceptada => new Icons.Regular.Size20.CheckmarkCircle(),
+        TipoNotificacion.RespuestaRechazada => new Icons.Regular.Size20.DismissCircle(),
+        _ => new Icons.Regular.Size20.Info()
+    };
+
+    private string GetEstadoColorFondo() => Content.Notificacion.Tipo switch
+    {
+        TipoNotificacion.SolicitudCambioMeta => "var(--accent-fill-rest)",
+        TipoNotificacion.RespuestaAceptada => "var(--success-fill-rest)",
+        TipoNotificacion.RespuestaRechazada => "var(--danger-fill-rest)",
+        _ => "var(--neutral-fill-rest)"
+    };
+
+    private async Task HandleAceptarAsync()
+    {
+        _isProcessing = true;
+        try
+        {
+            await Mediator.Send(new ResponderSolicitudRequest(
+                Content.Notificacion.Id, Aceptada: true,
+                MensajeRespuesta: null, RespondeId: Content.UsuarioId));
+            await Dialog.CloseAsync(new
+            {
+                Id = Content.Notificacion.Id,
+                Estado = EstadoNotificacion.Aceptada
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally { _isProcessing = false; }
+    }
+
+    private async Task HandleRechazarAsync()
+    {
+        _isProcessing = true;
+        try
+        {
+            await Mediator.Send(new ResponderSolicitudRequest(
+                Content.Notificacion.Id, Aceptada: false,
+                MensajeRespuesta: null, RespondeId: Content.UsuarioId));
+        await Dialog.CloseAsync(new
+        {
+        Id = Content.Notificacion.Id,
+        Estado = EstadoNotificacion.Rechazada
+        });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+        finally { _isProcessing = false; }
+    }
+
+   
+}

@@ -1,0 +1,226 @@
+﻿@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Enums
+@using WEB.Features.IndicadorDeArea.Dto
+@using WEB.Features.IndicadorDeArea.GetAll
+@using WEB.Features.Notificacion.Crear
+@using WEB.Interfaces
+@using WEB.Models
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@inject INotificationService NotificationService
+@inject IndicadorUpdateStateService IndicadorUpdateState
+@inject IDialogService DialogService
+@implements IDisposable
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <FluentMessageBar Title="Error" Intent="MessageIntent.Error">
+        @_errorMessage
+    </FluentMessageBar>
+}
+
+<FluentDataGrid @ref="_dataGrid"
+                ResizableColumns="true"
+                MultiLine="true"
+                ItemsProvider="@_itemsProvider"
+                IsFixed="false"
+                ItemKey="@(item => item.Id)"
+                Loading="_isLoading"
+                GridTemplateColumns="5fr 1fr 1fr 1fr 1fr"
+                ShowHover="true"
+                Style="width: 100%;">
+    <ChildContent>
+        <PropertyColumn Property="@(i => i.NombreIndicadorPadre)" Title="Indicador" Sortable="true" />
+        <PropertyColumn Align="Align.Center" Property="@(i => i.MetaCumplir)" Title="Meta a Cumplir" Sortable="true" />
+        <TemplateColumn Align="Align.Center" Title="Meta Real">
+            @(context.MetaReal ?? "—")
+        </TemplateColumn>
+        <TemplateColumn Title="Evaluación" Sortable="true">
+            <EvaluationBadge Value="@context.Evaluacion"></EvaluationBadge>
+        </TemplateColumn>
+        <TemplateColumn Title="Acciones" Align="Align.Center">
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                <FluentButton Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size16.Edit())"
+                              OnClick="() => OpenEditMetaRealDialog(context)"
+                              Title="Editar Meta Real" />
+                <FluentButton Appearance="Appearance.Outline"
+                              IconStart="@(new Icons.Regular.Size16.ArrowSwap())"
+                              OnClick="() => AbrirSolicitudDialog(context)"
+                              Title="Solicitar cambio"
+                              StopPropagation="true"/>
+            </FluentStack>
+        </TemplateColumn>
+    </ChildContent>
+    <EmptyContent>
+        <FluentStack VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+            <FluentIcon Value="new Icons.Regular.Size20.ChartMultiple()" Color="Color.Neutral" />
+            <FluentLabel Typography="Typography.Body" Color="Color.Neutral" Style="margin-top: 12px;">
+                No hay indicadores asignados a esta área
+            </FluentLabel>
+        </FluentStack>
+    </EmptyContent>
+</FluentDataGrid>
+
+@if (_showSolicitudDialog)
+{
+    <FluentDialog Open="@_showSolicitudDialog" Modal="true" Width="500px" OnClosed="() => _showSolicitudDialog = false">
+        <FluentDialogHeader>
+            <FluentLabel>Solicitar cambio de meta</FluentLabel>
+        </FluentDialogHeader>
+        <FluentDialogBody>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+                <FluentLabel>Indicador: <b>@(_indicadorSeleccionado?.NombreIndicadorPadre ?? "")</b></FluentLabel>
+                <FluentLabel>Meta actual: <b>@(_indicadorSeleccionado?.MetaCumplir ?? "")</b></FluentLabel>
+                <FluentTextField @bind-Value="_nuevaMetaPropuesta" Label="Nueva meta propuesta" Placeholder="Ej: 95%" Required="true" />
+                <FluentTextArea Style="width: 100%" @bind-Value="_mensajePersonalizado" Label="Mensaje" Placeholder="Añadir contexto..." />
+            </FluentStack>
+        </FluentDialogBody>
+        <FluentDialogFooter Justification="JustificationContent.SpaceBetween">
+            <FluentButton Appearance="Appearance.Neutral" OnClick="() => _showSolicitudDialog = false">Cancelar</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" OnClick="EnviarSolicitudAsync" Disabled="@string.IsNullOrWhiteSpace(_nuevaMetaPropuesta)">Enviar Solicitud</FluentButton>
+        </FluentDialogFooter>
+    </FluentDialog>
+}
+
+@code {
+    private bool _isLoading = true;
+    private string? _errorMessage;
+    private FluentDataGrid<IndicadorDeAreaDto>? _dataGrid;
+    private bool _disposed;
+    private GridItemsProvider<IndicadorDeAreaDto> _itemsProvider = default!;
+    private bool _isInitializing = false;
+    // Dialog fields
+    private bool _showSolicitudDialog;
+    private IndicadorDeAreaDto? _indicadorSeleccionado;
+    private string _nuevaMetaPropuesta = string.Empty;
+    private string _mensajePersonalizado = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        _itemsProvider = async req =>
+        {
+            Console.WriteLine("🔵 ItemsProvider ejecutándose");
+            try
+            {
+                var result = await Mediator.Send(new GetAllIndicadorDeAreaRequest(Page: 1, PageSize: 100));
+                Console.WriteLine($"🟢 Resultado: IsSuccess={result.IsSuccess}, ItemsCount={result.Value?.Items?.Count() ?? 0}");
+                if (result.IsSuccess && result.Value?.Items != null)
+                {
+                    var items = result.Value.Items.ToList();
+                    _errorMessage = null;
+                    return GridItemsProviderResult.From(items: items, totalItemCount: result.Value.TotalCount);
+                }
+                _errorMessage = "No se pudieron cargar los indicadores.";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"🔴 Error en provider: {ex.Message}");
+                _errorMessage = $"Error: {ex.Message}";
+            }
+            return GridItemsProviderResult.From(items: new List<IndicadorDeAreaDto>(), totalItemCount: 0);
+        };
+
+        IndicadorUpdateState.OnIndicadorUpdated += OnMetaUpdated;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_isInitializing)
+        {
+            _isInitializing = true;
+            await Task.Delay(100);
+            if (_dataGrid != null)
+            {
+                await _dataGrid.RefreshDataAsync();
+                _isLoading = false;
+                StateHasChanged();
+            }
+            _isInitializing = false;
+        }
+    }
+    private bool _isRefreshing = false;
+    private async void OnMetaUpdated()
+    {
+        if (_disposed) return;
+        Console.WriteLine("🔄 OnMetaUpdated ejecutado");
+        await InvokeAsync(async () =>
+        {
+            _isLoading = true;
+            StateHasChanged();
+            _isRefreshing = true;
+            if (_dataGrid != null)
+            {
+                await _dataGrid.RefreshDataAsync();
+            }
+            _isLoading = false;
+            _isRefreshing = false;
+            StateHasChanged();
+        });
+    }
+
+    private async Task OpenEditMetaRealDialog(IndicadorDeAreaDto item)
+    {
+        var parameters = new DialogParameters<IndicadorDeAreaDto>
+        {
+            Title = "Actualizar Meta Real",
+            PrimaryAction = null,
+            SecondaryAction = null,
+            Modal = true,
+            Width = "400px"
+        };
+
+        var dialog = await DialogService.ShowDialogAsync<MetaRealDialog>(item, parameters);
+        var result = await dialog.Result;
+
+        if (!result.Cancelled && result.Data is IndicadorDeAreaDto updatedDto)
+        {
+            if (_dataGrid != null)
+            {
+                await _dataGrid.RefreshDataAsync();
+            }
+        }
+    }
+
+    private void AbrirSolicitudDialog(IndicadorDeAreaDto indicador)
+    {
+        _indicadorSeleccionado = indicador;
+        _nuevaMetaPropuesta = indicador.MetaCumplir ?? string.Empty;
+        _mensajePersonalizado = string.Empty;
+        _showSolicitudDialog = true;
+    }
+
+    private async Task EnviarSolicitudAsync()
+    {
+        if (_indicadorSeleccionado == null || string.IsNullOrWhiteSpace(_nuevaMetaPropuesta))
+            return;
+
+        var user = await CurrentUser.GetUserAsync();
+        if (user == null) return;
+
+        var result = await Mediator.Send(new CrearSolicitudCambioMetaRequest(
+            IndicadorDeAreaId: _indicadorSeleccionado.Id,
+            NuevaMetaPropuesta: _nuevaMetaPropuesta,
+            MensajePersonalizado: _mensajePersonalizado,
+            RemitenteId: user.Id
+        ));
+
+        if (result.IsSuccess)
+        {
+            NotificationService.ShowSuccess("Solicitud enviada correctamente.");
+            _showSolicitudDialog = false;
+        }
+        else
+        {
+            NotificationService.ShowError(string.Join(", ", result.Errors.Select(e => e.Message)));
+        }
+    }
+
+    public void Dispose()
+    {
+        _disposed = true;
+        IndicadorUpdateState.OnIndicadorUpdated -= OnMetaUpdated;
+    }
+}

@@ -1,0 +1,12 @@
+﻿@using WEB.Core.Services
+@inject ThemeService ThemeService
+
+@code {
+protected override async Task OnAfterRenderAsync(bool firstRender)
+{
+    if (firstRender)
+    {
+        await ThemeService.LoadInitialThemeAsync();
+    }
+}
+}

@@ -1,0 +1,31 @@
+﻿@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Enums
+@using WEB.Interfaces
+@inject INotificationService _notificacion
+@inject IMediator Mediator
+
+
+
+    <FluentDialogBody>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15" Style="width: 100%;">
+            <FluentLabel Typo="Typography.PaneHeader">@TitleText</FluentLabel>
+            <FluentTextField @bind-Value="nombre"
+                             Label="Nombre del área"
+                             Required="true"
+                             Placeholder="Ej: FACIM"/>
+
+            <EnumSelect 
+                TEnum="@AreaTipo"
+                @bind-Value="@tipoArea"
+                Label="Tipo de Área"
+                Placeholder="Seleccione un tipo de área"/>
+        </FluentStack>
+    </FluentDialogBody>
+
+    <FluentDialogFooter>
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Right">
+            <FluentButton Appearance="Appearance.Stealth" OnClick="Cancel">Cancelar</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" OnClick="Save">@ButtonText</FluentButton>
+        </FluentStack>
+    </FluentDialogFooter>

@@ -1,0 +1,33 @@
+.parent-name[b-9q0f3vccu9] {
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.parent-name-normal[b-9q0f3vccu9] {
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+.objetivos-badge[b-9q0f3vccu9] {
+    font-family: monospace;
+    background: var(--neutral-layer-3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    display: inline-block;
+    line-height: 1.4;
+}
+
+.empty-cell[b-9q0f3vccu9] {
+    color: var(--neutral-stroke-focus);
+}
+
+/* Forzar el salto de línea en todo el grid sin romper nada */
+[b-9q0f3vccu9] fluent-data-grid-cell {
+    overflow: hidden !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+

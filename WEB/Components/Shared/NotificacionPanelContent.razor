@@ -1,0 +1,22 @@
+﻿@using WEB.Common
+@using WEB.Core.Services
+@using WEB.Interfaces
+@implements IDialogContentComponent<WEB.Common.NotificacionPanelData>
+@inject INotificationService NotificationService
+@inject NotificacionStateService NotificacionState
+
+<FluentDialogBody Style="padding: 0; overflow: hidden; display: flex; flex-direction: column; height: 100%;">
+    
+   
+    <div style="flex: 1; overflow-y: auto; overflow-x: hidden; width: 100%;">
+        <NotificacionLista RefreshKey="@_refreshKey" />
+    </div>
+</FluentDialogBody>
+
+@code {
+    [Parameter]
+    public NotificacionPanelData Content { get; set; } = default!;
+
+    private int _refreshKey;
+    
+}

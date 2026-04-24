@@ -1,0 +1,195 @@
+﻿@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Interfaces
+@inject INotificationService Notification
+@inject IRoleManagementService RoleService
+@inject IMediator Mediator
+
+@if (Content is null)
+{
+    <FluentDialogBody><FluentSkeleton Shape="SkeletonShape.Rect" Style="height:100px" /></FluentDialogBody>
+}
+
+
+
+<FluentDialogBody Style="min-width: 400px; max-width: 560px;">
+    <FluentStack Orientation="Orientation.Vertical">
+        @* Encabezado con información del usuario *@
+        <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="12">
+            <FluentIcon Value="@(new Icons.Regular.Size24.Person())" Color="Color.Accent" Style="width: 32px; height: 32px;" />
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
+                <FluentLabel Typo="Typography.H4">@Content.FullName</FluentLabel>
+                <FluentLabel Typo="Typography.Body" Color="Color.Neutral">@Content.Email</FluentLabel>
+            </FluentStack>
+        </FluentStack>
+
+        <FluentDivider Style="margin: 12px 0 8px 0;" />
+
+        @if (_step == DialogStep.Main)
+        {
+            <FluentLabel Typo="Typography.H5" Style="margin-bottom: 12px;">
+                Rol actual: <FluentBadge Appearance="Appearance.Accent">@Content.Role</FluentBadge>
+            </FluentLabel>
+
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+
+                @* Denegar rol (si aplica) *@
+                @if (Content.Role == AppRoles.JefeArea || Content.Role == AppRoles.JefeProceso)
+                {
+                    <FluentButton Appearance="Appearance.Outline"
+                                  OnClick="@(Content.Role == AppRoles.JefeArea ? DenegarAreaAsync : DenegarProcesoAsync)"
+                                  Disabled="@_isProcessing"
+                                  Style="width: 100%; justify-content: flex-start; padding: 8px 16px;">
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Width="100%" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8">
+                                <FluentIcon Value="@(new Icons.Regular.Size20.PersonArrowLeft())" />
+                                <span>Denegar como @(Content.Role == AppRoles.JefeArea ? "Jefe de Área" : "Jefe de Proceso")</span>
+                            </FluentStack>
+                            <FluentIcon Value="@(new Icons.Regular.Size20.Dismiss())" Color="Color.Error" />
+                        </FluentStack>
+                    </FluentButton>
+
+                    <FluentLabel Typo="Typography.Body" Color="Color.Neutral" Style="margin-left: 8px;">
+                        <FluentIcon Value="@(new Icons.Regular.Size16.Info())" Style="vertical-align: middle; margin-right: 4px;" />
+                        El usuario volverá al rol <b>@AppRoles.UsuarioNormal</b>
+                    </FluentLabel>
+
+                    <FluentDivider Style="margin: 8px 0;" />
+                }
+
+                @* Asignar roles (si es usuario normal) *@
+                @if (Content.Role == AppRoles.UsuarioNormal)
+                {
+                    <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 4px;">Asignar nuevo rol:</FluentLabel>
+
+                    <FluentButton Appearance="Appearance.Lightweight"
+                                  OnClick="() => LoadAvailableAreasAsync()"
+                                  Disabled="@_isProcessing"
+                                  Style="width: 100%; justify-content: flex-start; padding: 8px 16px;"
+                                  Title="Asignar como responsable de un área específica">
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Width="100%">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.Building())" />
+                            <span>Asignar como Jefe de Área</span>
+                        </FluentStack>
+                    </FluentButton>
+
+                    <FluentButton Appearance="Appearance.Lightweight"
+                                  OnClick="() => LoadAvailableProcesosAsync()"
+                                  Disabled="@_isProcessing"
+                                  Style="width: 100%; justify-content: flex-start; padding: 8px 16px;"
+                                  Title="Asignar como responsable de un proceso específico">
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Width="100%">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.Branch())" />
+                            <span>Asignar como Jefe de Proceso</span>
+                        </FluentStack>
+                    </FluentButton>
+                }
+
+                @* Mensaje si no hay acciones disponibles *@
+                @if (Content.Role != AppRoles.JefeArea && Content.Role != AppRoles.JefeProceso && Content.Role != AppRoles.UsuarioNormal)
+                {
+                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 16px;">
+                        <FluentLabel Typo="Typography.Body" Color="Color.Neutral">No hay acciones disponibles para este rol.</FluentLabel>
+                    </FluentStack>
+                }
+            </FluentStack>
+        }
+        else if (_step == DialogStep.SelectArea || _step == DialogStep.SelectProceso)
+        {
+            @* Paso de selección con búsqueda *@
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" VerticalAlignment="VerticalAlignment.Center">
+                    <FluentButton Appearance="Appearance.Stealth"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowLeft())"
+                                  OnClick="GoBack"
+                                  Disabled="@_isProcessing"
+                                  Title="Volver" />
+                    <FluentLabel Typo="Typography.H5">
+                        Seleccionar @(_step == DialogStep.SelectArea ? "Área" : "Proceso")
+                    </FluentLabel>
+                </FluentStack>
+
+                @if (_isProcessing)
+                {
+                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 32px;">
+                        <FluentProgressRing Style="width: 32px; height: 32px;" />
+                        <FluentLabel Typo="Typography.Body" Style="margin-left: 12px;">Cargando disponibles...</FluentLabel>
+                    </FluentStack>
+                }
+                else
+                {
+                    @* Campo de búsqueda *@
+                    <FluentSearch @bind-Value="_searchText"
+                                  Placeholder="Buscar por nombre..."
+                                  Immediate="true"
+                                  Disabled="@(_availableItems == null || !_availableItems.Any())"
+                                  Style="width: 100%;" />
+
+                    @* Lista filtrada *@
+                    
+                    
+                    @if (FilteredItems.Any())
+                    {
+                        <div
+                            style="max-height: 240px; overflow-y: auto; border: 1px solid var(--neutral-stroke-rest); border-radius: 4px;">
+                            <FluentListbox Items="@FilteredItems"
+                                           @bind-SelectedOption="_selectedItem"
+                                           Style="width: 100%;">
+                                <OptionTemplate>
+                                    <div
+                                        style="padding: 8px 12px; cursor: pointer; border-bottom: 1px solid var(--neutral-stroke-subtle);">
+                                        <FluentLabel Typo="Typography.Body">@context.Nombre</FluentLabel>
+                                    </div>
+                                </OptionTemplate>
+                            </FluentListbox>
+                        </div>
+
+                        <FluentButton Appearance="Appearance.Accent"
+                                      OnClick="ConfirmAssignmentAsync"
+                                      Disabled="@(_selectedItem is null || _isProcessing)"
+                                      Style="width: 100%;">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.Checkmark())" Style="margin-right: 6px;"/>
+                            Confirmar asignación
+                        </FluentButton>
+                    }
+                    else
+                    {
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center">
+                            <FluentIcon Value="@(new Icons.Regular.Size20.Info())" Color="Color.Neutral" Style="margin-right: 8px;" />
+                            <FluentLabel Typo="Typography.Body" Color="Color.Neutral">
+                                No hay @(_step == DialogStep.SelectArea ? "áreas" : "procesos") disponibles sin responsable.
+                            </FluentLabel>
+                        </FluentStack>
+                        
+                    }
+
+                }
+            </FluentStack>
+        }
+
+        @* Mensaje de error *@
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <FluentMessageBar Intent="MessageIntent.Error" AllowDismiss="true" Style="margin-top: 16px;">
+                @_errorMessage
+            </FluentMessageBar>
+        }
+    </FluentStack>
+</FluentDialogBody>
+
+<FluentDialogFooter Justification="JustificationContent.SpaceBetween" Style="padding: 12px 20px;">
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" VerticalAlignment="VerticalAlignment.Center">
+        @if (_isProcessing)
+        {
+            <FluentProgressRing Style="width: 16px; height: 16px;" />
+            <FluentLabel Typo="Typography.Body">Procesando...</FluentLabel>
+        }
+        
+    </FluentStack>
+    <FluentButton Appearance="Appearance.Neutral" 
+                  OnClick="CancelAsync" 
+                  Disabled="@_isProcessing">
+        Cancelar
+    </FluentButton>
+</FluentDialogFooter>
+

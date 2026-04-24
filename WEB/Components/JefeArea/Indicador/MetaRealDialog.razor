@@ -1,0 +1,21 @@
+﻿@using WEB.Core.Mediator
+@inject IMediator Mediator
+
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Style="width: 100%;">
+        <FluentTextField @bind-Value="_metaReal" 
+                         Label="Meta Real obtenida" 
+                         Placeholder="Ej: 90% o 85.5" />
+        
+        @if (!string.IsNullOrEmpty(_error))
+        {
+            <FluentLabel Typography="Typography.Caption" Color="Color.Error">@_error</FluentLabel>
+        }
+    </FluentStack>
+</FluentDialogBody>
+<FluentDialogFooter>
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Right">
+        <FluentButton Appearance="Appearance.Stealth" OnClick="Cancel">Cancelar</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="Save">Asignar</FluentButton>
+    </FluentStack>
+</FluentDialogFooter>

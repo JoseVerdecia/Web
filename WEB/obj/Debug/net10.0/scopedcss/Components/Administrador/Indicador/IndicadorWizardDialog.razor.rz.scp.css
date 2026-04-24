@@ -1,0 +1,160 @@
+.meta-area-item[b-er2veiswjq] {
+    display: flex;
+    gap: 10px;
+    width : 100%;
+    align-items: center;
+    padding: 12px;
+    background-color: var(--neutral-layer-2);
+    border-radius: 8px;
+    border: 1px solid var(--neutral-stroke-rest);
+    transition: background-color 0.2s ease;
+}
+
+.meta-area-item:hover[b-er2veiswjq] {
+    background-color: var(--neutral-layer-3);
+    border-color: var(--neutral-stroke-hover);
+}
+
+/* Summary Section */
+.summary-section[b-er2veiswjq] {
+    padding: 8px 0;
+}
+
+.summary-section .fluent-label[b-er2veiswjq] {
+    line-height: 1.6;
+}
+
+/* Wizard Step Content */
+[b-er2veiswjq] .fluent-wizard-step-content {
+    padding: 0;
+}
+
+/* Custom scrollbar for lists */
+[b-er2veiswjq]::-webkit-scrollbar {
+    width: 8px;
+}
+
+[b-er2veiswjq]::-webkit-scrollbar-track {
+    background: var(--neutral-layer-1);
+    border-radius: 4px;
+}
+
+[b-er2veiswjq]::-webkit-scrollbar-thumb {
+    background: var(--neutral-stroke-rest);
+    border-radius: 4px;
+}
+
+[b-er2veiswjq]::-webkit-scrollbar-thumb:hover {
+    background: var(--neutral-stroke-hover);
+}
+
+/* Badge styling in summary */
+[b-er2veiswjq] .fluent-badge {
+    font-size: 12px;
+    padding: 4px 10px;
+}
+
+/* Objetivo chip styling */
+.objetivo-chip[b-er2veiswjq] {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--neutral-layer-3);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 2px;
+    font-size: 12px;
+}
+
+/* Card hover effect */
+[b-er2veiswjq] .fluent-card {
+    transition: box-shadow 0.2s ease;
+}
+
+[b-er2veiswjq] .fluent-card:hover {
+    box-shadow: var(--elevation-shadow-card-rest);
+}
+
+/* Checkbox list styling */
+[b-er2veiswjq] .fluent-checkbox {
+    padding: 8px 0;
+}
+
+/* Disabled step styling */
+[b-er2veiswjq] li[disabled] > div {
+    color: var(--neutral-stroke-strong-rest);
+    opacity: var(--disabled-opacity);
+}
+
+/* Current step highlighting */
+[b-er2veiswjq] li[status="current"] > div {
+    font-weight: bold;
+    color: var(--accent-foreground-rest);
+}
+
+/* Button styling */
+[b-er2veiswjq] .fluent-button {
+    min-width: 100px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .meta-area-item[b-er2veiswjq] {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .meta-area-item[b-er2veiswjq]  .fluent-select,
+    .meta-area-item[b-er2veiswjq]  .fluent-text-field {
+        width: 100% !important;
+        flex: none !important;
+    }
+
+    .summary-section[b-er2veiswjq] {
+        padding: 4px 0;
+    }
+}
+
+/* Animation for step transitions */
+[b-er2veiswjq] .fluent-wizard {
+    transition: all 0.3s ease;
+}
+
+/* Error state styling */
+[b-er2veiswjq] .fluent-text-field[data-invalid="true"],
+[b-er2veiswjq] .fluent-select[data-invalid="true"] {
+    border-color: var(--error);
+}
+
+/* Loading state */
+.loading-container[b-er2veiswjq] {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 16px;
+}
+
+/* Divider customization */
+[b-er2veiswjq] .fluent-divider {
+    margin: 8px 0;
+}
+
+/* Label typography */
+[b-er2veiswjq] .fluent-label[typo="Header"] {
+    margin-bottom: 8px;
+}
+
+/* Form field spacing */
+[b-er2veiswjq] .fluent-stack[orientation="vertical"] > * {
+    margin-bottom: 0;
+}
+
+/* Badge container in objetivos */
+.objetivos-badges[b-er2veiswjq] {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}

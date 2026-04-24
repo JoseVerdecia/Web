@@ -1,0 +1,211 @@
+﻿@using WEB.Common
+@using WEB.Components.Shared
+@using WEB.Core.Extensions
+@using WEB.Enums
+
+   
+    <FluentDataGrid Items="@FilteredItems.AsQueryable()"
+                    Pagination="@paginationState"
+                    GenerateHeader="GenerateHeaderOption.Sticky"
+                    GridTemplateColumns="0.5fr 2fr 0.3fr 0.3fr 1fr 0.3fr 0.3fr 1fr 1fr 0.5fr"
+                    MultiLine="true"
+                    ShowHover="true"
+                    RowClass="@GetRowClass"
+                    OnRowDoubleClick="(FluentDataGridRow<IndicadorDisplayItem> row) => HandleRowClick(row)"
+                    Style="width: 100%;">
+        <ChildContent>
+           
+                <SelectColumn TGridItem="IndicadorDisplayItem"
+                              SelectMode="DataGridSelectMode.Multiple"
+                              SelectFromEntireRow="false"
+                              Property="@(e => e.IsSelected)"
+                              OnSelect="@(async e => await OnItemSelect(e.Item, e.Selected))"
+                              SelectAll="@Items.All(i => i.IsSelected)"
+                              SelectAllChanged="@(async all => await OnSelectAllChanged(all))" />
+           
+           
+
+            <TemplateColumn Title="Nombre"
+                            Align="Align.Start"
+                            Filtered="@(!string.IsNullOrWhiteSpace(nameFilter))">
+                <ColumnOptions>
+                    <FluentSearch Autofocus="true"
+                                  Immediate="true"
+                                  @bind-Value="nameFilter"
+                                  Placeholder="Buscar nombre..."
+                                  Style="width: 100%;"/>
+                </ColumnOptions>
+                <ChildContent>
+                    @{ var tooltipId = $"obs-{context.Id}"; }
+                    @if (!string.IsNullOrWhiteSpace(context.Observacion))
+                    {
+                        <FluentTooltip Anchor="@tooltipId" MaxWidth="300px" Delay="200" Position="TooltipPosition.Top">
+                            <div style="white-space: pre-wrap; font-size: 12px;">@context.Observacion</div>
+                        </FluentTooltip>
+                    }
+
+                    @if (context.IsEscencial)
+                    {
+                        <span class="parent-name" id="@tooltipId">@context.Nombre</span>
+                    }
+                    else
+                    {
+                        <span class="parent-name-normal" id="@tooltipId">@context.Nombre</span>
+                    }
+                </ChildContent>
+            </TemplateColumn>
+
+            <PropertyColumn
+                HeaderTooltip="Meta a cumplir para el indicador"
+                Property="@(i => i.MetaCumplir)"
+                Align="Align.Center"
+                Title="Meta"/>
+
+            <TemplateColumn HeaderTooltip="Meta real del indicador" Title="Real" Align="Align.Center">
+                @(context.MetaReal ?? "—")
+            </TemplateColumn>
+
+            <TemplateColumn Title="Evaluación"
+                            Align="Align.Center"
+                            Filtered="@(!string.IsNullOrWhiteSpace(evaluacionFilter))">
+                <ColumnOptions>
+                    <FluentSelect Items="evaluacionOptions"
+                                  Disabled="@(evaluacionOptions == null || !evaluacionOptions.Any())"
+                                  bind-Value="@evaluacionFilter"
+                                  Position="SelectPosition.Below"
+                                  ValueChanged="@(async v =>
+                                                {
+                                                    evaluacionFilter = v;
+                                                    await ResetPagination();
+                                                })"
+                                  OptionValue="opt => opt.Value"
+                                  OptionText="opt => opt.Text"
+                                  Placeholder="Filtrar evaluación"/>
+
+                    <FluentButton Appearance="Appearance.Outline"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                                  OnClick="ClearEvaluacionFilter"
+                                  Title="Limpiar filtro"/>
+                </ColumnOptions>
+                <ChildContent>
+                    <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
+                        @context.Evaluacion.GetDisplayName()
+                    </span>
+                </ChildContent>
+            </TemplateColumn>
+
+            <TemplateColumn Title="Origen"
+                            HeaderTooltip="Origen del Indicador (MES/INTERNO)"
+                            Align="Align.Center"
+                            Filtered="@(!string.IsNullOrWhiteSpace(origenFilter))">
+                <ColumnOptions>
+                    <FluentSelect Items="origenOptions"
+                                  bind-Value="@origenFilter"
+                                  Position="SelectPosition.Below"
+                                  ValueChanged="@(async v =>
+                                                {
+                                                    origenFilter = v;
+                                                    await ResetPagination();
+                                                })"
+                                  OptionValue="opt => opt.Value"
+                                  OptionText="opt => opt.Text"
+                                  Placeholder="Filtrar origen"/>
+                    <FluentButton Appearance="Appearance.Outline"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                                  OnClick="ClearOrigenFilter"
+                                  Title="Limpiar filtro"/>
+                </ColumnOptions>
+                <ChildContent>
+                    @if (context.Origen == IndicadorOrigen.MES.GetDisplayName())
+                    {
+                        <FluentBadge Appearance="Appearance.Accent">@context.Origen</FluentBadge>
+                    }
+                    else
+                    {
+                        <FluentBadge Appearance="Appearance.Neutral">@context.Origen</FluentBadge>
+                    }
+                </ChildContent>
+            </TemplateColumn>
+
+            <TemplateColumn Title="Tipo"
+                            HeaderTooltip="Tipo de Indicador (ESPECIAL/NECESARIO)"
+                            Align="Align.Center"
+                            Filtered="@(!string.IsNullOrWhiteSpace(tipoFilter))">
+                <ColumnOptions>
+                    <FluentSelect Items="tipoOptions"
+                                  bind-Value="@tipoFilter"
+                                  Position="SelectPosition.Below"
+                                  ValueChanged="@(async v =>
+                                                {
+                                                    tipoFilter = v;
+                                                    await ResetPagination();
+                                                })"
+                                  OptionValue="opt => opt.Value"
+                                  OptionText="opt => opt.Text"
+                                  Placeholder="Filtrar tipo"/>
+                    <FluentButton Appearance="Appearance.Outline"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                                  OnClick="ClearTipoFilter"
+                                  Title="Limpiar filtro"/>
+                </ColumnOptions>
+                <ChildContent>
+                    @if (context.IsEscencial)
+                    {
+                        <b>@context.Tipo</b>
+                    }
+                    else
+                    {
+                        @context.Tipo
+                    }
+                </ChildContent>
+            </TemplateColumn>
+
+            <TemplateColumn Title="Proceso"
+                            HeaderTooltip="Proceso al que pertenece el indicador"
+                            Align="Align.Start"
+                            Filtered="@(!string.IsNullOrWhiteSpace(procesoFilter))">
+                <ColumnOptions>
+                    <FluentSelect Items="procesoOptions"
+                                  bind-Value="@procesoFilter"
+                                  Position="SelectPosition.Below"
+                                  Disabled="@(procesoOptions == null || !procesoOptions.Any())"
+                                  ValueChanged="@(async v =>
+                                                {
+                                                    procesoFilter = v;
+                                                    await ResetPagination();
+                                                })"
+                                  OptionValue="opt => opt.Value"
+                                  OptionText="opt => opt.Text"
+                                  Placeholder="Filtrar proceso"/>
+                    <FluentButton Appearance="Appearance.Outline"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                                  OnClick="ClearProcesoFilter"
+                                  Title="Limpiar filtro"/>
+                </ColumnOptions>
+                <ChildContent>
+                    @(context.ProcesoNombre ?? "Sin proceso")
+                </ChildContent>
+            </TemplateColumn>
+
+            <TemplateColumn
+                HeaderTooltip="Objetivos Estrategicos al que pertenece el indicador"
+                Title="OE" Align="Align.Start">
+                <span class="objetivos-badge">@FormatObjetivos(context.ObjetivosFormatted)</span>
+            </TemplateColumn>
+
+            <TemplateColumn Title="Acciones" Align="Align.Start">
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentButton StopPropagation="true" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Edit())" OnClick="() => OnEdit.InvokeAsync(context)" Title="Editar indicador"/>
+                    <FluentButton StopPropagation="true" Appearance="Appearance.Outline" IconStart="@(new Icons.Regular.Size16.Delete())" OnClick="() => OnDelete.InvokeAsync(context)" Title="Eliminar indicador"/>
+                </FluentStack>
+            </TemplateColumn>
+        </ChildContent>
+
+        <EmptyContent>
+            <EmptyDataGridContent Mensaje="No hay Indicadores"/>
+        </EmptyContent>
+    </FluentDataGrid>
+
+    <div style="flex-shrink: 0; padding-top: 10px;">
+        <FluentPaginator State="@paginationState"/>
+    </div>

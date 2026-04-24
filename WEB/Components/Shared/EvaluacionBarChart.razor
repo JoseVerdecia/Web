@@ -1,0 +1,79 @@
+﻿@using ApexCharts
+@typeparam TItem where TItem : class
+
+<FluentCard Style="padding: 16px; background: var(--neutral-layer-2); height: 100%; overflow-x: auto;">
+    @if (!string.IsNullOrEmpty(Title))
+    {
+        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold" Style="margin-bottom: 8px;">
+            @Title
+        </FluentLabel>
+    }
+    <div style="min-width: 500px;">
+        <ApexChart TItem="TItem" Options="@ChartOptions">
+            <ApexPointSeries TItem="TItem" Items="@Items" Name="Sobrecumplidos" SeriesType="SeriesType.Bar" XValue="@XValue" YValue="@YSobrecumplidos" />
+            <ApexPointSeries TItem="TItem" Items="@Items" Name="Cumplidos" SeriesType="SeriesType.Bar" XValue="@XValue" YValue="@YCumplidos" />
+            <ApexPointSeries TItem="TItem" Items="@Items" Name="Parcialmente" SeriesType="SeriesType.Bar" XValue="@XValue" YValue="@YParcialmente" />
+            <ApexPointSeries TItem="TItem" Items="@Items" Name="Incumplidos" SeriesType="SeriesType.Bar" XValue="@XValue" YValue="@YIncumplidos" />
+            <ApexPointSeries TItem="TItem" Items="@Items" Name="No Evaluados" SeriesType="SeriesType.Bar" XValue="@XValue" YValue="@YNoEvaluados" />
+        </ApexChart>
+    </div>
+</FluentCard>
+
+@code{
+
+     [Parameter] public string? Title { get; set; }
+    [Parameter] public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
+    [Parameter] public Func<TItem, string> XValue { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal?> YSobrecumplidos { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal?> YCumplidos { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal?> YParcialmente { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal?> YIncumplidos { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal?> YNoEvaluados { get; set; } = null!;
+
+    private ApexChartOptions<TItem> ChartOptions { get; set; } = new()
+    {
+        Chart = new Chart
+        {
+            Stacked = true,
+            Height = "350",
+            Toolbar = new Toolbar { Show = false }
+        },
+        Colors = new List<string> { "#037036", "#05B353", "#f97316", "#dc2626", "#9C9C9C" },
+        PlotOptions = new PlotOptions
+        {
+            Bar = new PlotOptionsBar
+            {
+                Horizontal = false,
+                BorderRadius = 4,
+                BorderRadiusApplication = BorderRadiusApplication.Around,
+                BorderRadiusWhenStacked = BorderRadiusWhenStacked.All
+            }
+        },
+        Xaxis = new XAxis
+        {
+            Labels = new XAxisLabels
+            {
+                Style = new AxisLabelStyle { FontSize = "11px" },
+                Rotate = -45,
+                RotateAlways = false,
+                HideOverlappingLabels = true
+            }
+        },
+        Yaxis = new List<YAxis>
+        {
+            new YAxis
+            {
+                Labels = new YAxisLabels
+                {
+                    Style = new AxisLabelStyle { FontSize = "12px" },
+                    Formatter = @"function(val) { return Math.floor(val) }"
+                },
+                TickAmount = 5
+            }
+        },
+        Legend = new Legend { Position = LegendPosition.Top },
+        DataLabels = new DataLabels { Enabled = false },
+        Tooltip = new Tooltip { Shared = true, Intersect = false }
+    };
+
+}

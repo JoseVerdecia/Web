@@ -1,0 +1,43 @@
+﻿@layout AppLayout
+@using WEB.Components.JefeArea.Indicador
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Interfaces
+@page "/indicador-de-area"
+@inject IDialogService DialogService
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@rendermode InteractiveServer
+@inject IndicadorUpdateStateService IndicadorUpdateState
+@inject NavigationManager NavigationManager
+
+
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <FluentMessageBar Title="Error" Intent="MessageIntent.Error">
+        @errorMessage
+    </FluentMessageBar>
+}
+
+<FluentLayout>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="20" Style="padding: 20px;">
+
+        <FluentCard Appearance="Appearance.Filled" Style="padding: 16px 20px; background: var(--neutral-fill-stealth);">
+            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="12">
+                <FluentIcon Value="@(new Icons.Filled.Size20.Building())"
+                            Size="24"
+                            Color="Color.Accent" />
+                <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
+                    <FluentLabel Typography="Typography.Title">Mis Indicadores de Área</FluentLabel>
+                    <FluentLabel Typography="Typography.Caption" Color="Color.Accent">
+                        Área: @areaNombre
+                    </FluentLabel>
+                </FluentStack>
+            </FluentStack>
+        </FluentCard>
+
+        <IndicadorDeAreaDataGrid />
+
+    </FluentStack>
+</FluentLayout>

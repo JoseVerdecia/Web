@@ -1,0 +1,84 @@
+﻿@using WEB.Enums
+@using WEB.Features.Notificacion.Dto
+
+
+<div class="notif-card @(Notificacion.Leida ? "is-read" : "is-unread")"
+     @onclick="HandleClickAsync"
+     style=" cursor: pointer; width: 100%; box-sizing: border-box; border-bottom: 1px solid var(--neutral-stroke-divider-rest); display: flex; align-items: center; gap: 5px;">
+
+    
+    @if (!Notificacion.Leida)
+    {
+        <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--accent-fill-rest); flex-shrink: 0;"></div>
+    }
+    else
+    {
+        <div style="width: 8px; flex-shrink: 0;"></div>
+    }
+    
+   
+    <FluentStack Vertical Gap="1" Style="flex: 1; min-width: 0;">
+        <FluentLabel Typo="Typography.Body" Style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            @Notificacion.Cabecera
+        </FluentLabel>
+        <FluentStack Horizontal Gap="8" VerticalAlignment="VerticalAlignment.Center">
+            @if (!string.IsNullOrEmpty(Notificacion.AreaNombre))
+            {
+                <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="margin: 0;">
+                    @Notificacion.AreaNombre
+                </FluentLabel>
+            }
+            <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="margin: 0;">
+                @Notificacion.TiempoTranscurrido
+            </FluentLabel>
+        </FluentStack>
+    </FluentStack>
+
+   
+    @if (Notificacion.Tipo == TipoNotificacion.RespuestaAceptada)
+    {
+        <FluentIcon Value="@(new Icons.Filled.Size16.CheckmarkCircle())" Size="16" Color="Color.Success" />
+    }
+    else if (Notificacion.Tipo == TipoNotificacion.RespuestaRechazada)
+    {
+        <FluentIcon Value="@(new Icons.Filled.Size16.DismissCircle())" Size="16" Color="Color.Error" />
+    }
+    
+    <FluentButton Appearance="Appearance.Stealth"
+                  IconStart="@(new Icons.Regular.Size16.Delete())"
+                  StopPropagation="true"
+                  aria-label="Eliminar notificación"
+                  OnClick="HandleDeleteAsync"df/>
+</div>
+
+@code {
+    [Parameter] public NotificacionDto Notificacion { get; set; } = null!;
+    [Parameter] public EventCallback<int> OnClick { get; set; }
+    [Parameter] public EventCallback<int> OnDelete { get; set; }
+    
+    private async Task HandleClickAsync()
+    {
+        await OnClick.InvokeAsync(Notificacion.Id);
+    }
+    
+    private async Task HandleDeleteAsync()
+    {
+        await OnDelete.InvokeAsync(Notificacion.Id);
+    }
+
+    private Icon GetIcono() => Notificacion.Tipo switch
+    {
+        TipoNotificacion.SolicitudCambioMeta => new Icons.Regular.Size20.ArrowSwap(),
+        TipoNotificacion.RespuestaAceptada => new Icons.Regular.Size20.CheckmarkCircle(),
+        TipoNotificacion.RespuestaRechazada => new Icons.Regular.Size20.DismissCircle(),
+        _ => new Icons.Regular.Size20.Info()
+    };
+
+    private string GetIconoWrapperColor() => Notificacion.Tipo switch
+    {
+        TipoNotificacion.SolicitudCambioMeta => "var(--accent-fill-rest)",
+        TipoNotificacion.RespuestaAceptada => "var(--success-fill-rest)",
+        TipoNotificacion.RespuestaRechazada => "var(--danger-fill-rest)",
+        _ => "var(--neutral-fill-rest)"
+    };
+}

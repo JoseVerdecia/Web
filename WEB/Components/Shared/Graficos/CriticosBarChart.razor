@@ -1,0 +1,133 @@
+﻿@using ApexCharts
+@using Color = Microsoft.FluentUI.AspNetCore.Components.Color
+@using Align = ApexCharts.Align
+@typeparam TItem where TItem : class
+
+<FluentCard Appearance="Appearance.Filled" Style="padding: 20px; background: var(--neutral-layer-2); height: 100%;">
+    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@Title</FluentLabel>
+    @if (!string.IsNullOrEmpty(Subtitle))
+    {
+        <FluentLabel Typo="Typography.Subject" Color="Color.Accent" Style="display: block; margin-top: 2px; margin-bottom: 12px;">@Subtitle</FluentLabel>
+    }
+
+    <div class="chart-wrapper" style="min-height: 200px;">
+        <ApexChart TItem="TItem" Options="@ChartOptions">
+            <ApexPointSeries TItem="TItem"
+                             Items="@Items"
+                             Name="Meta Esperada"
+                             XValue="@XLabel"
+                             YValue="@YMeta" />
+            <ApexPointSeries TItem="TItem"
+                             Items="@Items"
+                             Name="Resultado Real"
+                             XValue="@XLabel"
+                             YValue="@YReal" />
+        </ApexChart>
+    </div>
+
+    @if (ShowTable)
+    {
+        <div style="overflow-x: auto; margin-top: 16px; border-top: 1px solid var(--neutral-stroke-2); padding-top: 12px;">
+            <table class="criticos-table">
+                <thead>
+                    <tr>
+                        <th>@TableHeaderName</th>
+                        <th class="text-center">Meta</th>
+                        <th class="text-center">Real</th>
+                        <th class="text-center" style="color: var(--color-status-error);">Brecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Items)
+                    {
+                        <tr>
+                            <td class="indicator-name" title="@XLabel(item)">@XLabel(item)</td>
+                            <td class="text-center">@YMeta(item)</td>
+                            <td class="text-center">@YReal(item)</td>
+                            <td class="text-center font-semibold" style="color: var(--color-status-error);">
+                                @YPorcentaje(item)%
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</FluentCard>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Indicadores Críticos";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
+    [Parameter] public Func<TItem, string> XLabel { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal?> YMeta { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal?> YReal { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal> YPorcentaje { get; set; } = null!;
+    [Parameter] public bool ShowTable { get; set; } = true;
+    [Parameter] public string TableHeaderName { get; set; } = "Indicador";
+    [Parameter] public int? MaxItems { get; set; } = 5;
+
+    private ApexChartOptions<TItem> ChartOptions { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ChartOptions = new ApexChartOptions<TItem>
+        {
+            Chart = new Chart
+            {
+                Height = ShowTable ? "220" : "300",
+                Toolbar = new Toolbar { Show = false },
+                FontFamily = "inherit"
+            },
+            PlotOptions = new PlotOptions
+            {
+                Bar = new PlotOptionsBar
+                {
+                    Horizontal = true,
+                    BorderRadius = 4,
+                    BarHeight = "60%"
+                }
+            },
+            Colors = new List<string> { "#0078D4", "#dc2626" },
+            Legend = new Legend
+            {
+                Position = LegendPosition.Top,
+                HorizontalAlign = Align.Center,
+                FontSize = "12px"
+            },
+            Tooltip = new Tooltip
+            {
+                Shared = true,
+                Intersect = false,
+                Theme = Mode.Dark,
+                Y = new TooltipY
+                {
+                    Formatter = @"function(val) { return val.toFixed(1) + '%'; }"
+                }
+            },
+            Grid = new Grid
+            {
+                Xaxis = new GridXAxis { Lines = new Lines { Show = false } },
+                Padding = new Padding { Left = 5, Right = 20 }
+            },
+            Yaxis = new List<YAxis>
+            {
+                new()
+                {
+                    Labels = new YAxisLabels
+                    {
+                        Style = new AxisLabelStyle { FontSize = "11px" },
+                        OffsetX = -5
+                    }
+                }
+            },
+            Xaxis = new XAxis
+            {
+                Labels = new XAxisLabels
+                {
+                    Style = new AxisLabelStyle { FontSize = "11px" }
+                }
+            }
+        };
+    }
+}

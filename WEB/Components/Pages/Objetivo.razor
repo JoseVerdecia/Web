@@ -1,0 +1,103 @@
+﻿
+@using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled
+@using WEB.Components.Administrador.Objetivo
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@inject IDialogService DialogService
+@inject IMediator Mediator
+@page "/objetivos"
+@rendermode InteractiveServer
+
+<FluentLayout>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+            <Title Icono="@(new Size24.Flag())" ValueTitle="Objetivos"></Title>
+            
+            <FluentStack Width="inline-block" HorizontalAlignment="HorizontalAlignment.End">
+            @if (ActiveTabId == "tab-activos")
+            {
+               
+                <FluentButton
+                    Appearance="Appearance.Outline"
+                    OnClick="EliminarSeleccionados"
+                    Disabled="@(objetivoDataGrid == null || !objetivoDataGrid.HasSelection)"
+                    IconStart="@(new Icons.Regular.Size16.Delete())">
+                    Eliminar
+                </FluentButton>
+                
+               
+                <FluentButton 
+                    Appearance="Appearance.Accent"
+                    OnClick="@OpenCreateDialog"
+                    IconStart="@(new Size20.AddSquare())">
+                    Crear Objtivo
+                </FluentButton>
+               
+            }
+            else
+            {
+                <FluentButton
+                    Appearance="Appearance.Outline"
+                    OnClick="@RestoreSelectedObjetivos"
+                    Disabled="selectedDeletedObjetivoIds.Count == 0"
+                    IconStart="@(new Size20.ArrowSync())">
+                    Restaurar
+                </FluentButton>
+                <FluentButton 
+                              OnClick="@DeleteSelectedPermanently"
+                              Disabled="@(selectedDeletedObjetivoIds.Count == 0)"
+                              IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Error))">
+                    Eliminar
+                </FluentButton>
+            }
+            </FluentStack>
+        </FluentStack>
+
+        <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
+
+            <FluentTab Id="tab-activos" Label="Objetivos activos">
+                @if (isLoadingActivos)
+                {
+                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                        <FluentProgressRing/>
+                    </FluentStack>
+                }
+                else
+                {
+                    <div style="overflow-x: auto; width: 100%;">
+                        <div style="min-width: 700px;">
+                            
+                            <ObjetivoDataGrid Objetivos="activeObjetivos"
+                                              OnEdit="OpenEditDialog"
+                                              @ref="objetivoDataGrid"
+                                              SelectionChanged="OnGridSelectionChanged"
+                                              OnDelete="DeleteObjetivo"
+                                              OnViewDetails="ViewObjetivoDetails"/>
+                        </div>
+                    </div>
+                }
+            </FluentTab>
+
+            <FluentTab Id="tab-papelera" Label="Papelera">
+                @if (isLoadingPapelera)
+                {
+                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                        <FluentProgressRing/>
+                    </FluentStack>
+                }
+                else
+                {
+                    <div style="overflow-x: auto; width: 100%;">
+                    <div style="min-width: 700px;">
+                    <ObjetivoDeletedDataGrid Objetivos="deletedObjetivos"
+                                             SelectedIds="selectedDeletedObjetivoIds"
+                                             SelectedIdsChanged="OnSelectedDeletedIdsChanged"
+                                             OnRestore="RestoreSingleObjetivo"
+                                             OnDeletePermanently="DeletePermanently"/>
+                    </div>
+                    </div>
+                }
+            </FluentTab>
+        </FluentTabs>
+    </FluentStack>
+</FluentLayout>

@@ -1,0 +1,96 @@
+﻿@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Interfaces
+@inject IDialogService DialogService
+@inject INotificationService _notification
+@inject IMediator Mediator
+
+<FluentDataGrid @ref="dataGrid"
+                Loading="@isLoading"
+                ShowHover="true"
+                DisplayMode="DataGridDisplayMode.Table"
+                ItemsProvider="usersProvider"
+                Pagination="@paginationState"
+                ResizableColumns=true
+                Style="width: 100%;">
+
+
+    <PropertyColumn Property="@(u => u.FullName)" Title="Nombre completo" Sortable="true"
+                    Filtered="!string.IsNullOrWhiteSpace(nameFilter)">
+        <ColumnOptions>
+            <FluentSearch @bind-Value="nameFilter"
+                          Placeholder="Filtrar por nombre..."
+                          Immediate="true" />
+        </ColumnOptions>
+    </PropertyColumn>
+    <PropertyColumn Align="Align.Center" Property="@(u => u.Email)" Title="Email" Sortable="true"/>
+
+    <TemplateColumn Title="Rol">
+        <ColumnOptions>
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="4">
+            
+            <FluentSelect @bind-Value="roleFilter"
+                          Items="@roleOptions"
+                          OptionValue="@(o => o.Value)"
+                          OptionText="@(o => o.Value)"
+                          NullText="Todos los roles"
+                          Placeholder="Selecciona un rol"
+                          Style="width: 100%;"
+                          SelectedOptionChanged="@((Option<string>? opt) => OnRoleFilterChanged(opt?.Value))"/>
+
+           
+            @if (!string.IsNullOrWhiteSpace(roleFilter))
+            {
+                <FluentButton Appearance="Appearance.Lightweight" 
+                              IconStart="@(new Icons.Regular.Size16.Dismiss())" 
+                              Title="Quitar filtro de rol"
+                              OnClick="@ClearRoleFilterAsync" />
+            }
+            </FluentStack>
+        </ColumnOptions>
+        <ChildContent>
+            <FluentBadge Appearance="@GetBadgeAppearance(context.Role)">
+                @context.Role
+            </FluentBadge>
+        </ChildContent>
+    </TemplateColumn>
+
+    <TemplateColumn Align="Align.Center" Title="Email confirmado">
+        <FluentIcon Value="@(context.EmailConfirmed ? (Icon)new Icons.Regular.Size20.CheckmarkCircle() : new Icons.Regular.Size20.DismissCircle())" Color="@(context.EmailConfirmed ? Color.Success : Color.Error)" />
+    </TemplateColumn>
+
+    <TemplateColumn Align="Align.Center" Title="Proceso/Área">
+        @if (context.Role == AppRoles.JefeProceso && !string.IsNullOrEmpty(context.ProcesoNombre))
+        {
+        <span>@context.ProcesoNombre</span>
+        }
+        else if (context.Role == AppRoles.JefeArea && !string.IsNullOrEmpty(context.AreaNombre))
+        {
+        <span>@context.AreaNombre</span>
+        }
+        else
+        {
+        <span>-</span>
+        }
+    </TemplateColumn>
+    <TemplateColumn Title="Acciones" Width="120px">
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="4">
+            <FluentButton Appearance="Appearance.Accent"
+                          Title="Ver detalles"
+                          IconStart="@(new Icons.Regular.Size16.Eye())"
+                          OnClick="() => ViewUserDetails(context)"/>
+        
+            @if (context.Role == AppRoles.UsuarioNormal || context.Role == AppRoles.JefeArea || context.Role == AppRoles.JefeProceso)
+            {
+                <FluentButton Appearance="Appearance.Accent"
+                              Title="Gestionar rol"
+                              IconStart="@(new Icons.Regular.Size16.PersonAdd())"
+                              OnClick="() => ManageUserRole(context)"/>
+            }
+        </FluentStack>
+    </TemplateColumn>
+</FluentDataGrid>
+
+<FluentPaginator State="@paginationState"
+                 OnPageChanged="OnPageChanged" />
+

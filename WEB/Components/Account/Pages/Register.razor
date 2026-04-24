@@ -1,0 +1,213 @@
+﻿@layout EmptyLayout
+@page "/Account/Register"
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using WEB.Data
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IUserStore<ApplicationUser> UserStore
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IEmailSender<ApplicationUser> EmailSender
+@inject ILogger<Register> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Registrarse</PageTitle>
+
+<FluentGrid Justify="JustifyContent.Center" Spacing="4" AdaptiveRendering="true" Style="width: 100%; max-width: 950px; height: 100%; max-height: 700px;">
+    
+    <FluentGridItem xs="12" Style="max-width: 480px;">
+        <FluentCard Style="height: 100%; display: flex; flex-direction: column; overflow: hidden;">
+            
+            <div style=" display: flex; flex-direction: column; height: 100%; justify-content: center;">
+                
+                <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" VerticalGap="8" Style="margin-bottom: 16px;">
+                    <FluentIcon Value="@(new Icons.Regular.Size24.PersonAdd())" Color="Color.Custom" CustomColor="#222E58" />
+                    <FluentLabel Typo="Typography.H3" Style="margin: 0; color: #222E58;">Crear Cuenta</FluentLabel>
+                    <FluentLabel Typo="Typography.Body" Color="Color.Neutral">Completa los datos para registrarte.</FluentLabel>
+                </FluentStack>
+
+                <FluentDivider Style="margin-bottom: 16px;" />
+
+                <StatusMessage Message="@Message" />
+                
+                <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register" Style="flex: 1; width: 100%;">
+                    <DataAnnotationsValidator />
+                    <FluentValidationSummary class="text-danger" role="alert" Style="margin-bottom: 12px;" />
+                    
+                    @* FluentStack principal con ancho completo *@
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="16" Width="100%" HorizontalAlignment="HorizontalAlignment.Center">
+                        
+                        @* Contenedor de cada campo con Width="100%" *@
+                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="4" Width="100%">
+                            <FluentTextField Name="Input.FullName" 
+                                             @bind-Value="Input.FullName" 
+                                             AutoComplete="name" 
+                                             Required="true" 
+                                             Placeholder="Juan Pérez" 
+                                             Label="Nombre completo"
+                                             Style="width: 100%;" />
+                            <FluentValidationMessage For="() => Input.FullName" class="text-danger" />
+                        </FluentStack>
+
+                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="4" Width="100%">
+                            <FluentTextField Name="Input.Email" 
+                                             @bind-Value="Input.Email" 
+                                             AutoComplete="email" 
+                                             Required="true" 
+                                             Placeholder="name@example.com" 
+                                             Label="Correo electrónico"
+                                             Style="width: 100%;" />
+                            <FluentValidationMessage For="() => Input.Email" class="text-danger" />
+                        </FluentStack>
+
+                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="4" Width="100%">
+                            <FluentTextField Type="TextFieldType.Password"
+                                             Name="Input.Password" 
+                                             @bind-Value="Input.Password" 
+                                             AutoComplete="new-password" 
+                                             Required="true" 
+                                             Placeholder="*****" 
+                                             Label="Contraseña"
+                                             Style="width: 100%;" />
+                            <FluentValidationMessage For="() => Input.Password" class="text-danger" />
+                        </FluentStack>
+
+                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="4" Width="100%">
+                            <FluentTextField Type="TextFieldType.Password"
+                                             Name="Input.ConfirmPassword" 
+                                             @bind-Value="Input.ConfirmPassword" 
+                                             AutoComplete="new-password" 
+                                             Required="true" 
+                                             Placeholder="*****" 
+                                             Label="Confirmar contraseña"
+                                             Style="width: 100%;" />
+                            <FluentValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
+                        </FluentStack>
+
+                        <FluentButton Type="ButtonType.Submit" 
+                                      Appearance="Appearance.Accent" 
+                                      Style="width: 100%; margin-top: 8px; background-color: #222E58;">
+                            Registrarse
+                        </FluentButton>
+                    </FluentStack>
+                </EditForm>
+                
+                <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="margin-top: 16px;">
+                    <FluentLabel Typo="Typography.Body" Color="Color.Neutral" Style="font-size: 13px;">
+                        ¿Ya tienes cuenta? 
+                        <FluentAnchor Appearance="Appearance.Hypertext" Href="Account/Login">Inicia sesión aquí</FluentAnchor>
+                    </FluentLabel>
+                </FluentStack>
+            </div>
+        </FluentCard>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private IEnumerable<IdentityError>? identityErrors;
+
+    [SupplyParameterFromForm] private InputModel Input { get; set; } = default!;
+
+    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
+
+    private string? Message => identityErrors is null ? null : $"Error: {string.Join(", ", identityErrors.Select(error => error.Description))}";
+
+    protected override void OnInitialized()
+    {
+        Input ??= new();
+    }
+
+    public async Task RegisterUser(EditContext editContext)
+    {
+        var user = CreateUser();
+        user.FullName = Input.FullName;    
+        user.EmailConfirmed = true; //TODO : Por ahora , hasta que implemente el auth por correo de la uho
+        
+        await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        var emailStore = GetEmailStore();
+        await emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+        var result = await UserManager.CreateAsync(user, Input.Password);
+
+        if (!result.Succeeded)
+        {
+            identityErrors = result.Errors;
+            return;
+        }
+
+        Logger.LogInformation("User created a new account with password.");
+        await UserManager.AddToRoleAsync(user, AppRoles.UsuarioNormal);
+        /*var userId = await UserManager.GetUserIdAsync(user);
+        var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var callbackUrl = NavigationManager.GetUriWithQueryParameters(
+            NavigationManager.ToAbsoluteUri("Account/ConfirmEmail").AbsoluteUri,
+            new Dictionary<string, object?> { ["userId"] = userId, ["code"] = code, ["returnUrl"] = ReturnUrl });
+
+        await EmailSender.SendConfirmationLinkAsync(user, Input.Email, HtmlEncoder.Default.Encode(callbackUrl));
+
+        if (UserManager.Options.SignIn.RequireConfirmedAccount)
+        {
+            RedirectManager.RedirectTo(
+                "Account/RegisterConfirmation",
+                new() { ["email"] = Input.Email, ["returnUrl"] = ReturnUrl });
+        }
+        else
+        {*/
+            await SignInManager.SignInAsync(user, isPersistent: false);
+            RedirectManager.RedirectTo(ReturnUrl);
+       // }
+    }
+
+    private ApplicationUser CreateUser()
+    {
+        try
+        {
+            return Activator.CreateInstance<ApplicationUser>();
+        }
+        catch
+        {
+            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                                                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor.");
+        }
+    }
+
+    private IUserEmailStore<ApplicationUser> GetEmailStore()
+    {
+        if (!UserManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+
+        return (IUserEmailStore<ApplicationUser>)UserStore;
+    }
+
+    private sealed class InputModel
+    {
+        [Required]
+        [StringLength(100, ErrorMessage = "El nombre completo debe tener máximo 100 caracteres.")]
+        [Display(Name = "Nombre completo")]
+        public string FullName { get; set; } = "";
+        
+        [Required]
+        [EmailAddress]
+        [Display(Name = "Email")]
+        public string Email { get; set; } = "";
+
+        [Required]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
+        public string Password { get; set; } = "";
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm password")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; } = "";
+    }
+
+}

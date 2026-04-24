@@ -1,0 +1,9 @@
+﻿<FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalAlignment="HorizontalAlignment.Center" HorizontalGap="10">
+    <FluentIcon Value="@(new Icons.Filled.Size24.CollectionsEmpty())" Color="@Color.Accent" />
+    <div>@Mensaje</div>
+</FluentStack>
+
+
+@code {
+    [Parameter] public required string Mensaje { get; set; } 
+}

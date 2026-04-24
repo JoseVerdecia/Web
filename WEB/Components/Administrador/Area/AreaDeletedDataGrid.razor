@@ -1,0 +1,71 @@
+﻿@using WEB.Components.Shared
+@using WEB.Features.Area.Dto
+<FluentDataGrid Items="@FilteredAreas.AsQueryable()"
+                Pagination="@paginationState"
+                ResizableColumns="true"
+                MultiLine="true"
+                Style="width: 100%;">
+    <ChildContent>
+        <SelectColumn TGridItem="AreaDto"
+                      SelectMode="DataGridSelectMode.Multiple"
+                      @bind-SelectedItems="SelectedAreas"
+                      SelectAll="SelectAllCheckbox"/>
+
+        <PropertyColumn Align="Align.Center" Property="@(a => a.Nombre)" Title="Nombre" Sortable="true"
+                        Filtered="!string.IsNullOrWhiteSpace(nameFilter)">
+            <ColumnOptions>
+                <FluentSearch @bind-Value="nameFilter"
+                              Placeholder="Filtrar por nombre..."
+                              Immediate="true" />
+            </ColumnOptions>
+        </PropertyColumn>
+
+        <PropertyColumn Align="Align.Center" Property="@(a => a.Tipo)" Title="Tipo de Área" Sortable="true">
+            <ColumnOptions>
+                <FluentSelect Items="tipoOptions"
+                              @bind-Value="tipoFilter"
+                              OptionValue="opt => opt.Value"
+                              OptionText="opt => opt.Text"
+                              Placeholder="Filtrar por tipo" />
+                <FluentButton Appearance="Appearance.Outline"
+                              IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                              OnClick="ClearTipoFilter"
+                              Title="Limpiar filtro" />
+            </ColumnOptions>
+        </PropertyColumn>
+
+        <TemplateColumn Align="Align.Center" Title="Responsable">
+            <span>
+                @if (string.IsNullOrEmpty(context.JefeArea?.Id))
+                {
+                    <span style="color: gray;">No asignado</span>
+                }
+                else
+                {
+                    @context.JefeArea.FullName
+                }
+            </span>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Acciones" Align="Align.Center">
+            <FluentStack HorizontalAlignment="HorizontalAlignment.Center"
+                         Orientation="Orientation.Horizontal"
+                         VerticalAlignment="VerticalAlignment.Center">
+                <FluentButton Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size20.ArrowSync())"
+                              OnClick="() => OnRestore.InvokeAsync(context)"
+                              Title="Restaurar" />
+                <FluentButton Appearance="Appearance.Outline"
+                              IconStart="@(new Icons.Regular.Size20.Delete())"
+                              OnClick="() => OnDeletePermanently.InvokeAsync(context)"
+                              Title="Eliminar permanentemente" />
+            </FluentStack>
+        </TemplateColumn>
+    </ChildContent>
+
+    <EmptyContent>
+        <EmptyDataGridContent Mensaje="No hay áreas eliminadas" />
+    </EmptyContent>
+</FluentDataGrid>
+
+<FluentPaginator State="@paginationState" />

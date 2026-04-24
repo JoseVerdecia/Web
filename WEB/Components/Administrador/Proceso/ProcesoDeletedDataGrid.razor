@@ -1,0 +1,65 @@
+﻿@using WEB.Components.Shared
+@using WEB.Core.Extensions
+@using WEB.Features.Proceso.Dto
+<FluentDataGrid Items="@FilteredProcesos.AsQueryable()"
+                Pagination="@paginationState"
+                ResizableColumns="true"
+                MultiLine="true"
+                Style="width: 100%;">
+    <ChildContent>
+        <SelectColumn TGridItem="ProcesoDto"
+                      SelectMode="DataGridSelectMode.Multiple"
+                      @bind-SelectedItems="SelectedProcesos"
+                      SelectAll="SelectAllCheckbox"
+                      Width="50px" />
+
+        <PropertyColumn Align="Align.Center" Property="@(p => p.Nombre)" Title="Nombre" Sortable="true"
+                        Filtered="!string.IsNullOrWhiteSpace(nameFilter)">
+            <ColumnOptions>
+                <FluentSearch @bind-Value="nameFilter"
+                              Placeholder="Filtrar por nombre..."
+                              Immediate="true" />
+            </ColumnOptions>
+        </PropertyColumn>
+
+        <TemplateColumn Align="Align.Center" Title="Evaluación">
+            <ChildContent>
+                <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
+                    @context.Evaluacion.GetDisplayName()
+                </span>
+            </ChildContent>
+        </TemplateColumn>
+
+        <TemplateColumn Align="Align.Center" Title="Responsable">
+            <span>
+                @if (context.Responsable == null || string.IsNullOrEmpty(context.Responsable.Id))
+                {
+                    <span style="color: gray;">No asignado</span>
+                }
+                else
+                {
+                    @context.Responsable.FullName
+                }
+            </span>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Acciones" Align="Align.Center">
+            <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Orientation="Orientation.Horizontal">
+                <FluentButton Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size16.ArrowSync())"
+                              OnClick="() => OnRestore.InvokeAsync(context)"
+                              Title="Restaurar" />
+                <FluentButton Appearance="Appearance.Outline"
+                              IconStart="@(new Icons.Regular.Size16.Delete())"
+                              OnClick="() => OnDeletePermanently.InvokeAsync(context)"
+                              Title="Eliminar permanentemente" />
+            </FluentStack>
+        </TemplateColumn>
+    </ChildContent>
+
+    <EmptyContent>
+        <EmptyDataGridContent Mensaje="No hay procesos eliminados" />
+    </EmptyContent>
+</FluentDataGrid>
+
+<FluentPaginator State="@paginationState" />

@@ -1,0 +1,94 @@
+﻿@page "/Account/Manage"
+
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Identity
+@using WEB.Interfaces
+@using WEB.Data
+@inject ICurrentUser CurrentUser
+@inject UserManager<ApplicationUser> UserManager
+@inject SignInManager<ApplicationUser> SignInManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Perfil</PageTitle>
+
+<h3>Perfil</h3>
+<StatusMessage/>
+
+<FluentGrid>
+    <FluentGridItem xs="12" sm="6">
+        <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
+            <DataAnnotationsValidator/>
+            <FluentValidationSummary class="text-danger" role="alert"/>
+            <FluentTextField Value="@username" Placeholder="Por favor elige tu nombre de usuario." Disabled Label="Username" Appearance=FluentInputAppearance.Filled Style="width: 100%"/>
+            <FluentTextField Name="@Input.PhoneNumber" @bind-Value="Input.PhoneNumber" Placeholder="Por favor, introduzca su número de teléfono." Label="Número de teléfono" Style="width: 100%"/>
+            <FluentValidationMessage For="() => Input.PhoneNumber" class="text-danger"/>
+            <p style="margin-top: 10px; text-align: end;">
+                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Save</FluentButton>
+            </p>
+        </EditForm>
+    </FluentGridItem>
+</FluentGrid>
+
+@code {
+    private CancellationTokenSource _cancellationToken = new(); 
+    private ApplicationUser? user;
+    private string? username;
+    private string? phoneNumber;
+
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+
+    [SupplyParameterFromForm] private InputModel Input { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Input ??= new();
+       
+        user = await CurrentUser.GetUserAsync(_cancellationToken.Token);
+        if (user is null)
+        {
+            RedirectManager.RedirectToInvalidUser(UserManager, HttpContext);
+            return;
+        }
+
+        username = await UserManager.GetUserNameAsync(user);
+        phoneNumber = await UserManager.GetPhoneNumberAsync(user);
+
+        Input.PhoneNumber ??= phoneNumber;
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        if (user is null)
+        {
+            RedirectManager.RedirectToInvalidUser(UserManager, HttpContext);
+            return;
+        }
+
+        if (Input.PhoneNumber != phoneNumber)
+        {
+            var setPhoneResult = await UserManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
+            if (!setPhoneResult.Succeeded)
+            {
+                RedirectManager.RedirectToCurrentPageWithStatus("Error: Fallo al ingresar el numero de telefono", HttpContext);
+                return;
+            }
+        }
+
+        await SignInManager.RefreshSignInAsync(user);
+        RedirectManager.RedirectToCurrentPageWithStatus("Tu perfil ha sido editado", HttpContext);
+    }
+
+    public void Dispose()
+    {
+        _cancellationToken.Cancel();
+        _cancellationToken.Dispose();
+    }
+    
+    private sealed class InputModel
+    {
+        [Phone]
+        [Display(Name = "Phone number")]
+        public string? PhoneNumber { get; set; }
+    }
+
+}

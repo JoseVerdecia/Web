@@ -1,0 +1,16 @@
+﻿
+    
+<FluentCard Class="custom-header-card" Style="width: fit-content;">
+    <ChildContent>
+        <FluentStack Orientation="Orientation.Horizontal">
+            <FluentIcon Value="@Icono"/>
+            <FluentLabel Typo="Typography.Header">@ValueTitle</FluentLabel>
+        </FluentStack>
+    </ChildContent>
+</FluentCard>
+
+
+@code {
+    [Parameter] public string ValueTitle { get; set; }
+    [Parameter] public Icon Icono { get; set; } 
+}

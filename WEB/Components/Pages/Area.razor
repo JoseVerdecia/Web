@@ -1,0 +1,105 @@
+﻿@page "/areas"
+@attribute [Authorize(Roles = AppRoles.Administrador)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Administrador.Area
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Data
+@inject IDialogService DialogService
+@inject IMediator Mediator
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+
+<FluentLayout>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+            <Title ValueTitle="Areas" Icono="@(new Icons.Filled.Size24.Location())"/>
+
+            <FluentStack Width="inline-block" HorizontalAlignment="HorizontalAlignment.End">
+            @if (ActiveTabId == "tab-activas")
+            {
+                
+                    <FluentButton
+                        Appearance="Appearance.Outline"
+                        OnClick="EliminarSeleccionadas"
+                        Disabled="@(areaDataGrid == null || !areaDataGrid.HasSelection)"
+                        IconStart="@(new Icons.Regular.Size16.Delete())">
+                        Eliminar
+                    </FluentButton>
+                
+               
+                    <FluentButton 
+                        Appearance="Appearance.Accent"
+                        OnClick="@OpenCreateDialog"
+                        IconStart="@(new Icons.Regular.Size20.AddSquare())">
+                        Crear Area
+                    </FluentButton>
+               
+            }
+            else
+            {
+                <FluentButton
+                    Appearance="Appearance.Outline"
+                    OnClick="@RestoreSelectedAreas"
+                    Disabled="selectedDeletedAreaIds.Count == 0"
+                    IconStart="@(new Icons.Regular.Size20.ArrowSync())">
+                    Restaurar
+                </FluentButton>
+                <FluentButton 
+                              OnClick="@DeleteSelectedPermanently"
+                              Disabled="@(selectedDeletedAreaIds.Count == 0)"
+                              IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Error))">
+                    Eliminar
+                </FluentButton>
+            }
+            </FluentStack>
+        </FluentStack>
+        
+        <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
+            <FluentTab Id="tab-activas" Label="Áreas activas">
+                @if (isLoadingActivas)
+                {
+                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                        <FluentProgressRing />
+                    </FluentStack>
+                }
+                else
+                {
+                    <div style="overflow-x: auto; width: 100%;">
+                    <div style="min-width: 700px;">
+                    <AreaDataGrid Areas="activeAreas"
+                                  @ref="areaDataGrid"
+                                  OnEdit="OpenEditDialog"
+                                  SelectionChanged="OnGridSelectionChanged"
+                                  OnDelete="DeleteArea"
+                                  OnViewDetails="ViewAreaDetails" />
+                    </div>
+                    </div>
+              
+                }
+            </FluentTab>
+
+            <FluentTab Id="tab-papelera" Label="Papelera">
+                @if (isLoadingPapelera)
+                {
+                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                        <FluentProgressRing />
+                    </FluentStack>
+                }
+                else
+                {
+                    <div style="overflow-x: auto; width: 100%;">
+                    <div style="min-width: 700px;">
+                    <AreaDeletedDataGrid Areas="deletedAreas"
+                                         SelectedIds="selectedDeletedAreaIds"
+                                         SelectedIdsChanged="OnSelectedDeletedIdsChanged"
+                                         OnRestore="RestoreSingleArea"
+                                         OnDeletePermanently="DeletePermanently" />
+                    </div>
+                    </div>
+                }
+            </FluentTab>
+        </FluentTabs>
+    </FluentStack>
+</FluentLayout>

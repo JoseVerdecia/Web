@@ -1,0 +1,119 @@
+﻿@using ApexCharts
+@using Color = Microsoft.FluentUI.AspNetCore.Components.Color
+@using Align = ApexCharts.Align
+@typeparam TItem where TItem : class
+
+<FluentCard Appearance="Appearance.Filled" Style="padding: 20px; background: var(--neutral-layer-2); height: 100%;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+        <div>
+            <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@Title</FluentLabel>
+            @if (!string.IsNullOrEmpty(Subtitle))
+            {
+                <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="display: block; margin-top: 2px;">@Subtitle</FluentLabel>
+            }
+        </div>
+        @if (Items.Any())
+        {
+            <FluentBadge Appearance="Appearance.Accent" Color="Color.Error" Style="font-size: 11px;">
+                @Items.Count() @(Items.Count() == 1 ? "crítico" : "críticos")
+            </FluentBadge>
+        }
+    </div>
+
+    @if (!Items.Any())
+    {
+        <div style="display: flex; align-items: center; justify-content: center; height: 200px; color: var(--neutral-foreground-hint);">
+            <FluentLabel>Sin entidades críticas 🎉</FluentLabel>
+        </div>
+    }
+    else
+    {
+        <div class="chart-wrapper" style="min-height: 200px;">
+            <ApexChart TItem="TItem" Options="@ChartOptions">
+                <ApexPointSeries TItem="TItem"
+                                 Items="@Items"
+                                 Name="Incumplidos"
+                                 SeriesType="SeriesType.Bar"
+                                 XValue="@XLabel"
+                                 YValue="@YIncumplidos"
+                                 Color="#dc2626" />
+                <ApexPointSeries TItem="TItem"
+                                 Items="@Items"
+                                 Name="Parciales"
+                                 SeriesType="SeriesType.Bar"
+                                 XValue="@XLabel"
+                                 YValue="@YParciales"
+                                 Color="#f97316" />
+            </ApexChart>
+        </div>
+    }
+</FluentCard>
+
+@code {
+    [Parameter] public string Title { get; set; } = "Entidades Críticas";
+    [Parameter] public string? Subtitle { get; set; }
+    [Parameter] public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
+    [Parameter] public Func<TItem, string> XLabel { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal?> YIncumplidos { get; set; } = null!;
+    [Parameter] public Func<TItem, decimal?> YParciales { get; set; } = null!;
+    [Parameter] public int? MaxItems { get; set; } = 10;
+
+    private ApexChartOptions<TItem> ChartOptions { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ChartOptions = new ApexChartOptions<TItem>
+        {
+            Chart = new Chart
+            {
+                Height = "300",
+                Toolbar = new Toolbar { Show = false },
+                FontFamily = "inherit"
+            },
+            PlotOptions = new PlotOptions
+            {
+                Bar = new PlotOptionsBar
+                {
+                    Horizontal = true,
+                    BorderRadius = 4,
+                    BarHeight = "55%"
+                }
+            },
+            Colors = new List<string> { "#dc2626", "#f97316" },
+            Legend = new Legend
+            {
+                Position = LegendPosition.Top,
+                HorizontalAlign = Align.Center,
+                FontSize = "11px"
+            },
+            DataLabels = new DataLabels
+            {
+                Enabled = true,
+                Formatter = @"function(val) { return val === 0 ? '' : val; }",
+                Style = new DataLabelsStyle { FontSize = "11px", FontWeight = "600" }
+            },
+            Grid = new Grid
+            {
+                Xaxis = new GridXAxis { Lines = new Lines { Show = false } },
+                Padding = new Padding { Left = 5, Right = 20 }
+            },
+            Yaxis = new List<YAxis>
+            {
+                new()
+                {
+                    Labels = new YAxisLabels
+                    {
+                        Style = new AxisLabelStyle { FontSize = "11px" },
+                        OffsetX = -5
+                    }
+                }
+            },
+            Tooltip = new Tooltip
+            {
+                Shared = true,
+                Intersect = false,
+                Theme = Mode.Dark
+            }
+        };
+    }
+}

@@ -1,0 +1,71 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Reflection
+@typeparam TEnum where TEnum : struct, Enum
+
+<FluentSelect TOption="EnumItem"
+              Items="_items"
+              Style="@Style"
+              Label="@Label"
+              Value="@_selectedValue"
+              ValueChanged="@OnValueChanged"
+              OptionText="@(item => item.Nombre)"
+              OptionValue="@(item => item.Valor)"
+              Placeholder="@Placeholder">
+</FluentSelect>
+
+@code {
+    [Parameter] public TEnum Value { get; set; }
+    [Parameter] public EventCallback<TEnum> ValueChanged { get; set; }
+    [Parameter] public string Label { get; set; } = string.Empty;
+    [Parameter] public string Placeholder { get; set; } = "Seleccione una opción";
+    [Parameter] public string Style { get; set; } 
+
+    private List<EnumItem> _items = new();
+    private string _selectedValue = string.Empty;
+
+    private class EnumItem
+    {
+        public string Valor { get; set; } = string.Empty;
+        public string Nombre { get; set; } = string.Empty;
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadEnumItems();
+        _selectedValue = Value.ToString();
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (_selectedValue != Value.ToString())
+            _selectedValue = Value.ToString();
+    }
+
+    private void LoadEnumItems()
+    {
+        _items = Enum.GetValues(typeof(TEnum))
+            .Cast<TEnum>()
+            .Select(e => new EnumItem
+            {
+                Valor = e.ToString(),
+                Nombre = GetDisplayName(e)
+            })
+            .ToList();
+    }
+
+    private string GetDisplayName(TEnum value)
+    {
+        var member = typeof(TEnum).GetMember(value.ToString()).FirstOrDefault();
+        var display = member?.GetCustomAttribute<DisplayAttribute>();
+        return display?.Name ?? value.ToString();
+    }
+
+    private async Task OnValueChanged(string newValue)
+    {
+        if (Enum.TryParse<TEnum>(newValue, out var enumValue))
+        {
+            _selectedValue = newValue;
+            await ValueChanged.InvokeAsync(enumValue);
+        }
+    }
+}

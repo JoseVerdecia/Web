@@ -1,0 +1,99 @@
+﻿@layout AppLayout
+@page "/indicadores/jefeProceso"
+@using WEB.Components.Administrador.Indicador
+@using WEB.Core.Mediator
+@using WEB.Interfaces
+@using WEB.Data
+@using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
+@using WEB.Components.Shared
+@inject IDialogService DialogService
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@rendermode InteractiveServer
+
+<FluentLayout>
+    <FluentStack Orientation="Orientation.Horizontal" Width="100%">
+         <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@($" Indicadores del proceso: {procesoNombre}")"></Title>
+    </FluentStack>
+
+    <FluentDivider Style="margin: 1rem 0;"/>
+
+    <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
+        <FluentTab Id="tab-activos" Label="Indicadores activos">
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" Style="margin-bottom: 16px;">
+                <FluentButton Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size20.AddSquare())"
+                              OnClick="@OpenCreateWizardDialog">
+                    Crear Indicador
+                </FluentButton>
+            </FluentStack>
+
+            @if (isLoadingActivos)
+            {
+                <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                    <FluentProgressRing/>
+                </FluentStack>
+            }
+            else
+            {
+                <FluentSplitter Orientation="Orientation.Horizontal"
+                                Panel1Size="60%"
+                                Panel2Size="40%"
+                                Panel1MinSize="400px"
+                                Panel2MinSize="250px"
+                                Collapsed="@(selectedIndicador == null)"
+                                BarSize="4">
+                    <Panel1>
+                        <div style="height: 100%; display: flex; flex-direction: column; overflow: hidden; min-height: 0;">
+                            <IndicadorDataGrid Items="gridItems"
+                                               OnEdit="OpenEditDialog"
+                                               OnDelete="DeleteIndicador"
+                                               OnViewDetails="ViewIndicadorDetails"
+                                               OnRowSelected="HandleRowSelected"/>
+                        </div>
+                    </Panel1>
+                    <Panel2>
+                        <div style="height: 100%; display: flex; flex-direction: column; background: var(--neutral-layer-1);">
+                            @if (selectedIndicador != null)
+                            {
+                                <header style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--neutral-stroke); flex-shrink: 0;">
+                                    <FluentLabel Style="font-weight: 600;">Áreas del indicador</FluentLabel>
+                                    <FluentButton Appearance="Appearance.Stealth"
+                                                  IconStart="@(new Icons.Regular.Size16.Dismiss())"
+                                                  OnClick="() => selectedIndicador = null"
+                                                  Title="Cerrar panel"/>
+                                </header>
+                                <div style="flex: 1; overflow: auto; padding: 16px;">
+                                    <IndicadorDeAreaDetailGrid Areas="selectedIndicador.Areas"/>
+                                </div>
+                            }
+                            else
+                            {
+                                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--neutral-foreground-hint);">
+                                    <FluentLabel>Seleccione un indicador para ver sus áreas</FluentLabel>
+                                </div>
+                            }
+                        </div>
+                    </Panel2>
+                </FluentSplitter>
+            }
+        </FluentTab>
+
+        <FluentTab Id="tab-papelera" Label="Papelera">
+            @if (isLoadingPapelera)
+            {
+                <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                    <FluentProgressRing/>
+                </FluentStack>
+            }
+            else
+            {
+                <IndicadorDeletedDataGrid @ref="deletedDataGrid"
+                                          Items="deletedGridItems"
+                                          OnRestore="RestoreSingleIndicador"
+                                          OnDeletePermanently="DeletePermanently"/>
+            }
+        </FluentTab>
+    </FluentTabs>
+
+</FluentLayout>

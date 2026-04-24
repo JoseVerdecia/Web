@@ -1,0 +1,59 @@
+﻿@rendermode InteractiveServer
+@using WEB.Components.Shared
+@using WEB.Core.Extensions
+@using WEB.Core.Services
+@using WEB.Interfaces
+@using WEB.Data
+
+@inject ICurrentUser CurrentUser
+
+<div class="navmenu">
+    <input type="checkbox" title="Menu expand/collapse toggle" id="navmenu-toggle" class="navmenu-icon"/>
+    <label for="navmenu-toggle" class="navmenu-icon">
+        <FluentIcon Value="@(new Icons.Regular.Size20.Navigation())" Color="Color.Fill"/>
+    </label>
+    <nav class="sitenav" aria-labelledby="main-menu">
+        <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
+            
+            <AuthorizeView>
+                <Authorized>
+                    @if (CurrentUser.IsInRole(AppRoles.Administrador))
+                    {
+                        
+                        <FluentNavGroup  Title="Dashboard" Icon="@(new Icons.Regular.Size20.EarthLeaf())">
+                            <ChildContent>
+                                <FluentNavLink Href="/dashboard" Icon="@(new Icons.Regular.Size20.LeafOne())">Dashboard</FluentNavLink>
+                            </ChildContent>
+                        </FluentNavGroup>
+                        <FluentNavLink Href="/proceso" Icon="@(new Icons.Regular.Size20.Flowchart())" IconColor="Color.Accent">Proceso</FluentNavLink>
+                        <FluentNavLink Href="/areas" Icon="@(new Icons.Regular.Size20.Location())">Áreas</FluentNavLink>
+                        <FluentNavLink Href="/objetivos" Icon="@(new Icons.Regular.Size20.Flag())">Objetivos</FluentNavLink>
+                        <FluentNavLink Href="/indicadores" Icon="@(new Icons.Regular.Size20.ArrowTrendingLines())">Indicadores</FluentNavLink>
+                        <FluentNavLink Href="/admin/users" Icon="@(new Icons.Regular.Size20.People())">Usuarios</FluentNavLink>
+                        <FluentNavLink Href="/evaluacion/programar" Icon="@(new Icons.Regular.Size20.ClipboardTask())">Evaluacion</FluentNavLink>
+                    }
+                    @if (CurrentUser.IsInRole(AppRoles.JefeProceso))
+                    {
+                        <FluentNavLink Href="/indicadores/jefeProceso" Icon="@(new Icons.Regular.Size20.ArrowTrendingLines())">Indicadores</FluentNavLink>
+                    }
+                    
+                    @if (CurrentUser.IsInRole(AppRoles.JefeArea))
+                    {
+                        <FluentNavLink Href="/indicador-de-area" Icon="@(new Icons.Regular.Size20.ArrowTrendingLines())">Indicadores</FluentNavLink>
+                    }
+                   
+                </Authorized>
+                <NotAuthorized>
+                    <FluentNavLink Href="Account/Login" Icon="@(new Icons.Regular.Size20.Accessibility())" IconColor="Color.Accent">Login</FluentNavLink>
+                </NotAuthorized>
+            </AuthorizeView>
+        </FluentNavMenu>
+    </nav>
+</div>
+
+
+@code {
+    private bool expanded = true;
+    private bool navGroupExpanded = true;
+    
+}

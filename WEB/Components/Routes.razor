@@ -1,0 +1,21 @@
+﻿@using WEB.Components.Account.Shared
+
+<FluentDesignTheme NeutralBaseColor="#f0f5eb" CustomColor="#92B921"  StorageName="theme" />
+
+<FluentDialogProvider @rendermode="InteractiveServer"/>
+<FluentMenuProvider @rendermode="InteractiveServer"/>
+<FluentToastProvider @rendermode = "InteractiveServer"/>
+<FluentTooltipProvider @rendermode="InteractiveServer"/>
+<FluentMessageBarProvider @rendermode="InteractiveServer"/>
+
+<CascadingAuthenticationState>
+    <Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
+                <NotAuthorized>
+                    <RedirectToLogin/>
+                </NotAuthorized>
+            </AuthorizeRouteView>
+        </Found>
+    </Router>
+</CascadingAuthenticationState>

@@ -1,0 +1,31 @@
+﻿@using WEB.Features.Proceso.Dto
+@implements IDialogContentComponent<ProcesoDto>
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+    <FluentLabel><b>ID:</b> @Content.Id</FluentLabel>
+    <FluentLabel><b>Nombre:</b> @Content.Nombre</FluentLabel>
+    <FluentLabel><b>Evaluacion:</b> @Content.Evaluacion</FluentLabel>
+    
+    @if (string.IsNullOrEmpty(Content.ResponsableId))
+    {
+        <FluentLabel><b>Responsable:</b> @Content.Responsable?.FullName (ID: @Content.ResponsableId))</FluentLabel>
+    }
+    else
+    {
+        <FluentLabel><i>Sin responsable asignado</i></FluentLabel>
+    }
+    
+   
+    <FluentStack HorizontalAlignment="HorizontalAlignment.End" Style="margin-top:20px;">
+        <FluentButton Appearance="Appearance.Accent" OnClick="Close" Autofocus="true">Cerrar</FluentButton>
+    </FluentStack>
+</FluentStack>
+
+@code {
+    [CascadingParameter] public FluentDialog Dialog { get; set; } = default!;
+    [Parameter]public ProcesoDto Content { get; set; }
+    
+    private async Task Close()
+    {
+        await Dialog.CloseAsync();
+    }
+}

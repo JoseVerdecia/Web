@@ -1,0 +1,50 @@
+
+.parent-name {
+    font-weight: 700; 
+    font-size: 12px;  
+    line-height: 1.4;
+}
+.parent-name-normal {
+    font-weight: 480; 
+    font-size: 12px;
+    line-height: 1.4;
+}
+.child-name {
+    padding-left: 24px;
+    color: var(--neutral-foreground-hint);
+}
+.objetivos-badge {
+    font-family: monospace;
+    background: var(--neutral-layer-3);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+}
+.empty-cell {
+    color: var(--neutral-stroke-focus);
+
+}
+
+.objetivos-badge {
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.4;
+    display: inline-block;
+}
+
+::deep fluent-data-grid-row {
+    overflow: hidden !important;
+}
+
+::deep fluent-data-grid-cell {
+    overflow: hidden !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+
+.objetivos-badge {
+    display: inline-block;
+    line-height: 1.4;
+}
+

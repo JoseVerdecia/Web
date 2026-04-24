@@ -1,0 +1,21 @@
+﻿<FluentCard Style="padding: 16px; background: var(--neutral-layer-2);">
+    <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold" Style="margin-bottom: 8px;">
+        @Title
+    </FluentLabel>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="4">
+        @foreach (var row in Rows)
+        {
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Style="width: 100%;">
+                <FluentLabel Typo="Typography.Body">@row.Label</FluentLabel>
+                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">@row.Value</FluentLabel>
+            </FluentStack>
+        }
+    </FluentStack>
+</FluentCard>
+
+@code {
+    [Parameter] public string Title { get; set; } = "";
+    [Parameter] public List<SummaryRow> Rows { get; set; } = new();
+
+    public record SummaryRow(string Label, string Value);
+}

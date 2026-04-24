@@ -1,0 +1,160 @@
+.meta-area-item {
+    display: flex;
+    gap: 10px;
+    width : 100%;
+    align-items: center;
+    padding: 12px;
+    background-color: var(--neutral-layer-2);
+    border-radius: 8px;
+    border: 1px solid var(--neutral-stroke-rest);
+    transition: background-color 0.2s ease;
+}
+
+.meta-area-item:hover {
+    background-color: var(--neutral-layer-3);
+    border-color: var(--neutral-stroke-hover);
+}
+
+/* Summary Section */
+.summary-section {
+    padding: 8px 0;
+}
+
+.summary-section .fluent-label {
+    line-height: 1.6;
+}
+
+/* Wizard Step Content */
+::deep .fluent-wizard-step-content {
+    padding: 0;
+}
+
+/* Custom scrollbar for lists */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--neutral-layer-1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--neutral-stroke-rest);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--neutral-stroke-hover);
+}
+
+/* Badge styling in summary */
+::deep .fluent-badge {
+    font-size: 12px;
+    padding: 4px 10px;
+}
+
+/* Objetivo chip styling */
+.objetivo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--neutral-layer-3);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin: 2px;
+    font-size: 12px;
+}
+
+/* Card hover effect */
+::deep .fluent-card {
+    transition: box-shadow 0.2s ease;
+}
+
+::deep .fluent-card:hover {
+    box-shadow: var(--elevation-shadow-card-rest);
+}
+
+/* Checkbox list styling */
+::deep .fluent-checkbox {
+    padding: 8px 0;
+}
+
+/* Disabled step styling */
+::deep li[disabled] > div {
+    color: var(--neutral-stroke-strong-rest);
+    opacity: var(--disabled-opacity);
+}
+
+/* Current step highlighting */
+::deep li[status="current"] > div {
+    font-weight: bold;
+    color: var(--accent-foreground-rest);
+}
+
+/* Button styling */
+::deep .fluent-button {
+    min-width: 100px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .meta-area-item {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .meta-area-item ::deep .fluent-select,
+    .meta-area-item ::deep .fluent-text-field {
+        width: 100% !important;
+        flex: none !important;
+    }
+
+    .summary-section {
+        padding: 4px 0;
+    }
+}
+
+/* Animation for step transitions */
+::deep .fluent-wizard {
+    transition: all 0.3s ease;
+}
+
+/* Error state styling */
+::deep .fluent-text-field[data-invalid="true"],
+::deep .fluent-select[data-invalid="true"] {
+    border-color: var(--error);
+}
+
+/* Loading state */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    gap: 16px;
+}
+
+/* Divider customization */
+::deep .fluent-divider {
+    margin: 8px 0;
+}
+
+/* Label typography */
+::deep .fluent-label[typo="Header"] {
+    margin-bottom: 8px;
+}
+
+/* Form field spacing */
+::deep .fluent-stack[orientation="vertical"] > * {
+    margin-bottom: 0;
+}
+
+/* Badge container in objetivos */
+.objetivos-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}

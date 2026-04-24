@@ -1,0 +1,128 @@
+﻿@using WEB.Common
+@using WEB.Core.Extensions
+@using WEB.Features.IndicadorDeArea.Dto
+@if (Areas == null || !Areas.Any())
+{
+    <FluentCard Style="padding: 20px; text-align: center;">
+        <FluentLabel Style="color: var(--neutral-foreground-hint);">Este indicador no tiene áreas vinculadas.</FluentLabel>
+    </FluentCard>
+}
+else
+{
+    <FluentDataGrid Items="@FilteredItems.AsQueryable()"
+                    ResizableColumns="true"
+                    Pagination="@paginationState"
+                    GridTemplateColumns="1fr 0.5fr 0.5fr 1.5fr"
+                    MultiLine="true"
+                    Style="width: 100%;">
+
+        <ChildContent>
+            <TemplateColumn Title="Área"
+                            Align="Align.Start"
+                            Filtered="@(!string.IsNullOrWhiteSpace(nameFilter))">
+                <ColumnOptions>
+                    <FluentSearch Autofocus="true"
+                                  Immediate="true"
+                                  @bind-Value="nameFilter"
+                                  Placeholder="Buscar nombre..."
+                                  Style="width: 100%;"/>
+                </ColumnOptions>
+                <ChildContent>
+                    <FluentLabel>@context.AreaNombre</FluentLabel>
+                </ChildContent>
+            </TemplateColumn>
+        
+            <PropertyColumn Property="@(a => a.MetaCumplir)" Title="Cumplir" Align="Align.Center" />
+        
+            <TemplateColumn Title="Real" Align="Align.Center">
+                @(context.MetaReal ?? "—")
+            </TemplateColumn>
+        
+            <TemplateColumn Title="Evaluación"
+                            Align="Align.Center"
+                            Filtered="@(!string.IsNullOrWhiteSpace(evaluacionFilter))">
+                <ColumnOptions>
+                    <FluentSelect Items="evaluacionOptions"
+                                  Position="SelectPosition.Below"
+                                  Value="evaluacionFilter"
+                                  ValueChanged="@(async v => { evaluacionFilter = v; await ResetPagination(); })"
+                                  OptionValue="opt => opt.Value"
+                                  OptionText="opt => opt.Text"
+                                  Placeholder="Filtrar evaluación"/>
+                    
+                    <FluentButton Appearance="Appearance.Outline"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                                  OnClick="ClearEvaluacionFilter"
+                                  Title="Limpiar filtro"/>
+                </ColumnOptions>
+                <ChildContent>
+                    <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
+                        @context.Evaluacion.GetDisplayName()
+                    </span>
+                </ChildContent>
+            </TemplateColumn>
+        </ChildContent>
+        
+        <EmptyContent>
+            <EmptyDataGridContent Mensaje="No hay Indicadores en esta area"/>
+        </EmptyContent>
+       
+    </FluentDataGrid>
+    
+    <div style="flex-shrink: 0; padding-top: 10px;">
+        <FluentPaginator State="@paginationState"/>
+    </div>
+}
+
+@code {
+    [Parameter] public List<IndicadorDeAreaDto> Areas { get; set; } = new();
+    private string nameFilter = string.Empty;
+    private string? evaluacionFilter;
+    private List<SelectOption<string?>> evaluacionOptions = new();
+    
+    private PaginationState paginationState = new() { ItemsPerPage = 10 };
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        evaluacionOptions = Areas
+            .Select(i => i.Evaluacion!)
+            .Distinct()
+            .OrderBy(e => e)
+            .Select(e => new SelectOption<string?> 
+            { 
+                Value = e.GetDisplayName(), 
+                Text = e.GetDisplayName() 
+            })
+            .ToList();
+    }
+
+    private IEnumerable<IndicadorDeAreaDto> FilteredItems =>
+        Areas.Where(i =>
+        
+            (string.IsNullOrEmpty(nameFilter) || 
+             i.AreaNombre.Contains(nameFilter, StringComparison.OrdinalIgnoreCase)) &&
+            
+            (string.IsNullOrEmpty(evaluacionFilter) || 
+             i.Evaluacion.GetDisplayName() == evaluacionFilter) /*&&
+            
+            (string.IsNullOrEmpty(tipoFilter) || 
+             i.Tipo == tipoFilter) &&
+            
+            (string.IsNullOrEmpty(origenFilter) || 
+             i.Origen == origenFilter) &&
+            
+            (string.IsNullOrEmpty(procesoFilter) || 
+             i.ProcesoNombre == procesoFilter)*/
+        );
+    
+    private async Task ResetPagination()
+    {
+        await paginationState.SetCurrentPageIndexAsync(0);
+    }
+    private async Task ClearEvaluacionFilter()
+    {
+        evaluacionFilter = null;
+        await ResetPagination();
+    }
+}

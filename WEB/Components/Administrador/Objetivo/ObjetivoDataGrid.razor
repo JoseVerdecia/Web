@@ -1,0 +1,62 @@
+﻿@using WEB.Components.Shared
+@using WEB.Core.Extensions
+@using WEB.Features.Objetivo.Dto
+<FluentDataGrid Items="@FilteredObjetivos.AsQueryable()"
+                Pagination="@paginationState"
+                ResizableColumns="true"
+                GridTemplateColumns="0.5fr 4.4fr 1fr 1fr 1fr"
+                MultiLine="true"
+                Style="width: 100%;">
+    <ChildContent>
+        <SelectColumn TGridItem="ObjetivoDto"
+                      SelectMode="DataGridSelectMode.Multiple"
+                      SelectFromEntireRow="false"
+                      Property="@(a => a.IsSelected)"
+                      OnSelect="@(async e => await OnItemSelect(e.Item, e.Selected))"
+                      SelectAll="@objetivos.All(i => i.IsSelected)"
+                      SelectAllChanged="@(async all => await OnSelectAllChanged(all))" />
+        
+        <PropertyColumn Property="@(a => a.Nombre)" Title="Nombre" Sortable="true"
+                        Filtered="@(!string.IsNullOrWhiteSpace(nameFilter))">
+            <ColumnOptions>
+                <FluentSearch @bind-Value="nameFilter"
+                              Placeholder="Filtrar por nombre..."
+                              Immediate="true"/>
+            </ColumnOptions>
+        </PropertyColumn>
+
+        <TemplateColumn Title="Numero" Align="Align.Center">
+            OBJETIVO#@context.NumeroObjetivo
+        </TemplateColumn>
+
+        <TemplateColumn Align="Align.Center" Title="Evaluacion">
+            <ChildContent>
+                <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
+                    @context.Evaluacion.GetDisplayName()
+                </span>
+            </ChildContent>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Acciones" Align="Align.Center">
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5" HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentButton Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size16.Edit())"
+                              OnClick="() => OnEdit.InvokeAsync(context)"
+                              Title="Editar"/>
+
+                <FluentButton Appearance="Appearance.Outline"
+                              IconStart="@(new Icons.Regular.Size16.Delete())"
+                              OnClick="() => OnDelete.InvokeAsync(context)"
+                              Title="Eliminar"/>
+                
+            </FluentStack>
+        </TemplateColumn>
+    </ChildContent>
+    
+    <EmptyContent>
+        <EmptyDataGridContent Mensaje= "No hay Objetivos"/>
+    </EmptyContent>
+    
+</FluentDataGrid>
+
+<FluentPaginator State="@paginationState" />

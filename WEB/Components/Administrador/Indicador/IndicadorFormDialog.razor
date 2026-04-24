@@ -1,0 +1,137 @@
+﻿@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Enums
+@using WEB.Interfaces
+@inject IMediator Mediator
+
+@inject INotificationService _notificacion
+
+
+@if (isLoading)
+{
+    <FluentStack HorizontalAlignment="HorizontalAlignment.Center">
+        <FluentProgressRing />
+    </FluentStack>
+}
+else
+{
+    <FluentDialogBody>
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="15" Style="width: 100%;">
+            <FluentLabel Typo="Typography.PaneHeader">@TitleText</FluentLabel>
+            
+            <FluentTextArea @bind-Value="nombre"
+                            Label="Nombre del indicador"
+                            Resize="TextAreaResize.Both"
+                             Required="true"
+                             Placeholder="Ej: Indicador#1" />
+            
+            <FluentSelect Label="Proceso"
+                          Required="true"
+                          @bind-Value="@procesoIdStr"              
+                          Items="@procesos"
+                          OptionText="@(p => p.Nombre)"
+                          OptionValue="@(p => p.Id.ToString())"
+                          Placeholder="Seleccione un proceso" />
+
+            <FluentTextField @bind-Value="metaCumplir"
+                             Label="Meta a cumplir"
+                             Required="true"
+                             Placeholder="Ej: 95%" />
+            
+            <FluentTextField @bind-Value="metaReal"
+                             Label="Meta real"
+                             Placeholder="Ej: 90%" />
+            
+            <EnumSelect 
+                TEnum="@IndicadorOrigen"
+                @bind-Value="@origen"
+                Label="Tipo"
+                Placeholder="MES o Interno"/>
+
+      
+            <EnumSelect 
+                TEnum="@IndicadorTipo"
+                @bind-Value="@tipo"
+                Label="Tipo"
+                Placeholder="Escencial o Necesario"/>
+            
+            <FluentTextField @bind-Value="observacion"
+                             Label="Observación"
+                             Placeholder="Observaciones adicionales (opcional)" />
+
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                <FluentLabel><b>Objetivos</b></FluentLabel>
+                @if (objetivos.Any())
+                {
+                    <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="10">
+                        @for (int i = 0; i < objetivos.Count; i++)
+                        {
+                            var index = i;
+                            <FluentCheckbox Checked="@objetivos[index].IsSelected"
+                                            CheckStateChanged="@((bool? v) => OnObjetivoChecked(index, v))"
+                                            Label="@objetivos[index].Nombre" />
+                        }
+                    </FluentStack>
+                    @if (objetivos.Any(o => o.IsSelected))
+                    {
+                        <FluentLabel style="color: var(--neutral-foreground-hint); font-size: 12px;">
+                            Seleccionados: @string.Join(", ", objetivos.Where(o => o.IsSelected).Select(o => o.Nombre))
+                        </FluentLabel>
+                    }
+                }
+                else
+                {
+                    <FluentLabel style="color: var(--neutral-foreground-hint);">No hay objetivos disponibles</FluentLabel>
+                }
+            </FluentStack>
+
+       
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                <FluentLabel><b>Metas por Área</b> (opcional)</FluentLabel>
+
+                @if (areas.Any())
+                {
+                    <FluentButton Appearance="Appearance.Outline"
+                                  IconStart="@(new Icons.Regular.Size16.Add())"
+                                  OnClick="@AddAreaMeta">
+                        Agregar Área
+                    </FluentButton>
+
+                    @if (metasPorAreaList.Any())
+                    {
+                        @foreach (var item in metasPorAreaList.ToList())
+                        {
+                            var index = metasPorAreaList.IndexOf(item);
+                            <div class="meta-area-item">
+                                <FluentSelect Style="width: 200px;"
+                                              Value="@item.AreaId.ToString()"
+                                              ValueChanged="@((string v) => UpdateAreaId(index, int.Parse(v)))"
+                                              Items="@(GetAvailableAreas(item.AreaId))"   
+                                              OptionText="@(a => a.Nombre)"
+                                              OptionValue="@(a => a.Id.ToString())"
+                                              Placeholder="Área" />
+                                <FluentTextField Style="flex: 1;"
+                                                 @bind-Value="item.Meta"
+                                                 Placeholder="Meta" />
+                                <FluentButton Appearance="Appearance.Lightweight"
+                                              IconStart="@(new Icons.Regular.Size16.Delete())"
+                                              OnClick="@(() => RemoveAreaMeta(index))" />
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    <FluentLabel style="color: var(--neutral-foreground-hint);">No hay áreas disponibles</FluentLabel>
+                }
+            </FluentStack>
+        </FluentStack>
+    </FluentDialogBody>
+
+    <FluentDialogFooter>
+        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Right">
+            <FluentButton Appearance="Appearance.Stealth" OnClick="@Cancel">Cancelar</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" OnClick="@Save" Disabled="!IsValid">@ButtonText</FluentButton>
+        </FluentStack>
+    </FluentDialogFooter>
+}

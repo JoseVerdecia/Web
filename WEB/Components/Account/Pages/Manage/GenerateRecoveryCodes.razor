@@ -1,0 +1,81 @@
+﻿@page "/Account/Manage/GenerateRecoveryCodes"
+
+@using Microsoft.AspNetCore.Identity
+@using WEB.Interfaces
+@using WEB.Data
+@inject ICurrentUser CurrentUser
+@inject UserManager<ApplicationUser> UserManager
+@inject IdentityRedirectManager RedirectManager
+@inject ILogger<GenerateRecoveryCodes> Logger
+
+<PageTitle>Generar códigos de recuperación de autenticación de dos factores (2FA)</PageTitle>
+
+@if (recoveryCodes is not null)
+{
+    <ShowRecoveryCodes RecoveryCodes="recoveryCodes.ToArray()" StatusMessage="@message"/>
+}
+else
+{
+        <h3>Generar códigos de recuperación de autenticación de dos factores (2FA)</h3>
+    <div class="alert alert-warning" role="alert">
+        <p>
+            <span class="glyphicon glyphicon-warning-sign"></span>
+            <strong>Guarda estos códigos en un lugar seguro.</strong>
+        </p>
+        <p>
+            Si pierdes tu dispositivo y no tienes los códigos de recuperación, perderás el acceso a tu cuenta.
+        </p>
+        <p>
+            Generar nuevos códigos de recuperación no cambia las claves utilizadas en las aplicaciones de autenticación. Si desea cambiar la clave
+            utilizada en una aplicación de autenticación, debe <a href="Account/Manage/ResetAuthenticator">restablecer sus claves de autenticación.</a>
+        </p>
+    </div>
+    <div>
+        <form @formname="generate-recovery-codes" @onsubmit="OnSubmitAsync" method="post">
+            <AntiforgeryToken/>
+            <p style="margin-top: 10px; text-align: end;">
+                <FluentButton Type="ButtonType.Submit" Appearance="Appearance.Accent">Generate Recovery Codes</FluentButton>
+            </p>
+        </form>
+    </div>
+}
+
+@code {
+    private string? message;
+    private ApplicationUser? user;
+    private IEnumerable<string>? recoveryCodes;
+    private CancellationTokenSource _cancellationToken = new(); 
+    [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        user = await CurrentUser.GetUserAsync(_cancellationToken.Token);
+        if (user is null)
+        {
+            RedirectManager.RedirectToInvalidUser(UserManager, HttpContext);
+            return;
+        }
+
+        var isTwoFactorEnabled = await UserManager.GetTwoFactorEnabledAsync(user);
+        if (!isTwoFactorEnabled)
+        {
+            throw new InvalidOperationException("Cannot generate recovery codes for user because they do not have 2FA enabled.");
+        }
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        if (user is null)
+        {
+            RedirectManager.RedirectToInvalidUser(UserManager, HttpContext);
+            return;
+        }
+
+        var userId = await UserManager.GetUserIdAsync(user);
+        recoveryCodes = await UserManager.GenerateNewTwoFactorRecoveryCodesAsync(user, 10);
+        message = "You have generated new recovery codes.";
+
+        Logger.LogInformation("User with ID '{UserId}' has generated new 2FA recovery codes.", userId);
+    }
+
+}

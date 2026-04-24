@@ -1,0 +1,36 @@
+﻿@using WEB.Features.Area.Dto
+@implements IDialogContentComponent<WEB.Features.Area.Dto.AreaDto>
+
+<FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+    <FluentLabel><b>ID:</b> @Content.Id</FluentLabel>
+    <FluentLabel><b>Nombre:</b> @Content.Nombre</FluentLabel>
+    <FluentLabel><b>Tipo:</b> @Content.Tipo</FluentLabel>
+    
+    @if (!string.IsNullOrEmpty(Content.JefeArea?.Id))
+    {
+        <FluentLabel><b>Evaluación:</b> @Content.JefeArea</FluentLabel>
+    }
+    @if (Content.JefeArea != null)
+    {
+        <FluentLabel><b>Responsable:</b> @Content.JefeArea.FullName (ID: @Content.JefeArea.Id)</FluentLabel>
+    }
+    else
+    {
+        <FluentLabel><i>Sin responsable asignado</i></FluentLabel>
+    }
+    
+   
+    <FluentStack HorizontalAlignment="HorizontalAlignment.End" Style="margin-top:20px;">
+        <FluentButton Appearance="Appearance.Accent" OnClick="Close" Autofocus="true">Cerrar</FluentButton>
+    </FluentStack>
+</FluentStack>
+
+@code {
+    [CascadingParameter] public FluentDialog Dialog { get; set; } = default!;
+    [Parameter]public AreaDto Content { get; set; }
+    
+    private async Task Close()
+    {
+        await Dialog.CloseAsync();
+    }
+}

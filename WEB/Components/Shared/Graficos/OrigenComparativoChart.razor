@@ -1,0 +1,107 @@
+﻿@using ApexCharts
+@using WEB.Features.Dashboard.Dto
+@using WEB.Features.Dashboard.Dto.story
+@using Color = Microsoft.FluentUI.AspNetCore.Components.Color
+@using Align = ApexCharts.Align
+
+<FluentCard Appearance="Appearance.Filled" Style="padding: 20px; background: var(--neutral-layer-2); height: 100%;">
+    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">MES vs Internos</FluentLabel>
+    <FluentLabel Typo="Typography.Subject" Color="Color.Accent" Style="display: block; margin-top: 2px;">
+        Comparativa de cumplimiento entre indicadores de origen externo (MES) e internos.
+    </FluentLabel>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0;">
+        <StatCard Value="@($"{Data.PorcentajeMes}%")" Label="MES (Externo)" Color="Color.Warning" />
+        <StatCard Value="@($"{Data.PorcentajeInternos}%")" Label="Internos" Color="Color.Success" />
+    </div>
+
+    <div class="chart-wrapper" style="min-height: 180px;">
+        <ApexChart TItem="OrigenBarData" Options="@ChartOptions">
+            <ApexPointSeries TItem="OrigenBarData"
+                             Items="@ChartData"
+                             Name="MES (Externo)"
+                             XValue="@(e => e.Label)"
+                             YValue="@(e => e.Mes)" />
+            <ApexPointSeries TItem="OrigenBarData"
+                             Items="@ChartData"
+                             Name="Internos"
+                             XValue="@(e => e.Interno)"
+                             YValue="@(e => e.Interno)" />
+        </ApexChart>
+    </div>
+
+    <div style="display: flex; justify-content: center; gap: 24px; margin-top: 8px; font-size: 12px; color: var(--neutral-foreground-hint);">
+        <span>MES: @Data.CumplidosMes/@Data.TotalMes cumplidos</span>
+        <span>Internos: @Data.CumplidosInternos/@Data.TotalInternos cumplidos</span>
+    </div>
+</FluentCard>
+
+@code {
+    [Parameter] public OrigenComparativoDto Data { get; set; } = new();
+
+    private List<OrigenBarData> ChartData => new()
+    {
+        new() { Label = "Cumplidos", Mes = Data.CumplidosMes, Interno = Data.CumplidosInternos },
+        new() { Label = "No Cumplidos", Mes = Data.TotalMes - Data.CumplidosMes, Interno = Data.TotalInternos - Data.CumplidosInternos }
+    };
+
+    private ApexChartOptions<OrigenBarData> ChartOptions { get; set; }
+
+    protected override void OnInitialized()
+    {
+        ChartOptions = new ApexChartOptions<OrigenBarData>
+        {
+            Chart = new Chart
+            {
+                Height = "200",
+                Toolbar = new Toolbar { Show = false },
+                FontFamily = "inherit"
+            },
+            PlotOptions = new PlotOptions
+            {
+                Bar = new PlotOptionsBar
+                {
+                    ColumnWidth = "55%",
+                    BorderRadius = 6,
+                    DataLabels = new PlotOptionsBarDataLabels
+                    {
+                        Position = BarDataLabelPosition.Top
+                    }
+                }
+            },
+            Colors = new List<string> { "#f97316", "#0078D4" },
+            DataLabels = new DataLabels
+            {
+                Enabled = true,
+                Formatter = @"function(val) { return Math.floor(val); }",
+                Style = new DataLabelsStyle { FontSize = "13px", FontWeight = "600" }
+            },
+            Legend = new Legend
+            {
+                Position = LegendPosition.Top,
+                HorizontalAlign = Align.Center,
+                FontSize = "12px"
+            },
+            Yaxis = new List<YAxis>
+            {
+                new()
+                {
+                    Labels = new YAxisLabels
+                    {
+                        Formatter = @"function(val) { return Math.floor(val); }"
+                    },
+                    TickAmount = 5
+                }
+            },
+            Grid = new Grid
+            {
+                Padding = new Padding { Top = 0, Bottom = 0 }
+            },
+            Tooltip = new Tooltip
+            {
+                Shared = true,
+                Intersect = false
+            }
+        };
+    }
+}

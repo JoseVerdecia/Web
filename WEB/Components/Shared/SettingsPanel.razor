@@ -1,0 +1,33 @@
+﻿    @using Microsoft.FluentUI.AspNetCore.Components
+    @implements IDialogContentComponent
+    
+
+    <FluentDesignTheme @rendermode="InteractiveServer" StorageName="theme" @bind-Mode="@Mode" @bind-OfficeColor="@Color"/>
+
+    <FluentLabel Typo="Typography.Subject">Tema</FluentLabel>
+    <FluentSelect Items="@themeModes" 
+                  @bind-SelectedOption="@Mode"
+                  Style="margin-top: 8px; width: 100%;" />
+
+    <FluentLabel Typo="Typography.Subject">Color de Office</FluentLabel>
+    <FluentSelect Items="@officeColors" 
+                  @bind-SelectedOption="@Color"
+                  Style="margin-top: 8px; width: 100%;" />
+
+
+
+    @code{
+
+        private IEnumerable<DesignThemeModes> themeModes = Enum.GetValues<DesignThemeModes>();
+        private IEnumerable<OfficeColor?> officeColors = new OfficeColor?[] 
+        { 
+            OfficeColor.Default,
+            OfficeColor.Access,
+            OfficeColor.Excel,
+            OfficeColor.PowerBI
+        };
+
+        private DesignThemeModes Mode = DesignThemeModes.System;
+        private OfficeColor? Color = OfficeColor.Default;
+
+    }

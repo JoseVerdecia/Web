@@ -1,0 +1,47 @@
+﻿<div class="detail-dialog-content">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+        <FluentLabel><b>ID:</b> @Content.Id</FluentLabel>
+        <FluentLabel><b>Nombre:</b> @Content.Nombre</FluentLabel>
+        <FluentLabel><b>Meta a Cumplir:</b> @Content.MetaCumplir</FluentLabel>
+        <FluentLabel><b>Meta Real:</b> @(Content.MetaReal ?? "No definida")</FluentLabel>
+        <FluentLabel><b>Evaluación:</b> @Content.Evaluacion</FluentLabel>
+        <FluentLabel><b>Origen:</b> @Content.Origen</FluentLabel>
+        <FluentLabel><b>Tipo:</b> @Content.Tipo</FluentLabel>
+
+        @if (!string.IsNullOrEmpty(Content.Observacion))
+        {
+            <FluentLabel><b>Observación:</b> @Content.Observacion</FluentLabel>
+        }
+
+        @if (Content.Proceso != null)
+        {
+            <FluentLabel><b>Proceso:</b> @Content.Proceso.Nombre</FluentLabel>
+        }
+
+        @if (Content.Objetivos?.Any() == true)
+        {
+            <FluentLabel><b>Objetivos:</b></FluentLabel>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5" Style="margin-left: 15px;">
+                @foreach (var objetivo in Content.Objetivos)
+                {
+                    <FluentLabel>• @objetivo.Nombre (ID: @objetivo.Id)</FluentLabel>
+                }
+            </FluentStack>
+        }
+
+        @if (Content.Areas?.Any() == true)
+        {
+            <FluentLabel><b>Áreas asociadas:</b> @Content.Areas.Count</FluentLabel>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5" Style="margin-left: 15px;">
+                @foreach (var area in Content.Areas)
+                {
+                    <FluentLabel>• @area.AreaNombre - Meta: @area.MetaCumplir</FluentLabel>
+                }
+            </FluentStack>
+        }
+
+        <FluentStack HorizontalAlignment="HorizontalAlignment.End" Style="margin-top:20px;">
+            <FluentButton Appearance="Appearance.Accent" OnClick="Close" Autofocus="true">Cerrar</FluentButton>
+        </FluentStack>
+    </FluentStack>
+</div>

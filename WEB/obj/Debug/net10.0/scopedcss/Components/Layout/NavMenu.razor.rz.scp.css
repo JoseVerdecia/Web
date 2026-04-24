@@ -1,0 +1,20 @@
+.logout-item[b-52vz10t17v] {
+    width: 100%;
+    padding: 8px 12px;
+}
+.logout-form[b-52vz10t17v] {
+    width: 100%;
+}
+.logout-button[b-52vz10t17v] {
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+}
+
+.logout-button span[b-52vz10t17v] {
+    margin-left: 8px;
+}
+
+.logout-button[b-52vz10t17v]  .fluent-icon {
+    margin-right: 8px;
+}

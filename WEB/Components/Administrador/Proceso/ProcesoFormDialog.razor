@@ -1,0 +1,21 @@
+﻿@using WEB.Core.Mediator
+@using WEB.Interfaces
+@inject IMediator Mediator
+@implements IDialogContentComponent<object>
+@inject INotificationService NotificacionService
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="15" Style="width: 100%;">
+        <FluentLabel Typo="Typography.PaneHeader">@TitleText</FluentLabel>
+        <FluentTextField @bind-Value="nombre"
+                         Label="Nombre del proceso"
+                         Required="true"
+                         Placeholder="Ej: Pre-Grado"/>
+    </FluentStack>
+</FluentDialogBody>
+
+<FluentDialogFooter>
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Right">
+        <FluentButton Appearance="Appearance.Stealth" OnClick="@Cancel">Cancelar</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="@Save" Disabled="!IsValid">@ButtonText</FluentButton>
+    </FluentStack>
+</FluentDialogFooter>
