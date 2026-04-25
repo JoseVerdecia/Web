@@ -2,10 +2,14 @@
 @using WEB.Components.Administrador.Proceso
 @using WEB.Components.Shared
 @using WEB.Core.Mediator
+@using WEB.Services
 @rendermode RenderMode.InteractiveServer
 @inject IMediator Mediator
+@inject ExcelExportService ExcelExportService
+@inject IJSRuntime JSRuntime
 @inject IDialogService DialogService
 
+<PageTitle>Procesos</PageTitle>
 <FluentLayout>
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
         <FluentStack  Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
@@ -14,7 +18,11 @@
             <FluentStack Width="inline-block" HorizontalAlignment="HorizontalAlignment.End">
             @if (ActiveTabId == "tab-activos")
             {
-           
+               
+                <FluentMenuButton Text="Exportar">
+                    <FluentMenuItem Disabled="@(!activeProcesos.Any())" OnClick="ExportProcesos"> Excel</FluentMenuItem>
+                    <FluentMenuItem Disabled="@(!activeProcesos.Any())" OnClick="ExportProcesosPdf"> PDF</FluentMenuItem>
+                </FluentMenuButton>
                 <FluentButton
                     Appearance="Appearance.Outline"
                     OnClick="EliminarSeleccionados"
@@ -28,7 +36,7 @@
                     Appearance="Appearance.Accent"
                     OnClick="@OpenCreateDialog" 
                     IconStart="@(new Icons.Regular.Size20.AddSquare())">
-                    Crear Proceso
+                    Crear
                 </FluentButton>
                 
              
@@ -55,7 +63,7 @@
         </FluentStack>
         
         <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
-            <FluentTab Id="tab-activos" Label="Procesos activos">
+            <FluentTab Id="tab-activos" Label="Activos">
                 @if (isLoadingActivos)
                 {
                     <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">

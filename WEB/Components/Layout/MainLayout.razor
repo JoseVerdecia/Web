@@ -1,6 +1,9 @@
-﻿
-@inherits LayoutComponentBase
+﻿@inherits LayoutComponentBase
+@using Microsoft.AspNetCore.SignalR.Client
+@using Microsoft.JSInterop
 
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
 <FluentDesignTheme  StorageName="theme" />
     <FluentLayout>
@@ -28,3 +31,14 @@
         <span class="dismiss">🗙</span>
     </div>
 
+@code {
+    private HubConnection? hubConnection;
+
+    public async ValueTask DisposeAsync()
+    {
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
+    }
+}

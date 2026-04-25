@@ -135,6 +135,15 @@
             })
             .Build();
         
+        _hubConnection.On("RefreshPage", () =>
+        {
+            InvokeAsync(() =>
+            {
+                
+                NavigationManager.Refresh(forceReload: true);
+            });
+        });
+        
         _hubConnection.On("MetaActualizada", () =>
         {
             Console.WriteLine(" [SignalR] MetaActualizada recibida!");

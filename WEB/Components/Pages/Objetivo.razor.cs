@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled;
+using Microsoft.JSInterop;
 using WEB.Components.Administrador.Objetivo;
 using WEB.Core.Mediator;
 using WEB.Features.Objetivo.Delete;
@@ -401,5 +402,17 @@ public partial class Objetivo : ComponentBase
     {
         _cts.Cancel();
         _cts.Dispose();
+    }
+    
+    private async Task ExportObjetivos()
+    {
+        var excelData = await ExcelExportService.ExportAllObjetivosDetailedToExcelAsync();
+        await JSRuntime.InvokeVoidAsync("downloadFile", "Objetivos.xlsx", Convert.ToBase64String(excelData));
+    }
+    
+    private async Task ExportObjetivosPdf()
+    {
+        var pdfData = await ExcelExportService.ExportAllObjetivosDetailedToPdfAsync();
+        await JSRuntime.InvokeVoidAsync("downloadFile", "Objetivos.pdf", Convert.ToBase64String(pdfData));
     }
 }

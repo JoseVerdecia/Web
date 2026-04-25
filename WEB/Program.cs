@@ -11,6 +11,7 @@ using WEB.Data;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Components.Tooltip;
 using Microsoft.JSInterop;
+using QuestPDF.Infrastructure;
 using WEB.Core.Mediator;
 using WEB.Core.Services;
 using WEB.Data.Hub;
@@ -19,6 +20,7 @@ using WEB.Data.Interceptors;
 using WEB.Data.IRepository;
 using WEB.Data.Repository;
 using WEB.Interfaces;
+using WEB.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +28,7 @@ var cultureInfo = new CultureInfo("es-ES");
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
+QuestPDF.Settings.License = LicenseType.Community;
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -34,9 +37,11 @@ builder.Services.AddFluentUIComponents();
 
 //builder.Services.AddScoped<ICacheInvalidator, MemoryCacheInvalidator>();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
+builder.Services.AddScoped<IUnitOfWorkAccessor, UnitOfWorkAccessor>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<GlobalEvaluationService>();
+builder.Services.AddScoped<ExcelExportService>();
 builder.Services.AddScoped<IndicadorUpdateStateService>();
 builder.Services.AddApexCharts();
 builder.Services.AddScoped<IDeleteCascadeService, DeleteCascadeService>();
@@ -53,7 +58,7 @@ builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 builder.Services.AddScoped(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehavior<,>));
 
-builder.Services.AddScoped<IUnitOfWorkAccessor, UnitOfWorkAccessor>();
+
 /*builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();*/
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<INotificationService, NotificationService>();

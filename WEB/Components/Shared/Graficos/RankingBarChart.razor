@@ -12,28 +12,38 @@
                 <FluentLabel Typo="Typography.Subject" Color="Color.Accent" Style="display: block; margin-top: 2px;">@Subtitle</FluentLabel>
             }
         </div>
-        @if (ShowAverage)
+        @if (ShowAverage && FilteredItems.Any())
         {
             <FluentBadge Appearance="Appearance.Neutral" Style="font-size: 12px;">
                 Promedio: @AverageValue.ToString("F1")%
             </FluentBadge>
         }
     </div>
-    <div class="chart-wrapper">
-        <ApexChart TItem="TItem" Options="@ChartOptions">
-            <ApexPointSeries TItem="TItem"
-                             Items="@FilteredItems"
-                             Name="Cumplimiento %"
-                             XValue="@XLabel"
-                             YValue="@YPorcentaje" />
-        </ApexChart>
-    </div>
+    @if (!FilteredItems.Any())
+    {
+        <div style="display: flex; align-items: center; justify-content: center; height: 320px; color: var(--neutral-foreground-hint); flex-direction: column; gap: 8px;">
+            <FluentIcon Value="@(new Icons.Regular.Size20.ChartMultiple())" />
+            <FluentLabel>No hay datos disponibles</FluentLabel>
+        </div>
+    }
+    else
+    {
+        <div class="chart-wrapper">
+            <ApexChart TItem="TItem" Options="@ChartOptions">
+                <ApexPointSeries TItem="TItem"
+                                 Items="@FilteredItems"
+                                 Name="Cumplimiento %"
+                                 XValue="@XLabel"
+                                 YValue="@YPorcentaje" />
+            </ApexChart>
+        </div>
+    }
 </FluentCard>
 
 @code {
     [Parameter] public string Title { get; set; } = "Rendimiento";
     [Parameter] public string? Subtitle { get; set; }
-    [Parameter] public IEnumerable<TItem> Items { get; set; } = Enumerable.Empty<TItem>();
+    [Parameter] public List<TItem> Items { get; set; } = new();
     [Parameter] public Func<TItem, string> XLabel { get; set; } = null!;
     [Parameter] public Func<TItem, decimal?> YPorcentaje { get; set; } = null!;
     [Parameter] public bool ShowAverage { get; set; } = true;

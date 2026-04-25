@@ -8,7 +8,7 @@
             @Title
         </FluentLabel>
     }
-    <div style="min-width: 500px;">
+   
         <ApexChart TItem="TItem" Options="@ChartOptions">
             <ApexPointSeries TItem="TItem" Items="@Items" Name="Sobrecumplidos" SeriesType="SeriesType.Bar" XValue="@XValue" YValue="@YSobrecumplidos" />
             <ApexPointSeries TItem="TItem" Items="@Items" Name="Cumplidos" SeriesType="SeriesType.Bar" XValue="@XValue" YValue="@YCumplidos" />
@@ -16,7 +16,7 @@
             <ApexPointSeries TItem="TItem" Items="@Items" Name="Incumplidos" SeriesType="SeriesType.Bar" XValue="@XValue" YValue="@YIncumplidos" />
             <ApexPointSeries TItem="TItem" Items="@Items" Name="No Evaluados" SeriesType="SeriesType.Bar" XValue="@XValue" YValue="@YNoEvaluados" />
         </ApexChart>
-    </div>
+    
 </FluentCard>
 
 @code{

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled;
+using Microsoft.JSInterop;
 using WEB.Components.Administrador.Area;
 using WEB.Core.Mediator;
 using WEB.Enums;
@@ -405,5 +406,16 @@ public partial class Area : ComponentBase
     {
         _cts.Cancel();
         _cts.Dispose();
+    }
+    
+    private async Task ExportAreas()
+    {
+        var excelData = await ExcelExportService.ExportAllAreasDetailedToExcelAsync();
+        await JSRuntime.InvokeVoidAsync("downloadFile", "Areas.xlsx", Convert.ToBase64String(excelData));
+    }
+    private async Task ExportAreasPdf()
+    {
+        var pdfData = await ExcelExportService.ExportAllAreasDetailedToPdfAsync();
+        await JSRuntime.InvokeVoidAsync("downloadFile", "Areas.pdf", Convert.ToBase64String(pdfData));
     }
 }

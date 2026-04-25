@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿﻿using Microsoft.EntityFrameworkCore;
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data;
@@ -150,17 +150,25 @@ public class GetDashboardUnificadoHandler : IRequestHandler<GetDashboardUnificad
                 .ToList();
 
             // ── Ranking Objetivos (peor a mejor) ──
-            dto.ObjetivosRanking = dto.ObjetivosConteo
+            dto.ObjetivosRanking = objetivos
                 .Select(o =>
                 {
-                    var totalConEvaluacion = o.Sobrecumplidos + o.Cumplidos + o.ParcialmenteCumplidos + o.Incumplidos;
+                    var delObjetivo = indicadoresDeArea
+                        .Where(i => i.Indicador != null && i.Indicador.Objetivos.Any(oi => oi.Id == o.Id))
+                        .ToList();
+
+                    var totalConEvaluacion = delObjetivo.Count(i => i.Evaluacion != Enums.Evaluacion.NoEvaluado);
+                    var cumplidos = delObjetivo.Count(i => 
+                        i.Evaluacion == Enums.Evaluacion.Cumplido || 
+                        i.Evaluacion == Enums.Evaluacion.Sobrecumplido);
+
                     return new ObjetivoRankingDto
                     {
-                        ObjetivoId = o.ObjetivoId,
-                        Label = o.NumeroObjetivoString,
+                        ObjetivoId = o.Id,
+                        Label = $"OBJETIVO#: {o.NumeroObjetivo}",
                         PorcentajeCumplimiento = totalConEvaluacion == 0
                             ? 0
-                            : Math.Round((decimal)(o.Sobrecumplidos + o.Cumplidos) / totalConEvaluacion * 100, 1)
+                            : Math.Round((decimal)cumplidos / totalConEvaluacion * 100, 1)
                     };
                 })
                 .OrderBy(r => r.PorcentajeCumplimiento)
@@ -174,12 +182,25 @@ public class GetDashboardUnificadoHandler : IRequestHandler<GetDashboardUnificad
 
             dto.AreasConteo = areas
                 .Where(a => areaIdsConIndicadores.Contains(a.Id))
-                .Select(a => new AreaConteoDto
+                .Select(a =>
                 {
-                    AreaId = a.Id,
-                    Nombre = a.Nombre,
-                    Label = a.Nombre,
-                    PorcentajeCumplimiento = CalcularPorcentajeCumplimientoArea(a.Id, indicadoresDeArea)
+                    var delArea = indicadoresDeArea
+                        .Where(i => i.AreaId == a.Id)
+                        .ToList();
+
+                    var totalEvaluados = delArea.Count(i => i.Evaluacion != Enums.Evaluacion.NoEvaluado);
+                    var cumplidos = delArea.Count(i =>
+                        i.Evaluacion == Enums.Evaluacion.Cumplido || i.Evaluacion == Enums.Evaluacion.Sobrecumplido);
+
+                    return new AreaConteoDto
+                    {
+                        AreaId = a.Id,
+                        Nombre = a.Nombre,
+                        Label = a.Nombre,
+                        PorcentajeCumplimiento = totalEvaluados == 0
+                            ? 0
+                            : Math.Round((decimal)cumplidos / totalEvaluados * 100, 1)
+                    };
                 })
                 .OrderBy(a => a.PorcentajeCumplimiento)
                 .ToList();

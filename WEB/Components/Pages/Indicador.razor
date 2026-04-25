@@ -4,12 +4,15 @@
 @using WEB.Components.Administrador.Indicador
 @using WEB.Components.Shared
 @using WEB.Core.Mediator
+@using WEB.Services
 @inject IDialogService DialogService
 @inject IMediator Mediator
 @attribute [Authorize]
+@inject ExcelExportService ExcelExportService
+@inject IJSRuntime JSRuntime
 @rendermode  InteractiveServer
 
-
+<PageTitle>Indicador</PageTitle>
 @if (!string.IsNullOrEmpty(errorMessage))
 {
     <FluentMessageBar Title="Error" Intent="MessageIntent.Error" AllowDismiss="true">
@@ -29,7 +32,11 @@
                 @if (ActiveTabId == "tab-activos")
                 {
                    
-                        
+                    
+                    <FluentMenuButton Text="Exportar">
+                        <FluentMenuItem Disabled="@(!gridItems.Any())" OnClick="ExportIndicadores"> Excel</FluentMenuItem>
+                        <FluentMenuItem Disabled="@(!gridItems.Any())" OnClick="ExportIndicadoresPdf"> PDF</FluentMenuItem>
+                    </FluentMenuButton>
                         <FluentButton   OnClick="EliminarSeleccionados"
                                         Appearance="Appearance.Outline"
                                         Disabled="@(indicadorDataGrid == null || !indicadorDataGrid.HasSelection)"
@@ -40,7 +47,7 @@
                         <FluentButton   OnClick="@OpenCreateWizardDialog"
                                         Appearance="Appearance.Accent"
                                         IconStart="@(new Icons.Regular.Size20.AddSquare())">
-                            Crear Inicador
+                            Crear
                         </FluentButton>
                    
                     
@@ -67,7 +74,7 @@
         <FluentDivider Style="margin: 1rem 0;" />
         
         <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
-            <FluentTab Id="tab-activos" Label="Indicadores activos">
+            <FluentTab Id="tab-activos" Label="Activos">
                 @if (isLoading)
                 {
                     <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">

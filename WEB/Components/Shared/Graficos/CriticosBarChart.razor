@@ -19,6 +19,7 @@
                              YValue="@YMeta" />
             <ApexPointSeries TItem="TItem"
                              Items="@Items"
+                             SeriesType="SeriesType.Line"
                              Name="Resultado Real"
                              XValue="@XLabel"
                              YValue="@YReal" />
@@ -94,6 +95,12 @@
                 Position = LegendPosition.Top,
                 HorizontalAlign = Align.Center,
                 FontSize = "12px"
+            },
+            Stroke = new Stroke
+            {
+                Width = new List<double> { 1, 3 },
+                Curve = new CurveSelections(Curve.Smooth),
+                LineCap = LineCap.Round
             },
             Tooltip = new Tooltip
             {

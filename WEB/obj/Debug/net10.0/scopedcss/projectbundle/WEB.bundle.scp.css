@@ -486,7 +486,7 @@
     color: var(--neutral-stroke-focus);
 }
 
-/* Forzar el salto de línea en todo el grid sin romper nada */
+
 [b-9q0f3vccu9] fluent-data-grid-cell {
     overflow: hidden !important;
     white-space: normal !important;

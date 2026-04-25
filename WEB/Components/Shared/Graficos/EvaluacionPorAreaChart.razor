@@ -55,46 +55,6 @@
                                  YValue="@(e => e.PorcentajeCumplimiento)" />
             </ApexChart>
         </div>
-
-        @* ✅ TABLA MEJORADA: Solo muestra el Top 5 mejores *@
-        <div style="overflow-x: auto; margin-top: 12px; border-top: 1px solid var(--neutral-stroke-2); padding-top: 8px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold" Style="color: var(--neutral-foreground-hint);">
-                    Top 5 Mejores
-                </FluentLabel>
-                @if (CurrentIndicadores.Count > 5)
-                {
-                    <FluentLabel Typo="Typography.Subject" Style="color: var(--neutral-foreground-hint);">
-                        y @(CurrentIndicadores.Count - 5) más
-                    </FluentLabel>
-                }
-            </div>
-            <table class="criticos-table">
-                <thead>
-                    <tr>
-                        <th>Indicador</th>
-                        <th class="text-center">Meta</th>
-                        <th class="text-center">Real</th>
-                        <th class="text-center">%</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var ind in TopIndicadores)
-                    {
-                        <tr>
-                            <td class="indicator-name" title="@ind.Nombre">@ind.Nombre</td>
-                            <td class="text-center">@ind.MetaCumplir</td>
-                            <td class="text-center">@ind.MetaReal</td>
-                            <td class="text-center">
-                                <span style="color: @(GetEvalColor(ind.PorcentajeCumplimiento)); font-weight: 600;">
-                                    @ind.PorcentajeCumplimiento.ToString("F1")%
-                                </span>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
     }
 </FluentCard>
 
@@ -236,12 +196,5 @@
     {
         return name.Length > maxLen ? name.Substring(0, maxLen) + "..." : name;
     }
-
-    private static string GetEvalColor(decimal porcentaje) => porcentaje switch
-    {
-        >= 100 => "#16a34a",
-        >= 80 => "#0078D4",
-        >= 50 => "#ea580c",
-        _ => "#dc2626"
-    };
+    
 }

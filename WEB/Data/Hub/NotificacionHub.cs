@@ -39,7 +39,6 @@ public class NotificacionHub : Microsoft.AspNetCore.SignalR.Hub
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        // Usar la misma lógica para obtener el userId
         var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value
                      ?? Context.GetHttpContext()?.Request.Query["userId"].ToString();
         

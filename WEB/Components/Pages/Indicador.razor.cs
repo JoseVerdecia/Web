@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled;
+using Microsoft.JSInterop;
 using WEB.Common;
 using WEB.Components.Administrador.Indicador;
 using WEB.Core.Extensions;
@@ -527,5 +528,16 @@ public partial class Indicador : ComponentBase
     {
        
         await Task.CompletedTask;
+    }
+    
+    private async Task ExportIndicadores()
+    {
+        var excelData = await ExcelExportService.ExportIndicadoresToExcelAsync();
+        await JSRuntime.InvokeVoidAsync("downloadFile", "Indicadores.xlsx", Convert.ToBase64String(excelData));
+    }
+    private async Task ExportIndicadoresPdf()
+    {
+        var pdfData = await ExcelExportService.ExportIndicadoresToPdfAsync();
+        await JSRuntime.InvokeVoidAsync("downloadFile", "Indicadores.pdf", Convert.ToBase64String(pdfData)); 
     }
 }

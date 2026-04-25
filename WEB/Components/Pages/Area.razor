@@ -4,13 +4,17 @@
 @using WEB.Components.Administrador.Area
 @using WEB.Components.Shared
 @using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Services
 @using WEB.Data
 @inject IDialogService DialogService
 @inject IMediator Mediator
 @attribute [Authorize]
+@inject ExcelExportService ExcelExportService
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-
+<PageTitle>Areas</PageTitle>
 <FluentLayout>
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
         <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
@@ -19,6 +23,10 @@
             <FluentStack Width="inline-block" HorizontalAlignment="HorizontalAlignment.End">
             @if (ActiveTabId == "tab-activas")
             {
+                <FluentMenuButton Text="Exportar">
+                    <FluentMenuItem Disabled="@(!activeAreas.Any())" OnClick="ExportAreas">Excel</FluentMenuItem>
+                    <FluentMenuItem Disabled="@(!activeAreas.Any())" OnClick="ExportAreasPdf">PDF</FluentMenuItem>
+                </FluentMenuButton>
                 
                     <FluentButton
                         Appearance="Appearance.Outline"
@@ -28,12 +36,11 @@
                         Eliminar
                     </FluentButton>
                 
-               
                     <FluentButton 
                         Appearance="Appearance.Accent"
                         OnClick="@OpenCreateDialog"
                         IconStart="@(new Icons.Regular.Size20.AddSquare())">
-                        Crear Area
+                        Crear
                     </FluentButton>
                
             }
@@ -57,7 +64,7 @@
         </FluentStack>
         
         <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
-            <FluentTab Id="tab-activas" Label="Áreas activas">
+            <FluentTab Id="tab-activas" Label="Activos">
                 @if (isLoadingActivas)
                 {
                     <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">

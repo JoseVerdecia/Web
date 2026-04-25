@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using WEB.Common;
 using WEB.Core.Helpers;
 using WEB.Data;
+using WEB.Data.Hub;
 using WEB.Data.IRepository;
 using WEB.Enums;
 using WEB.Interfaces;
@@ -12,26 +14,31 @@ namespace WEB.Core.Services;
 public class GlobalEvaluationService
 {
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly IHubContext<NotificacionHub> _hubContext;
 
-    public GlobalEvaluationService(IServiceScopeFactory scopeFactory)
+    public GlobalEvaluationService(IServiceScopeFactory scopeFactory, IHubContext<NotificacionHub> hubContext)
     {
         _scopeFactory = scopeFactory;
+        _hubContext = hubContext;
     }
 
     public async Task EjecutarEvaluacionCompletaAsync()
     {
-        // ✅ Creamos el scope y sacamos el DbContext DIRECTAMENTE
+       
         using var scope = _scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
         await EvaluarTodosLosIndicadoresAsync(context);
         await EvaluarTodosLosProcesosAsync(context);
         await EvaluarTodosLosObjetivosAsync(context);
+
+        
+        await _hubContext.Clients.All.SendAsync("RefreshPage");
     }
 
     private async Task EvaluarTodosLosIndicadoresAsync(ApplicationDbContext context)
     {
-        // ✅ Usar EF Core directamente. Include("IndicadoresDeArea") reemplaza a tu GetAll(includeProperties: ...)
+     
         var indicadoresGlobales = await context.Indicador
             .Include(i => i.IndicadoresDeArea)
             .Where(i => !i.IsDeleted)

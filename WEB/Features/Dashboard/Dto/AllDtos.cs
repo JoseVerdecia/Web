@@ -40,6 +40,12 @@ public class DashboardUnificadoDto
     public List<IndicadorCriticoDto> TopCincoCriticos { get; set; } = new();
 }
 
+public class GaugeItem
+{
+    public string Label { get; set; } = "Cumplimiento Global";
+    public decimal Value { get; set; }
+}
+
 public class ConteoEvaluacionesDto
 {
     public int Sobrecumplidos { get; set; }

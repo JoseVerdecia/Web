@@ -1,12 +1,14 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.OutputCaching;
 using Microsoft.AspNetCore.SignalR;
+using WEB.Core.Helpers;
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Core.Services;
 using WEB.Data;
 using WEB.Data.IRepository;
 using WEB.Features.Indicador.Dto;
+using WEB.Features.IndicadorDeArea.Dto;
 using WEB.Interfaces;
 using WEB.Models;
 
@@ -154,13 +156,31 @@ public class UpdateIndicadorHandler : IRequestHandler<UpdateIndicadorCommand, In
         {
             var areaExistente = indicador.IndicadoresDeArea.FirstOrDefault(a => a.AreaId == kvp.Key);
             if (areaExistente != null)
-                areaExistente.MetaCumplir = kvp.Value;
+            {
+                //Al actualizar la meta a cumplir, recalcular evaluación automáticamente
+                var resultadoEvaluacion = EvaluacionHelper.ActualizarMetaCumplir(areaExistente, kvp.Value);
+                if (resultadoEvaluacion.IsFailure)
+                {
+                    Result<IndicadorModel>.Fail($"Error al actualizar meta para el área ID {kvp.Key}: {resultadoEvaluacion.Errors.Select(e=>e.Message)}");
+                }
+            }
             else
-                indicador.IndicadoresDeArea.Add(new IndicadorDeAreaModel
+            {
+                var nuevoIndicadorDeArea = new IndicadorDeAreaModel
                 {
                     AreaId = kvp.Key,
                     MetaCumplir = kvp.Value
-                });
+                };
+                
+                var resultadoParseo = EvaluacionHelper.ActualizarMetaCumplir(nuevoIndicadorDeArea, kvp.Value);
+                if (resultadoParseo.IsFailure)
+                {
+                    // Error en parseo - saltar este indicador
+                    continue;
+                }
+                
+                indicador.IndicadoresDeArea.Add(nuevoIndicadorDeArea);
+            }
         }
     }
   

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled;
+using Microsoft.JSInterop;
 using WEB.Components.Administrador.Proceso;
 using WEB.Core.Mediator;
 using WEB.Enums;
@@ -408,4 +409,15 @@ public partial class Proceso : ComponentBase
         _cts.Cancel();
         _cts.Dispose();
     }
+    private async Task ExportProcesos()
+    {
+        var excelData = await ExcelExportService.ExportAllProcesosDetailedToExcelAsync();
+        await JSRuntime.InvokeVoidAsync("downloadFile", "Procesos.xlsx", Convert.ToBase64String(excelData));
+    }
+    private async Task ExportProcesosPdf()
+    {
+            var pdfData = await ExcelExportService.ExportAllProcesosDetailedToPdfAsync();
+            await JSRuntime.InvokeVoidAsync("downloadFile", "Procesos.pdf", Convert.ToBase64String(pdfData)); 
+    }
+
 }

@@ -11,6 +11,7 @@ public partial class ObjetivoFormDialog : ComponentBase
 {
     [CascadingParameter] public FluentDialog Dialog { get; set; } = default!;
 
+    
     private string nombre = string.Empty;
     private int numeroObjetivo;
     private bool IsValid => !string.IsNullOrWhiteSpace(nombre);
@@ -49,9 +50,11 @@ public partial class ObjetivoFormDialog : ComponentBase
 
     private async Task Save()
     {
+        var nombreLimpio = System.Text.RegularExpressions.Regex.Replace(nombre ?? "", @"\s+", " ").Trim();
+        
         if (Content is CreateObjetivoRequest)
         {
-            var request = new CreateObjetivoCommand (Nombre : nombre, NumeroObjetivo:numeroObjetivo);
+            var request = new CreateObjetivoCommand (Nombre : nombreLimpio, NumeroObjetivo:numeroObjetivo);
             var result = await Mediator.Send(request);
            
             if (result.IsFailure)
@@ -71,7 +74,7 @@ public partial class ObjetivoFormDialog : ComponentBase
         }
         else if (Content is UpdateObjetivoRequest updateReq)
         {
-            var request = new UpdateObjetivoCommand(Id : updateReq.Id, Nombre : nombre , NumeroObjetivo:numeroObjetivo);
+            var request = new UpdateObjetivoCommand(Id : updateReq.Id, Nombre : nombreLimpio , NumeroObjetivo:numeroObjetivo);
             
             var result = await Mediator.Send(request);
             
