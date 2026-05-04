@@ -13,14 +13,12 @@ namespace WEB.Features.Indicador.Create;
 public class CreateIndicadorHandler : IRequestHandler<CreateIndicadorCommand, IndicadorDto>
 {
     private readonly IUnitOfWorkAccessor _uow;
-    /*private readonly IOutputCacheStore _cacheStore;*/
-   // private readonly IHubContext<DashboardHub> _hubContext;
+   
 
-    public CreateIndicadorHandler(IUnitOfWorkAccessor uow /*IOutputCacheStore cacheStore*//*IHubContext<DashboardHub>  hubContext*/)
+    public CreateIndicadorHandler(IUnitOfWorkAccessor uow)
     {
         _uow = uow;
-       // _cacheStore = cacheStore;
-      //  _hubContext = hubContext;
+      
     }
 
     public async Task<Result<IndicadorDto>> Handle(CreateIndicadorCommand command, CancellationToken cancellationToken)
@@ -33,9 +31,7 @@ public class CreateIndicadorHandler : IRequestHandler<CreateIndicadorCommand, In
             .TapAsync(indicador =>  AsignarObjetivos(indicador,command))
             .Tap(indicador => _uow.Current.Indicador.Add(indicador))        
             .TapAsync(_ => _uow.Current.SaveAsync())                  
-          //  .TapInvalidateCacheAsync(_cacheStore,cancellationToken,CacheTags.AllIndicadores)
             .BindAsync(RecargarRelaciones)   
-           // .TapAsync(_=> _hubContext.Clients.Group(GroupNames.Administradores).SendAsync("StatsUpdated", cancellationToken))
             .Map(indicador => indicador.MapToDto());               
     }
     private async Task AsignarObjetivos(IndicadorModel indicador, CreateIndicadorCommand command)
@@ -93,11 +89,12 @@ public class CreateIndicadorHandler : IRequestHandler<CreateIndicadorCommand, In
         return IndicadorDomainService.CrearIndicador(
             nombre: command.Nombre,
             metaCumplir: command.MetaCumplir,
-            metaReal: command.MetaReal,
             origen: command.Origen,
             tipo: command.Tipo,
             observacion: command.Observacion,
             procesoId: command.ProcesoId,
+            valorTotal: command.ValorTotal,
+            valorReal: command.ValorReal,
             objetivoIds: command.ObjetivoIds, 
             metasPorArea: command.MetaCumplirPorArea ?? new Dictionary<int, string>());
     }

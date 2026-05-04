@@ -1,0 +1,356 @@
+﻿@using Microsoft.FluentUI.AspNetCore.Components
+@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Enums
+@using WEB.Interfaces
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@inject INotificationService _notificacion
+
+@if (isLoading)
+{
+    <FluentProgressRing />
+    <FluentLabel>Cargando formulario…</FluentLabel>
+}
+else
+{
+    <FluentWizard @ref="wizard"
+                  StepperPosition="StepperPosition.Left"
+                  StepSequence="WizardStepSequence.Linear"
+                  DisplayStepNumber="WizardStepStatus.Current | WizardStepStatus.Next"
+                  Height="90%"
+                  Width="100%"
+                  OnFinish="OnFinishAsync"
+                  @bind-Value="currentStep">
+        <Steps>
+  
+            <FluentWizardStep Label="Información General"
+                              Summary="Datos principales y clasificación"
+                              OnChange="OnStepChange">
+                <ChildContent>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; height: 100%; gap:10px;">
+                        <FluentCard>
+                            <FluentStack Orientation="Orientation.Vertical">
+                                <FluentTextArea @bind-Value="nombre"
+                                                Label="Nombre"
+                                                Style="width: 100%;height: 50%;"
+                                                Resize="TextAreaResize.Vertical"
+                                                Required="true"
+                                                Placeholder="Ej: Porciento de incremento de visitas a los sitios web institucionales." />
+
+                                <FluentStack Orientation="Orientation.Horizontal" Width="fit-content" VerticalAlignment="VerticalAlignment.Center">
+                                    <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Left">
+                                        <FluentTextField @bind-Value="metaCumplir"
+                                                         Label="Meta"
+                                                         Required="true"
+                                                         Pattern="^\d+(\.\d+)?%?$"
+                                                         Placeholder="Ej: 95% o 95%"/>
+                                    </FluentStack>
+
+                                    <FluentStack Orientation="Orientation.Vertical">
+                                        @if (isJefeProceso)
+                                        {
+                                            <FluentStack Orientation="Orientation.Horizontal">
+                                                <FluentLabel>Proceso asignado:</FluentLabel>
+                                                <FluentLabel Weight="FontWeight.Bolder">@fixedProcesoNombre</FluentLabel>
+                                            </FluentStack>
+                                        }
+                                        else
+                                        {
+                                            <FluentSelect @bind-Value="@procesoIdStr"
+                                                          Label="Proceso"
+                                                          Required="true"
+                                                          Items="@procesos"
+                                                          OptionText="@(p => p.Nombre)"
+                                                          OptionValue="@(p => p.Id.ToString())"
+                                                          Placeholder="Seleccione un proceso"/>
+                                        }
+                                    </FluentStack>
+                                </FluentStack>
+
+                                <FluentStack Orientation="Orientation.Horizontal" Width="fit-content" VerticalAlignment="VerticalAlignment.Center">
+                                    <FluentStack Orientation="Orientation.Vertical">
+                                        <EnumSelect TEnum="@IndicadorOrigen"
+                                                    @bind-Value="@origen"
+                                                    Style="min-width: 100px !important;"
+                                                    Label="Origen"/>
+                                    </FluentStack>
+                                    <FluentStack Orientation="Orientation.Vertical">
+                                        <EnumSelect TEnum="@IndicadorTipo"
+                                                    @bind-Value="@tipo"
+                                                    Style="min-width: 100px !important;"
+                                                    Label="Tipo"/>
+                                    </FluentStack>
+                                </FluentStack>
+
+                                <FluentTextArea @bind-Value="observacion"
+                                                Cols="60"
+                                                Placeholder="Observaciones adicionales"/>
+                            </FluentStack>
+                        </FluentCard>
+
+                        @if (IsMetaCumplirPorcentual)
+                        {
+                            <FluentCard>
+                                <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
+                                    <FluentStack Orientation="Orientation.Vertical">
+                                        <FluentTextArea @bind-Value="valorTotal"
+                                                        Cols="60"
+                                                        Required="true"
+                                                        Label="Valor Total"
+                                                        Placeholder="Ej: Visitas año anterior"/>
+                                    </FluentStack>
+                                    <FluentStack Orientation="Orientation.Vertical">
+                                        <FluentTextArea @bind-Value="valorReal"
+                                                        Required="true"
+                                                        Cols="60"
+                                                        Label="Valor Real"
+                                                        Placeholder="Ej: Nuevas visitas año actual"/>
+                                    </FluentStack>
+                                </FluentStack>
+                            </FluentCard>
+                        }
+                    </div>
+                </ChildContent>
+            </FluentWizardStep>
+
+       
+            <FluentWizardStep Label="Objetivos"
+                              Summary="Seleccione los objetivos relacionados"
+                              Disabled="@(!IsStep1Valid)">
+                <ChildContent>
+                    <FluentStack Orientation="Orientation.Horizontal">
+                        <FluentStack Orientation="Orientation.Vertical">
+                            <FluentCard Width="fot-content">
+                                <FluentLabel Typo="Typography.H2" Color="Color.Custom" CustomColor="#222E58">OBJETIVOS RELACIONADOS</FluentLabel>
+                            </FluentCard>
+                            <FluentDivider/>
+                            @if (objetivos.Any())
+                            {
+                                <FluentLabel>Seleccione uno o más objetivos:</FluentLabel>
+                                <div class="objetivos-container">
+                                    @foreach (var grupo in objetivos.OrderBy(o => o.NumeroObjetivo).Select((obj, index) => new { obj, index }).GroupBy(x => x.index / 3))
+                                    {
+                                        <FluentToolbar Orientation="Orientation.Vertical">
+                                            @foreach (var item in grupo)
+                                            {
+                                                <FluentCheckbox @bind-Value="item.obj.IsSelected"
+                                                                Label="@($"OBJETIVO#:{item.obj.NumeroObjetivo}")"/>
+                                            }
+                                        </FluentToolbar>
+                                    }
+                                </div>
+                                @if (objetivos.Any(o => o.IsSelected))
+                                {
+                                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
+                                        <FluentLabel Weight="FontWeight.Bolder">Seleccionados:</FluentLabel>
+                                        <FluentStack Orientation="Orientation.Horizontal" Wrap="true" HorizontalGap="8">
+                                            @foreach (var obj in objetivos.Where(o => o.IsSelected))
+                                            {
+                                                <FluentBadge Appearance="Appearance.Accent">OBJETIVO#:@obj.NumeroObjetivo</FluentBadge>
+                                            }
+                                        </FluentStack>
+                                    </FluentStack>
+                                }
+                            }
+                            else
+                            {
+                                <FluentCard Style="padding: 20px; text-align: center;">
+                                    <FluentLabel>No hay objetivos disponibles</FluentLabel>
+                                </FluentCard>
+                            }
+                        </FluentStack>
+
+                        <FluentStack Orientation="Orientation.Vertical" Style="width: 100%;height: 23rem">
+                            <FluentCard Style="height: 100%; display: flex; flex-direction: column;">
+                                <div style="flex: 1; overflow-y: auto; max-height: 450px; padding: 8px;">
+                                    @foreach (var objetivo in objetivos.OrderBy(o => o.NumeroObjetivo))
+                                    {
+                                        <div style="padding: 10px 8px; border-bottom: 1px solid #f5f5f5;">
+                                            <div style="font-weight: 600; font-size: 13px; color: #222E58; margin-bottom: 4px;">
+                                                OBJETIVO#: @objetivo.NumeroObjetivo
+                                            </div>
+                                            <span style="font-size: 12px; color: #555; line-height: 1.4;">
+                                                @objetivo.Nombre
+                                            </span>
+                                        </div>
+                                    }
+                                </div>
+                            </FluentCard>
+                        </FluentStack>
+                    </FluentStack>
+                </ChildContent>
+            </FluentWizardStep>
+            
+            <FluentWizardStep Label="Metas por Área"
+                              Summary="Configure metas por área"
+                              Disabled="@(!IsStep2Valid)">
+                <ChildContent>
+                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="15" Style="padding: 20px;">
+                        <FluentLabel Typo="Typography.Header">Metas por Área</FluentLabel>
+                        <FluentDivider/>
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="20" Style="align-items: flex-start;">
+                            <FluentTabs Style="flex: 2; min-width: 0;">
+                                <FluentTab Label="Asignación masiva">
+                                    <FluentCard Style="padding: 16px; background: var(--neutral-layer-2); margin-top: 8px;">
+                                        <FluentStack Orientation="Orientation.Vertical" VerticalGap="10" Style="margin-top: 8px;">
+                                            <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Bottom" HorizontalAlignment="HorizontalAlignment.Start" Width="fit-content">
+                                                <FluentStack Orientation="Orientation.Vertical">
+                                                    <FluentSelect @bind-Value="bulkTipoStr"
+                                                                  Label="Tipo de área"
+                                                                  Required="true"
+                                                                  Width="fit-content"
+                                                                  Items="Enum.GetValues<AreaTipo>().Cast<AreaTipo>()"
+                                                                  OptionText="@(t => t.ToString())"
+                                                                  OptionValue="@(t => ((int)t).ToString())"/>
+                                                </FluentStack>
+                                                <FluentStack Orientation="Orientation.Vertical">
+                                                    <FluentTextField @bind-Value="bulkMeta"
+                                                                     Label="Meta"
+                                                                     Pattern="@(IsMetaCumplirPorcentual ? @"^\d+(\.\d+)?%$" : @"^\d+(\.\d+)?$")"
+                                                                     Required="true"
+                                                                     Placeholder="Ej: 90%"
+                                                                     Style="width:100px;"/>
+                                                </FluentStack>
+                                                <FluentStack VerticalAlignment="VerticalAlignment.Center" Orientation="Orientation.Vertical">
+                                                    <FluentButton Appearance="Appearance.Accent"
+                                                                  OnClick="ApplyBulkAssignment"
+                                                                  Disabled="@(string.IsNullOrWhiteSpace(bulkMeta) || areasDelTipoSeleccionado.All(a => bulkExcluidos.Contains(a.Id)))">
+                                                        Aplicar
+                                                    </FluentButton>
+                                                </FluentStack>
+                                            </FluentStack>
+                                            @if (areasDelTipoSeleccionado.Any())
+                                            {
+                                                <FluentLabel>Excluir áreas:</FluentLabel>
+                                                <div style="max-height: 150px; overflow-y: auto; border: 1px solid var(--neutral-stroke); padding: 8px;">
+                                                    @foreach (var grupo in areasDelTipoSeleccionado
+                                                                      .Select((area, index) => new { area, index })
+                                                                      .GroupBy(x => x.index / 3))
+                                                    {
+                                                        <FluentToolbar Orientation="Orientation.Vertical">
+                                                            @foreach (var item in grupo)
+                                                            {
+                                                                <FluentCheckbox Value="@bulkExcluidos.Contains(item.area.Id)"
+                                                                                ValueChanged="@(v => ToggleBulkExclusion(item.area.Id, v))"
+                                                                                Label="@item.area.Nombre" />
+                                                            }
+                                                        </FluentToolbar>
+                                                    }
+                                                </div>
+                                            }
+                                        </FluentStack>
+                                    </FluentCard>
+                                </FluentTab>
+                                <FluentTab Label="Asignación manual">
+                                    <FluentCard AreaRestricted="false" Style="padding: 16px; margin-top: 8px;">
+                                        <FluentButton Appearance="Appearance.Outline"
+                                                      IconStart="@(new Icons.Regular.Size16.Add())"
+                                                      OnClick="@AddAreaMeta">Agregar Área</FluentButton>
+                                        @if (manualMetaItems.Any())
+                                        {
+                                            <div class="metas-area-container" style="margin-top: 8px;">
+                                                @foreach (var item in manualMetaItems.ToList())
+                                                {
+                                                    var index = manualMetaItems.IndexOf(item);
+                                                    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Style="margin-bottom: 8px;">
+                                                        <FluentSelect Label="Área"
+                                                                      Value="@item.AreaId.ToString()"
+                                                                      Items="@GetAvailableAreas(item.AreaId)"
+                                                                      OptionText="@(a => a.Nombre)"
+                                                                      OptionValue="@(a => a.Id.ToString())"
+                                                                      ValueChanged="@((string v) => UpdateAreaId(index, int.Parse(v)))" />
+                                                        <FluentTextField Label="Meta"
+                                                                         @bind-Value="item.Meta"
+                                                                         Placeholder="Ej: 90%" />
+                                                        <FluentButton Appearance="Appearance.Accent"
+                                                                      IconStart="@(new Icons.Regular.Size16.Delete())"
+                                                                      OnClick="@(() => RemoveAreaMeta(index))" />
+                                                    </FluentStack>
+                                                }
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            <FluentCard Style="padding: 15px; text-align: center; margin-top: 8px;">
+                                                <FluentLabel>No hay áreas manuales configuradas.</FluentLabel>
+                                            </FluentCard>
+                                        }
+                                    </FluentCard>
+                                </FluentTab>
+                            </FluentTabs>
+                            <div style="flex: 1; min-width: 200px;">
+                                <FluentCard Style="padding: 16px; background: var(--neutral-layer-1);">
+                                    <FluentStack Orientation="Orientation.Horizontal">
+                                        <FluentLabel Weight="FontWeight.Bold" Style="margin-bottom: 8px;">
+                                            Áreas con meta asignada
+                                        </FluentLabel>
+                                        <FluentBadge Fill="custom" Color="white" BackgroundColor="@GetSumaColor()">
+                                            @SumaMetas.ToString("F2")
+                                        </FluentBadge>
+                                    </FluentStack>
+                                    @if (bulkMetaItems.Any() || manualMetaItems.Any())
+                                    {
+                                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                                            @foreach (var item in bulkMetaItems)
+                                            {
+                                                var area = areas.FirstOrDefault(a => a.Id == item.AreaId);
+                                                <FluentBadge Appearance="Appearance.Accent"
+                                                             DismissIcon="@(new Icons.Regular.Size12.Dismiss().WithColor(Color.Lightweight))"
+                                                             OnDismissClick="@(() => RemoveBulkItemByAreaId(item.AreaId))">
+                                                    @(area?.Nombre ?? "Área") : @item.Meta
+                                                </FluentBadge>
+                                            }
+                                            @foreach (var item in manualMetaItems)
+                                            {
+                                                var area = areas.FirstOrDefault(a => a.Id == item.AreaId);
+                                                <FluentBadge Appearance="Appearance.Neutral"
+                                                             OnDismissClick="@(() => RemoveManualItemByAreaId(item.AreaId))">
+                                                    @(area?.Nombre ?? "Área") : @item.Meta
+                                                </FluentBadge>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <FluentLabel Style="color: var(--neutral-foreground-hint);">
+                                            No hay áreas asignadas
+                                        </FluentLabel>
+                                    }
+                                </FluentCard>
+                            </div>
+                        </FluentStack>
+                    </FluentStack>
+                </ChildContent>
+            </FluentWizardStep>
+        </Steps>
+
+        <ButtonTemplate>
+            @{
+                var index = context;
+                var lastStepIndex = 2;
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="10" Style="padding: 8px;">
+                    @if (index > 0)
+                    {
+                        <FluentButton OnClick="@(() => wizard.GoToStepAsync(currentStep - 1))"
+                                      Appearance="Appearance.Outline">Anterior</FluentButton>
+                    }
+                    <FluentSpacer />
+                    @if (index < lastStepIndex)
+                    {
+                        <FluentButton OnClick="@TryGoToNextStep"
+                                      Appearance="Appearance.Accent"
+                                      Disabled="@(!IsCurrentStepValid(index))">Siguiente</FluentButton>
+                    }
+                    else
+                    {
+                        <FluentButton OnClick="@(() => wizard.FinishAsync())"
+                                      Appearance="Appearance.Accent"
+                                      Disabled="@(!IsCurrentStepValid(index))">@ButtonText</FluentButton>
+                    }
+                    <FluentButton OnClick="@Cancel" Appearance="Appearance.Stealth">Cancelar</FluentButton>
+                </FluentStack>
+            }
+        </ButtonTemplate>
+    </FluentWizard>
+}

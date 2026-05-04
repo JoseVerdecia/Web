@@ -1,0 +1,65 @@
+﻿@page "/indicadores/jefeProceso/tabla-proceso"
+@layout AppLayout
+@attribute [Authorize(Roles = AppRoles.JefeProceso)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Features.Proceso.Get
+@using WEB.Interfaces
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@rendermode InteractiveServer
+
+<PageTitle>Indicadores de mi proceso</PageTitle>
+
+<FluentLayout>
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Width="100%">
+        <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@procesoNombre"></Title>
+        <FluentButton Appearance="Appearance.Accent"
+                      OnClick="@(() => Navigation.NavigateTo("/indicadores/jefeProceso"))"
+                      IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+            Volver
+        </FluentButton>
+    </FluentStack>
+
+    <FluentDivider Style="margin: 1rem 0;" />
+
+    @if (isLoadingProceso)
+    {
+        <FluentProgressRing />
+    }
+    else if (procesoId == null)
+    {
+        <FluentLabel Color="Color.Error">No se pudo cargar el proceso asociado.</FluentLabel>
+    }
+    else
+    {
+        <PEProcesoTable ProcesoId="procesoId.Value" />
+    }
+</FluentLayout>
+
+@code {
+    [Inject] NavigationManager Navigation { get; set; } = default!;
+    private int? procesoId;
+    private string procesoNombre = "Cargando...";
+    private bool isLoadingProceso = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await CurrentUser.GetUserAsync();
+        if (user == null)
+        {
+            isLoadingProceso = false;
+            return;
+        }
+
+        var result = await Mediator.Send(new GetProcesoByJefeIdRequest(user.Id));
+        if (result.IsSuccess && result.Value is not null)
+        {
+            procesoId = result.Value.Id;
+            procesoNombre = result.Value.Nombre;
+        }
+        isLoadingProceso = false;
+    }
+}

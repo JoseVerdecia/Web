@@ -25,9 +25,6 @@
 }
 
 
-[b-9q0f3vccu9] fluent-data-grid-cell {
-    overflow: hidden !important;
-    white-space: normal !important;
-    word-break: break-word !important;
+[b-9q0f3vccu9] .fluent-splitter .fluent-splitter-panel:first-child {
+    overflow: visible !important;
 }
-

@@ -9,6 +9,8 @@ namespace WEB.Components.Administrador.Indicador;
 
 public partial class IndicadorDataGrid : ComponentBase
 {
+    [Parameter] public string AreasBaseUrl { get; set; } = "/indicadores";
+    [Parameter] public string EditBaseUrl { get; set; } = "/indicadores/form";
     [Parameter] public List<IndicadorDisplayItem> Items { get; set; } = new();
     [Parameter] public EventCallback<IndicadorDisplayItem> OnEdit { get; set; }
     [Parameter] public EventCallback<IndicadorDisplayItem> OnDelete { get; set; }
@@ -45,11 +47,8 @@ public partial class IndicadorDataGrid : ComponentBase
     private List<SelectOption<string?>> evaluacionOptions = new();
     private List<SelectOption<string?>> procesoOptions = new();
     
-    /*private IEnumerable<IndicadorDisplayItem> FilteredItems =>
-        Items.Where(i =>
-            string.IsNullOrEmpty(nameFilter) ||
-            i.Nombre.Contains(nameFilter, StringComparison.OrdinalIgnoreCase)
-        );*/
+    private void NavigateToAreas(int id) => NavigationManager.NavigateTo($"{AreasBaseUrl}/{id}/areas");
+    private void NavigateToEdit(int id) => NavigationManager.NavigateTo($"{EditBaseUrl}/{id}");
     
     protected override void OnInitialized()
     {
@@ -57,7 +56,16 @@ public partial class IndicadorDataGrid : ComponentBase
         tipoOptions = EnumHelper.GetOptions<IndicadorTipo>(includeAllOption: false);
         origenOptions = EnumHelper.GetOptions<IndicadorOrigen>(includeAllOption: false);
     }
+    private async Task ClearAllFilters()
+    {
+        nameFilter = string.Empty;
+        evaluacionFilter = string.Empty;
+        origenFilter = string.Empty;
+        tipoFilter = string.Empty;
+        procesoFilter = string.Empty;
     
+        await ResetPagination();
+    }
     private List<IndicadorDisplayItem> _previousItems = new();
     protected override void OnParametersSet()
     {

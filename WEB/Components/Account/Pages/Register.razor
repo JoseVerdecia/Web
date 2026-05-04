@@ -1,13 +1,16 @@
 ﻿@layout EmptyLayout
 @page "/Account/Register"
-
+@attribute [AllowAnonymous]
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.SignalR
 @using Microsoft.AspNetCore.WebUtilities
+@using WEB.Data.Hub
 @using WEB.Data
-
+@inject IHubContext<NotificacionHub> HubContext
 @inject UserManager<ApplicationUser> UserManager
 @inject IUserStore<ApplicationUser> UserStore
 @inject SignInManager<ApplicationUser> SignInManager
@@ -66,7 +69,7 @@
                         </FluentStack>
 
                         <FluentStack Orientation="Orientation.Vertical" VerticalGap="4" Width="100%">
-                            <FluentTextField Type="TextFieldType.Password"
+                            <FluentTextField TextFieldType="TextFieldType.Password"
                                              Name="Input.Password" 
                                              @bind-Value="Input.Password" 
                                              AutoComplete="new-password" 
@@ -78,8 +81,9 @@
                         </FluentStack>
 
                         <FluentStack Orientation="Orientation.Vertical" VerticalGap="4" Width="100%">
-                            <FluentTextField Type="TextFieldType.Password"
+                            <FluentTextField TextFieldType="TextFieldType.Password"
                                              Name="Input.ConfirmPassword" 
+                                            
                                              @bind-Value="Input.ConfirmPassword" 
                                              AutoComplete="new-password" 
                                              Required="true" 
@@ -110,7 +114,7 @@
 
 @code {
     private IEnumerable<IdentityError>? identityErrors;
-
+    
     [SupplyParameterFromForm] private InputModel Input { get; set; } = default!;
 
     [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
@@ -139,8 +143,9 @@
             return;
         }
 
-        Logger.LogInformation("User created a new account with password.");
+        Logger.LogInformation("Nuevo usuario registrado. Pendiente de asignación de rol por administrador.");
         await UserManager.AddToRoleAsync(user, AppRoles.UsuarioNormal);
+        await HubContext.Clients.Group("Administradores").SendAsync("NuevoUsuarioRegistrado");
         /*var userId = await UserManager.GetUserIdAsync(user);
         var code = await UserManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -159,7 +164,7 @@
         else
         {*/
             await SignInManager.SignInAsync(user, isPersistent: false);
-            RedirectManager.RedirectTo(ReturnUrl);
+            RedirectManager.RedirectTo("/pendiente");
        // }
     }
 
@@ -206,7 +211,7 @@
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "Las contraseñas no son iguales")]
         public string ConfirmPassword { get; set; } = "";
     }
 

@@ -40,11 +40,11 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
     private string nombre = string.Empty;
     private int procesoId;
     private string metaCumplir = string.Empty;
-    private string? metaReal;
     private IndicadorOrigen origen = IndicadorOrigen.MES;
     private IndicadorTipo tipo = IndicadorTipo.Escencial;
     private string? observacion;
-
+    private string valorTotal = string.Empty;
+    private string valorReal = string.Empty;
     private bool isJefeProceso = false;
     private int? fixedProcesoId = null;
     private string fixedProcesoNombre = "";
@@ -71,6 +71,11 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
         !string.IsNullOrWhiteSpace(metaCumplir) &&
         !string.IsNullOrWhiteSpace(origen.GetDisplayName()) &&
         !string.IsNullOrWhiteSpace(tipo.GetDisplayName());
+    
+    private bool IsMetaCumplirPorcentual =>
+        !string.IsNullOrEmpty(metaCumplir) &&
+        MetaHelper.TryParsearMeta(metaCumplir, out _, out bool isPorc) &&
+        isPorc;
 
     /// <summary>
     /// Validación del Paso 2: Objetivos (al menos uno seleccionado)
@@ -171,7 +176,6 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
             nombre = updateRequest.Nombre;
             procesoId = updateRequest.ProcesoId;
             metaCumplir = updateRequest.MetaCumplir;
-            metaReal = updateRequest.MetaReal;
             origen = updateRequest.Origen;
             tipo = updateRequest.Tipo;
             observacion = updateRequest.Observacion;
@@ -303,12 +307,13 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
                 (
                     Nombre : nombre,
                     MetaCumplir : metaCumplir,
-                    MetaReal : metaReal,
                     Origen :origen,
                     Tipo : tipo,
                     Observacion: observacion,
                     ProcesoId : procesoId,
                     ObjetivoIds : objetivoIdsSelected,
+                    ValorTotal:valorTotal,
+                    ValorReal:valorReal,
                     MetaCumplirPorArea : metaCumplirPorArea
                 );
 
@@ -325,17 +330,18 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
             }
             else if (Content is UpdateIndicadorRequest updateReq)
             {
-                var request = new UpdateIndicadorCommand
+                var request = new UpdateIndicadorCommand    
                 (
                     Id : updateReq.Id,
                     Nombre : nombre,
                     MetaCumplir: metaCumplir,
-                    MetaReal : metaReal,
                     Origen : origen,
                     Tipo : tipo,
                     Observacion : observacion,
                     ProcesoId : procesoId,
                     ObjetivoIds : objetivoIdsSelected.Any() ? objetivoIdsSelected : null,
+                    ValorTotal:valorTotal,
+                    ValorReal:valorReal,
                     MetaCumplirPorArea : metaCumplirPorArea
                 );
 
@@ -413,10 +419,6 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
     private bool IsMetaCumplirValid =>
         !string.IsNullOrWhiteSpace(metaCumplir) &&
         MetaHelper.TryParsearMeta(metaCumplir, out _, out _);
-
-    private bool IsMetaRealValid =>
-        string.IsNullOrWhiteSpace(metaReal) || 
-        MetaHelper.TryParsearMeta(metaReal, out _, out _);
     
     private Result<Unit> ValidateStep1()
     {
@@ -430,9 +432,6 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
 
         if (!IsMetaCumplirValid)
             errors.Add(new ErrorDetail { Message = "La meta a cumplir no tiene un formato válido (ej: 90, 90.5%)." });
-
-        if (!IsMetaRealValid)
-            errors.Add(new ErrorDetail { Message = "La meta real no tiene un formato válido." });
         
         return errors.Any() ? Result<Unit>.Fail(errors) : Result<Unit>.Success(Unit.Value);
     }

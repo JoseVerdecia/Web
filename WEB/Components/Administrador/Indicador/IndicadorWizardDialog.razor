@@ -46,10 +46,10 @@ else
                                             Placeholder="Ej: Indicador#1"/>
                         </FluentStack>
 
-                        <FluentStack Orientation="@(isSmallScreen ? Orientation.Vertical : Orientation.Horizontal)" VerticalGap="16">
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" Orientation="@(isSmallScreen ? Orientation.Vertical : Orientation.Horizontal)" VerticalGap="16">
                             @if (isJefeProceso)
                             {
-                                <FluentStack Orientation="Orientation.Vertical">
+                                <FluentStack Style="width: fit-content" Orientation="Orientation.Horizontal">
                                     <FluentLabel>Proceso asignado:</FluentLabel>
                                     <FluentLabel Weight="FontWeight.Bolder">@fixedProcesoNombre</FluentLabel>
                                 </FluentStack>
@@ -74,26 +74,7 @@ else
                                                  Placeholder="Observaciones adicionales"/>
                             </FluentStack>
                         </FluentStack>
-
-                        <FluentStack Orientation="@(isSmallScreen ? Orientation.Vertical : Orientation.Horizontal)" VerticalGap="16">
-                            <FluentStack Orientation="Orientation.Vertical" Style="@(isSmallScreen ? "width: 100%;" : "width: 50%;")">
-                                <FluentTextField Style="width: 100%;"
-                                                 @bind-Value="metaCumplir"
-                                                 Label="Meta a cumplir"
-                                                 Required="true"
-                                                 Pattern="^\d+(\.\d+)?%?$"
-                                                 Placeholder="Ej: 95%"/>
-                            </FluentStack>
-
-                            <FluentStack Orientation="Orientation.Vertical" Style="@(isSmallScreen ? "width: 100%;" : "width: 50%;")">
-                                <FluentTextField Style="width: 100%;"
-                                                 @bind-Value="metaReal"
-                                                 Label="Meta real"
-                                                 Pattern="^\d+(\.\d+)?%?$"
-                                                 Placeholder="Ej: 90%"/>
-                            </FluentStack>
-                        </FluentStack>
-
+                        
                         <FluentStack Orientation="@(isSmallScreen ? Orientation.Vertical : Orientation.Horizontal)" VerticalGap="16">
                             <FluentStack Orientation="Orientation.Vertical" Style="@(isSmallScreen ? "width: 100%;" : "width: 50%;")">
                                 <EnumSelect TEnum="@IndicadorOrigen"
@@ -108,6 +89,31 @@ else
                                             Label="Tipo"
                                             Placeholder="Esencial o Necesario"/>
                             </FluentStack>
+                        </FluentStack>
+                        
+                        <FluentStack Orientation="@(isSmallScreen ? Orientation.Vertical : Orientation.Horizontal)" VerticalGap="16">
+                            <FluentStack Orientation="Orientation.Vertical" Style="@(isSmallScreen ? "width: 100%;" : "width: 50%;")">
+                                <FluentTextField Style="width: 100%;"
+                                                 @bind-Value="metaCumplir"
+                                                 Label="Meta a cumplir"
+                                                 Required="true"
+                                                 Pattern="^\d+(\.\d+)?%?$"
+                                                 Placeholder="Ej: 95%"/>
+                            </FluentStack>
+                            
+                            @if (IsMetaCumplirPorcentual)
+                            {
+                                <FluentStack Orientation="@(isSmallScreen ? Orientation.Vertical : Orientation.Horizontal)" VerticalGap="16">
+                                    <FluentStack Orientation="Orientation.Vertical">
+                                        <FluentTextField @bind-Value="valorTotal" Label="Valor Total"
+                                                         Placeholder="Ej: Visitas año anterior"/>
+                                    </FluentStack>
+                                    <FluentStack Orientation="Orientation.Vertical">
+                                        <FluentTextField @bind-Value="valorReal" Label="Valor Real"
+                                                         Placeholder="Ej: Nuevas visitas año actual"/>
+                                    </FluentStack>
+                                </FluentStack>
+                            }
                         </FluentStack>
                     </FluentStack>
                 </ChildContent>

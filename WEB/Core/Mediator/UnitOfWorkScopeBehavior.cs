@@ -22,14 +22,14 @@ public class UnitOfWorkScopeBehavior<TRequest, TResponse> : IPipelineBehavior<TR
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
     {
-        // Crear un nuevo DbContext para este request
+        
         await using var dbContext = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
-        // Crear UnitOfWork con ese DbContext
+      
         var unitOfWork = new UnitOfWork(dbContext);
         var scope = new UnitOfWorkScope(unitOfWork);
 
-        // Establecer el ámbito actual (accesible por el accesor)
+      
         UnitOfWorkAccessor.CurrentScope = scope;
 
         try

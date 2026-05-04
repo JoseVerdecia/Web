@@ -1,0 +1,117 @@
+﻿@page "/proyecto-estrategico/objetivos"
+@using Microsoft.FluentUI.AspNetCore.Components
+@using WEB.Data.IRepository
+@using WEB.Models
+@using Microsoft.EntityFrameworkCore
+@using WEB.Core.Mediator
+@using WEB.Enums
+@using WEB.Services
+@using WEB.Interfaces
+@rendermode InteractiveServer
+@inject IUnitOfWorkAccessor UnitOfWorkAccessor
+@inject NavigationManager NavigationManager
+@inject IMediator Mediator
+@inject IJSRuntime JSRuntime
+@inject ExcelExportService ExportService
+
+<PageTitle>Proyecto Estratégico - Objetivos</PageTitle>
+
+<FluentGridItem Justify="JustifyContent.FlexEnd">
+    <FluentMenuButton Style="margin-right: 10px;" Text="Exportar">
+        <FluentMenuItem Disabled="@(!objetivos.Any())" OnClick="ExportToExcel">Excel</FluentMenuItem>
+        <FluentMenuItem Disabled="@(!objetivos.Any())" OnClick="ExportToPdf">PDF</FluentMenuItem>
+    </FluentMenuButton>
+    <FluentButton Appearance="Appearance.Accent"
+                  OnClick="@(() => NavigationManager.NavigateTo("/objetivos"))"
+                  IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+        Volver
+    </FluentButton>
+</FluentGridItem>
+
+<FluentLayout>
+    <FluentGrid Spacing="4">
+        <FluentGridItem xs="12">
+            @if (isLoadingObjetivos)
+            {
+                <FluentProgressRing />
+            }
+            else if (!objetivos.Any())
+            {
+                <FluentLabel>No hay objetivos registrados.</FluentLabel>
+            }
+            else
+            {
+                <FluentCard Style="margin-top:10px;" Height="fit-content">
+                    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold" Style="margin-bottom: 12px; display: block;">
+                        @($"“{currentObjetivoNombre}”")
+                    </FluentLabel>
+                </FluentCard>
+               
+
+                <FluentTabs @bind-ActiveTabId="activeTabId"
+                            OnTabChange="HandleTabChange">
+                    @foreach (var objetivo in objetivos)
+                    {
+                        var objetivoId = objetivo.Id;
+                        var tabId = $"tab-{objetivoId}";
+                        <FluentTab Id="@tabId" Label="@($"Objetivo#{objetivo.NumeroObjetivo}")">
+                            @if (loadingIndicadores.Contains(objetivoId))
+                            {
+                                <FluentProgressRing />
+                            }
+                            else if (!indicadoresPorObjetivo.ContainsKey(objetivoId))
+                            {
+                                <FluentLabel>No hay indicadores para este objetivo.</FluentLabel>
+                            }
+                            else
+                            {
+                                var indicadores = indicadoresPorObjetivo[objetivoId];
+                                
+                                var indicadoresPorProceso = indicadores
+                                    .Where(i => i.Proceso != null)
+                                    .GroupBy(i => i.Proceso.Id)
+                                    .Select(g => new { Proceso = g.First().Proceso, Items = g.ToList() })
+                                    .OrderBy(x => x.Proceso.Nombre)
+                                    .ToList();
+
+                                <table class="pe-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Proceso</th>
+                                            <th>INDICADOR</th>
+                                            <th>@DateTime.Now.Year</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach (var grupo in indicadoresPorProceso)
+                                    {
+                                        var proceso = grupo.Proceso;
+                                        var lista = grupo.Items;
+
+                                        for (int i = 0; i < lista.Count; i++)
+                                        {
+                                            var ind = lista[i];
+                                            <tr class="fila-grupo @(i == 0 ? "primera-fila-grupo" : "") @(i == lista.Count - 1 ? "ultima-fila-grupo" : "")">
+                                                @if (i == 0)
+                                                {
+                                                    <td class="celda-proceso" rowspan="@lista.Count">
+                                                        <div class="contenedor-proceso">@proceso.Nombre</div>
+                                                    </td>
+                                                }
+                                                <td class="@(ind.Tipo == IndicadorTipo.Escencial ? "fila-escencial" : "")">
+                                                    @ind.Nombre
+                                                </td>
+                                                <td class="celda-meta">@ind.MetaCumplir</td>
+                                            </tr>
+                                        }
+                                    }
+                                    </tbody>
+                                </table>
+                            }
+                        </FluentTab>
+                    }
+                </FluentTabs>
+            }
+        </FluentGridItem>
+    </FluentGrid>
+</FluentLayout>

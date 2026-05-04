@@ -5,7 +5,7 @@
 @using Align = ApexCharts.Align
 
 <FluentCard Appearance="Appearance.Filled" Style="padding: 20px; background: var(--neutral-layer-2); height: 100%;">
-    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">MES vs Internos</FluentLabel>
+    <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">MES - INTERNOS</FluentLabel>
 
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 16px 0;">
         <StatCard Value="@($"{Data.PorcentajeMes}%")" Label="MES" Color="Color.Warning" />
@@ -16,12 +16,12 @@
         <ApexChart TItem="OrigenBarData" Options="@ChartOptions">
             <ApexPointSeries TItem="OrigenBarData"
                              Items="@ChartData"
-                             Name="MES (Externo)"
+                             Name="MES"
                              XValue="@(e => e.Label)"
                              YValue="@(e => e.Mes)" />
             <ApexPointSeries TItem="OrigenBarData"
                              Items="@ChartData"
-                             Name="Internos"
+                             Name="INTERNOS"
                              XValue="@(e => e.Label)"
                              YValue="@(e => e.Interno)" />
         </ApexChart>

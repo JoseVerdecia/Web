@@ -1,0 +1,38 @@
+﻿/* Mantén tu tabla con border-collapse si lo deseas */
+.pe-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    border: 1px solid #d0d0d0;
+    table-layout: auto; /* o fixed si quieres anchos fijos */
+}
+
+/* Celda que usa rowspan */
+.celda-proceso {
+    vertical-align: middle;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.85rem;
+    width: 220px;
+    border-left: 1px solid var(--neutral-stroke-divider-rest);
+    border-right: 1px solid var(--neutral-stroke-divider-rest);
+    background-color: var(--neutral-fill-stealth-rest);
+    padding: 0; /* quitar padding para que el contenedor ocupe 100% */
+}
+
+/* Contenedor interno que ocupa toda la celda y centra el contenido */
+.contenedor-proceso {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px; /* si quieres espacio interno */
+    box-sizing: border-box;
+}
+
+/* Asegura que las filas se ajusten al contenido */
+.pe-table td, .pe-table th {
+    padding: 6px 8px;
+    border: 1px solid #d0d0d0;
+    vertical-align: middle;
+}

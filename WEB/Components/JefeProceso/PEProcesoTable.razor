@@ -1,0 +1,46 @@
+﻿@using WEB.Core.Mediator
+@using WEB.Enums
+@inject IMediator Mediator
+
+@if (isLoading)
+{
+    <FluentProgressRing />
+}
+else if (!indicadores.Any())
+{
+    <FluentLabel>No hay indicadores para este proceso.</FluentLabel>
+}
+else
+{
+    <table class="pe-table">
+        <thead>
+        <tr>
+            <th>OE</th>
+            <th>INDICADOR</th>
+            <th>@DateTime.Now.Year</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var ind in indicadores.OrderBy(i => i.Id))
+        {
+            var esEscencial = ind.Tipo == IndicadorTipo.Escencial;
+            <tr>
+                <td class="celda-oe">
+                    @if (ind.Objetivos.Any())
+                    {
+                        @string.Join("/", ind.Objetivos.OrderBy(o => o.NumeroObjetivo).Select(o => o.NumeroObjetivo))
+                    }
+                    else
+                    {
+                        <span class="sin-oe">—</span>
+                    }
+                </td>
+                <td class="@(esEscencial ? "fila-escencial" : "")">
+                    @ind.Nombre
+                </td>
+                <td class="celda-meta">@ind.MetaCumplir</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

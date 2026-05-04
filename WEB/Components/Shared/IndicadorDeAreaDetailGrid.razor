@@ -1,5 +1,6 @@
 ﻿@using WEB.Common
 @using WEB.Core.Extensions
+@using WEB.Enums
 @using WEB.Features.IndicadorDeArea.Dto
 @if (Areas == null || !Areas.Any())
 {
@@ -11,8 +12,10 @@ else
 {
     <FluentDataGrid Items="@FilteredItems.AsQueryable()"
                     ResizableColumns="true"
+                    DisplayMode="DataGridDisplayMode.Table"
+                     ShowHover="true"
                     Pagination="@paginationState"
-                    GridTemplateColumns="1fr 0.5fr 0.5fr 1.5fr"
+                    GridTemplateColumns="@(IndicadorEsPorcentual ? "1fr 0.5fr 0.5fr 0.5fr 0.5fr 1.5fr" : "1fr 0.5fr 0.5fr 1.5fr")"
                     MultiLine="true"
                     Style="width: 100%;">
 
@@ -32,10 +35,39 @@ else
                 </ChildContent>
             </TemplateColumn>
         
-            <PropertyColumn Property="@(a => a.MetaCumplir)" Title="Cumplir" Align="Align.Center" />
+            <PropertyColumn Property="@(a => a.MetaCumplir)" Title="Meta" Align="Align.Center" />
+            
+            @if (IndicadorEsPorcentual)
+            {
+                <PropertyColumn Property="@(a => a.ValorTotal)" Title="Valor Total" Align="Align.Center" />
+                <PropertyColumn Property="@(a => a.ValorReal)" Title="Valor Real" Align="Align.Center" />
+            }
         
             <TemplateColumn Title="Real" Align="Align.Center">
                 @(context.MetaReal ?? "—")
+            </TemplateColumn>
+            
+            <TemplateColumn Title="Tipo"
+                            Align="Align.Center"
+                            Filtered="@(!string.IsNullOrWhiteSpace(tipoFilter))">
+                <ColumnOptions>
+                    <FluentSelect Items="@tipoOptions"
+                                  Position="SelectPosition.Below"
+                                  Value="@tipoFilter"
+                                  ValueChanged="@(async v => { tipoFilter = v; await ResetPagination(); })"
+                                  OptionValue="opt => opt.Value"
+                                  OptionText="opt => opt.Text"
+                                  Placeholder="Filtrar tipo"/>
+                    <FluentButton Appearance="Appearance.Outline"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                                  OnClick="ClearTipoFilter"
+                                  Title="Limpiar filtro"/>
+                </ColumnOptions>
+                <ChildContent>
+                    <FluentBadge Appearance="@(context.Tipo == AreaTipo.Facultad ? Appearance.Accent : Appearance.Neutral)">
+                        @context.Tipo.GetDisplayName()
+                    </FluentBadge>
+                </ChildContent>
             </TemplateColumn>
         
             <TemplateColumn Title="Evaluación"
@@ -76,9 +108,13 @@ else
 
 @code {
     [Parameter] public List<IndicadorDeAreaDto> Areas { get; set; } = new();
+    [Parameter] public bool IndicadorEsPorcentual { get; set; }
     private string nameFilter = string.Empty;
     private string? evaluacionFilter;
     private List<SelectOption<string?>> evaluacionOptions = new();
+    private string? tipoFilter;
+    private List<SelectOption<string?>> tipoOptions = new();
+
     
     private PaginationState paginationState = new() { ItemsPerPage = 10 };
 
@@ -95,26 +131,28 @@ else
                 Text = e.GetDisplayName() 
             })
             .ToList();
+
+    tipoOptions = Enum.GetValues<AreaTipo>()
+    .Select(t => new SelectOption<string?>
+    {
+    Value = t.ToString(),
+    Text = t.GetDisplayName()
+    })
+    .ToList();
     }
 
     private IEnumerable<IndicadorDeAreaDto> FilteredItems =>
         Areas.Where(i =>
-        
-            (string.IsNullOrEmpty(nameFilter) || 
-             i.AreaNombre.Contains(nameFilter, StringComparison.OrdinalIgnoreCase)) &&
-            
-            (string.IsNullOrEmpty(evaluacionFilter) || 
-             i.Evaluacion.GetDisplayName() == evaluacionFilter) /*&&
-            
-            (string.IsNullOrEmpty(tipoFilter) || 
-             i.Tipo == tipoFilter) &&
-            
-            (string.IsNullOrEmpty(origenFilter) || 
-             i.Origen == origenFilter) &&
-            
-            (string.IsNullOrEmpty(procesoFilter) || 
-             i.ProcesoNombre == procesoFilter)*/
-        );
+            (string.IsNullOrEmpty(nameFilter) || i.AreaNombre.Contains(nameFilter, StringComparison.OrdinalIgnoreCase)) &&
+            (string.IsNullOrEmpty(evaluacionFilter) || i.Evaluacion.GetDisplayName() == evaluacionFilter) &&
+            (string.IsNullOrEmpty(tipoFilter) || i.Tipo.ToString() == tipoFilter));
+
+
+    private async Task ClearTipoFilter()
+    {
+        tipoFilter = null;
+        await ResetPagination();
+    }
     
     private async Task ResetPagination()
     {

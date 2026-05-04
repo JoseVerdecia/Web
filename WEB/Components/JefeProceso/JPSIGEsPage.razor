@@ -1,0 +1,92 @@
+﻿@page "/indicadores/jefeProceso/siges"
+@layout AppLayout
+@attribute [Authorize(Roles = AppRoles.JefeProceso)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Features.Proceso.Get
+@using WEB.Interfaces
+@using WEB.Services
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@inject ExcelExportService ExcelExportService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<PageTitle>Proyecto Estratégico</PageTitle>
+<FluentLayout>
+    <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" Orientation="Orientation.Horizontal" Width="100%">
+        <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@procesoNombre" />
+        
+        <FluentStack Width="fit-content" Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End">
+            <FluentMenuButton Text="Exportar">
+                <FluentMenuItem OnClick="@ExportToExcel">Excel</FluentMenuItem>
+                <FluentMenuItem OnClick="@ExportToPdf">PDF</FluentMenuItem>
+            </FluentMenuButton>
+            <FluentButton Appearance="Appearance.Accent"
+                          OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso"))"
+                          IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                Volver
+            </FluentButton>
+        </FluentStack>
+    </FluentStack>
+
+    <FluentDivider Style="margin: 1rem 0;" />
+
+    @if (isLoadingProceso)
+    {
+        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 60px;">
+            <FluentProgressRing />
+        </FluentStack>
+    }
+    else if (procesoId == null)
+    {
+        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 60px;">
+            <FluentLabel Typo="Typography.Subject">No se encontró su proceso asociado.</FluentLabel>
+        </FluentStack>
+    }
+    else
+    {
+        <ProcesoSIGEsTable ProcesoId="procesoId.Value" />
+    }
+</FluentLayout>
+
+@code {
+    private int? procesoId;
+    private string procesoNombre = "Cargando...";
+    private bool isLoadingProceso = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await CurrentUser.GetUserAsync();
+        if (user == null)
+        {
+            isLoadingProceso = false;
+            return;
+        }
+
+        var result = await Mediator.Send(new GetProcesoByJefeIdRequest(user.Id));
+        if (result.IsSuccess && result.Value is not null)
+        {
+            procesoId = result.Value.Id;
+            procesoNombre = result.Value.Nombre;
+        }
+        isLoadingProceso = false;
+    }
+
+    private async Task ExportToExcel()
+    {
+        if (procesoId == null) return;
+        var data = await ExcelExportService.ExportProcesoToExcelSIEGEAsync(procesoId.Value);
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"Proceso_{procesoId}.xlsx", Convert.ToBase64String(data));
+    }
+
+    private async Task ExportToPdf()
+    {
+        if (procesoId == null) return;
+        var data = await ExcelExportService.ExportProcesoToPdfSIEGEAsync(procesoId.Value);
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"Proceso_{procesoId}.pdf", Convert.ToBase64String(data));
+    }
+}

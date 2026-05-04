@@ -4,8 +4,11 @@
 @using WEB.Components.Administrador.Indicador
 @using WEB.Components.Shared
 @using WEB.Core.Mediator
+@using WEB.Data
 @using WEB.Services
+@attribute [Authorize(Roles=AppRoles.Administrador)]
 @inject IDialogService DialogService
+@inject NavigationManager NavigationManager
 @inject IMediator Mediator
 @attribute [Authorize]
 @inject ExcelExportService ExcelExportService
@@ -13,6 +16,7 @@
 @rendermode  InteractiveServer
 
 <PageTitle>Indicador</PageTitle>
+
 @if (!string.IsNullOrEmpty(errorMessage))
 {
     <FluentMessageBar Title="Error" Intent="MessageIntent.Error" AllowDismiss="true">
@@ -20,132 +24,112 @@
     </FluentMessageBar>
 }
 
-
 <FluentLayout>
-    <div class="page-container" style="height: calc(100vh - 120px); display: flex; flex-direction: column;">
-        
-        <div class="page-header" style="margin-bottom: 16px; flex-shrink: 0;">
-            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
-            <Title Icono="@(new Size24.ArrowTrendingLines())" ValueTitle="Indicadores"></Title>
-            
-            <FluentStack Width="inline-block" HorizontalAlignment="HorizontalAlignment.End">
-                @if (ActiveTabId == "tab-activos")
-                {
-                   
-                    
-                    <FluentMenuButton Text="Exportar">
-                        <FluentMenuItem Disabled="@(!gridItems.Any())" OnClick="ExportIndicadores"> Excel</FluentMenuItem>
-                        <FluentMenuItem Disabled="@(!gridItems.Any())" OnClick="ExportIndicadoresPdf"> PDF</FluentMenuItem>
-                    </FluentMenuButton>
-                        <FluentButton   OnClick="EliminarSeleccionados"
-                                        Appearance="Appearance.Outline"
-                                        Disabled="@(indicadorDataGrid == null || !indicadorDataGrid.HasSelection)"
-                                        IconStart="@(new Icons.Regular.Size16.Delete())">
-                            Eliminar
-                        </FluentButton>
-                        
-                        <FluentButton   OnClick="@OpenCreateWizardDialog"
-                                        Appearance="Appearance.Accent"
-                                        IconStart="@(new Icons.Regular.Size20.AddSquare())">
-                            Crear
-                        </FluentButton>
-                   
-                    
-                }
-                else
-                {
-                    <FluentButton  OnClick="@RestoreSelectedIndicadores"
-                                   Disabled="@(deletedDataGrid == null || !deletedDataGrid.HasSelection)"
-                                   IconStart="@(new Icons.Regular.Size20.ArrowSync().WithColor(Color.Accent))">
-                        Restaurar
-                    </FluentButton>
-                    
-                    <FluentButton 
-                                  OnClick="@DeleteSelectedPermanently"
-                                  Disabled="@(selectedDeletedIds.Count == 0)"
-                                  IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Error))">
-                        Eliminar
-                    </FluentButton>
-                }
-            </FluentStack>
-            </FluentStack>
-        </div>
-        
-        <FluentDivider Style="margin: 1rem 0;" />
-        
-        <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
-            <FluentTab Id="tab-activos" Label="Activos">
-                @if (isLoading)
-                {
-                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
-                        <FluentProgressRing />
-                    </FluentStack>
-                }
-                else
-                {
-                    <FluentSplitter Orientation="Orientation.Horizontal"
-                                    Panel1Size="60%"
-                                    Panel2Size="40%"
-                                    Panel1MinSize="400px"
-                                    Panel2MinSize="250px"
-                                    Collapsed="@(selectedIndicador == null)"
-                                    BarSize="4">
-                        <Panel1>
-                            <div style="height: 100%; overflow-x:auto;width:100%;display: flex; flex-direction: column;  min-height: 0;">
-                                <IndicadorDataGrid
-                                    @ref="indicadorDataGrid"
-                                    Items="gridItems"
-                                    OnEdit="OpenEditDialog"
-                                    OnDelete="DeleteIndicador"
-                                    OnViewDetails="ViewIndicadorDetails"
-                                    OnRowSelected="HandleRowSelected"
-                                    SelectionChanged="OnGridSelectionChanged" />
-                            </div>
-                        </Panel1>
-                        <Panel2>
-                            <div style="height: 100%; display: flex; flex-direction: column; background: var(--neutral-layer-1);">
-                                @if (selectedIndicador != null)
-                                {
-                                    <header style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--neutral-stroke); flex-shrink: 0;">
-                                        <FluentButton Appearance="Appearance.Stealth"
-                                                      IconStart="@(new Icons.Regular.Size16.Dismiss())"
-                                                      OnClick="() => selectedIndicador = null"
-                                                      Title="Cerrar panel" />
-                                    </header>
-                                    <div style="flex: 1; overflow: auto; padding: 16px;">
-                                        <IndicadorDeAreaDetailGrid Areas="selectedIndicador.Areas" />
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--neutral-foreground-hint);">
-                                        <FluentLabel>Seleccione un indicador para ver sus áreas</FluentLabel>
-                                    </div>
-                                }
-                            </div>
-                        </Panel2>
-                    </FluentSplitter>
-                }
-            </FluentTab>
+  
+    <FluentGrid Spacing="4" Style="width: 100%;">
+        <FluentGridItem xs="12">
+            <FluentGrid Justify="JustifyContent.SpaceBetween" AlignItems="Alignment.Center" Spacing="3">
+                
+                
+                <FluentGridItem xs="12" md="6">
+                    <Title Icono="@(new Size24.ArrowTrendingLines())" ValueTitle="Indicadores"></Title>
+                </FluentGridItem>
 
-            <FluentTab Id="tab-papelera" Label="Papelera">
-                @if (isLoadingPapelera)
-                {
-                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
-                        <FluentProgressRing />
+             
+                <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
+               
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" Gap="8" Style="flex-wrap: wrap;">
+                        @if (ActiveTabId == "tab-activos")
+                        {
+                            <FluentMenuButton Text="Exportar">
+                                <FluentMenuItem Disabled="@(!gridItems.Any())" OnClick="ExportIndicadores"> Excel</FluentMenuItem>
+                                <FluentMenuItem Disabled="@(!gridItems.Any())" OnClick="ExportIndicadoresPdf"> PDF</FluentMenuItem>
+                            </FluentMenuButton>
+                            
+                            <FluentButton   
+                                OnClick="EliminarSeleccionados"
+                                Appearance="Appearance.Outline"
+                                Disabled="@(indicadorDataGrid == null || !indicadorDataGrid.HasSelection)"
+                                IconStart="@(new Icons.Regular.Size16.Delete())">
+                                Eliminar
+                            </FluentButton>
+                            
+                            <FluentButton OnClick="@(() => NavigationManager.NavigateTo("/indicadores/form"))"
+                                          Appearance="Appearance.Accent"
+                                          IconStart="@(new Icons.Regular.Size20.AddSquare())">
+                                Crear
+                            </FluentButton>
+                        }
+                        else
+                        {
+                            <FluentButton  
+                                OnClick="@RestoreSelectedIndicadores"
+                                Disabled="@(deletedDataGrid == null || !deletedDataGrid.HasSelection)"
+                                IconStart="@(new Icons.Regular.Size20.ArrowSync().WithColor(Color.Accent))">
+                                Restaurar
+                            </FluentButton>
+                            
+                            <FluentButton 
+                                OnClick="@DeleteSelectedPermanently"
+                                Disabled="@(selectedDeletedIds.Count == 0)"
+                                IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Error))">
+                                Eliminar
+                            </FluentButton>
+                        }
                     </FluentStack>
-                }
-                else
-                {
-                    <div style="overflow-x: auto; width: 100%;">
-                    <IndicadorDeletedDataGrid @ref="deletedDataGrid"
-                                              Items="deletedGridItems"
-                                              OnRestore="RestoreSingleIndicador"
-                                              OnDeletePermanently="DeletePermanently"
-                                              SelectionChanged="OnDeletedGridSelectionChanged" />
-                    </div>
-                }
-            </FluentTab>
-        </FluentTabs>
-    </div>
+                </FluentGridItem>
+            </FluentGrid>
+        </FluentGridItem>
+
+        <!-- Separador -->
+        <FluentGridItem xs="12">
+            <FluentDivider Style="margin: 0.5rem 0;" />
+        </FluentGridItem>
+        
+        <FluentGridItem xs="12">
+            <FluentTabs Height="200px" Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
+                <FluentTab Id="tab-activos" Label="Activos">
+                    @if (isLoading)
+                    {
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                            <FluentProgressRing />
+                        </FluentStack>
+                    }
+                    else
+                    {
+                                <div style="height: fit-content; overflow-x:auto;width:100%;display: flex; flex-direction: column;  min-height: 0;">
+                                    <IndicadorDataGrid
+                                        @ref="indicadorDataGrid"
+                                        AreasBaseUrl="/indicadores"
+                                        EditBaseUrl="/indicadores/jefeProcesoform"
+                                        Items="gridItems"
+                                        OnDelete="DeleteIndicador"
+                                        OnViewDetails="ViewIndicadorDetails"
+                                        OnRowSelected="HandleRowSelected"
+                                        SelectionChanged="OnGridSelectionChanged" />
+                                </div>
+                    }
+                </FluentTab>
+
+                <FluentTab Id="tab-papelera" Label="Papelera">
+                    @if (isLoadingPapelera)
+                    {
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                            <FluentProgressRing />
+                        </FluentStack>
+                    }
+                    else
+                    {
+                        <div style="overflow-x: auto; width: 100%;">
+                            <IndicadorDeletedDataGrid @ref="deletedDataGrid"
+                                                      Items="deletedGridItems"
+                                                      OnRestore="RestoreSingleIndicador"
+                                                      OnDeletePermanently="DeletePermanently"
+                                                      SelectionChanged="OnDeletedGridSelectionChanged" />
+                        </div>
+                    }
+                </FluentTab>
+            </FluentTabs>
+        </FluentGridItem>
+    </FluentGrid>
 </FluentLayout>

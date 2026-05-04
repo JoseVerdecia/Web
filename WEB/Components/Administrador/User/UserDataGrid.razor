@@ -12,13 +12,14 @@
                 ItemsProvider="usersProvider"
                 Pagination="@paginationState"
                 ResizableColumns=true
-                Style="width: 100%;">
+                Style="width: 100%;height: 200px">
 
 
     <PropertyColumn Property="@(u => u.FullName)" Title="Nombre completo" Sortable="true"
                     Filtered="!string.IsNullOrWhiteSpace(nameFilter)">
         <ColumnOptions>
             <FluentSearch @bind-Value="nameFilter"
+                          @bind-Value:after="OnNameFilterChanged"
                           Placeholder="Filtrar por nombre..."
                           Immediate="true" />
         </ColumnOptions>
@@ -31,6 +32,7 @@
             
             <FluentSelect @bind-Value="roleFilter"
                           Items="@roleOptions"
+                           Position="SelectPosition.Below"
                           OptionValue="@(o => o.Value)"
                           OptionText="@(o => o.Value)"
                           NullText="Todos los roles"
@@ -79,13 +81,19 @@
                           Title="Ver detalles"
                           IconStart="@(new Icons.Regular.Size16.Eye())"
                           OnClick="() => ViewUserDetails(context)"/>
+            
         
+                
             @if (context.Role == AppRoles.UsuarioNormal || context.Role == AppRoles.JefeArea || context.Role == AppRoles.JefeProceso)
             {
                 <FluentButton Appearance="Appearance.Accent"
                               Title="Gestionar rol"
                               IconStart="@(new Icons.Regular.Size16.PersonAdd())"
                               OnClick="() => ManageUserRole(context)"/>
+                <FluentButton Appearance="Appearance.Accent"
+                              Title="Eliminar usuario"
+                              IconStart="@(new Icons.Regular.Size16.Delete())"
+                              OnClick="() => DeleteUserAsync(context)" />
             }
         </FluentStack>
     </TemplateColumn>

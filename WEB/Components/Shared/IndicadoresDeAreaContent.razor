@@ -1,0 +1,36 @@
+﻿@using WEB.Features.Indicador.Dto
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Features.Indicador.Get
+@inject IMediator Mediator
+
+@if (isLoading)
+{
+    <FluentProgressRing />
+}
+else if (indicador != null)
+{
+    <FluentLabel Typo="Typography.H3">@indicador.Nombre</FluentLabel>
+    <FluentBadge Appearance="Appearance.Accent">META: @indicador.MetaCumplir</FluentBadge>
+    <FluentBadge Appearance="Appearance.Accent">@indicador.Proceso.Nombre</FluentBadge>
+    <FluentDivider Orientation="Orientation.Horizontal" Role="DividerRole.Separator" Style="margin-top: 10px;margin-bottom: 10px;" />
+    <IndicadorDeAreaDetailGrid Areas="indicador.Areas" IndicadorEsPorcentual="@(indicador != null && indicador.IsMetaCumplirPorcentual)" />
+}
+else
+{
+    <FluentLabel Color="Color.Error">No se encontró el indicador.</FluentLabel>
+}
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private IndicadorDto? indicador;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Mediator.Send(new GetIndicadorByIdRequest(Id));
+        if (result.IsSuccess)
+            indicador = result.Value;
+        isLoading = false;
+    }
+}

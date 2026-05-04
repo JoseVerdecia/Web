@@ -2,6 +2,7 @@
 using Microsoft.FluentUI.AspNetCore.Components;
 using WEB.Core.Services;
 using WEB.Data;
+using WEB.Features.Users.Delete;
 using WEB.Features.Users.Dto;
 using WEB.Features.Users.GetAll;
 
@@ -170,6 +171,39 @@ public partial class UserDataGrid : ComponentBase
         if (!result.Cancelled)
         {
             await dataGrid.RefreshDataAsync(true);
+        }
+    }
+    private async Task OnNameFilterChanged()
+    {
+        if (dataGrid != null)
+        {
+            await dataGrid.RefreshDataAsync(true);
+        }
+    }
+    
+    private async Task DeleteUserAsync(UserDto user)
+    {
+        var dialog = await DialogService.ShowConfirmationAsync(
+            $"¿Eliminar al usuario {user.FullName} ({user.Email})?",
+            "Confirmar eliminación",
+            "Eliminar",
+            "Cancelar");
+
+        var dialogResult = await dialog.Result;
+        
+        if (dialogResult.Cancelled)
+            return;
+
+        var result = await Mediator.Send(new DeleteUserRequest(user.Id));
+        
+        if (result.IsSuccess)
+        {
+            _notification.ShowSuccess($"Usuario {user.FullName} eliminado correctamente.");
+            await dataGrid.RefreshDataAsync(true);   
+        }
+        else
+        {
+            _notification.ShowError(string.Join(", ", result.Errors));
         }
     }
 }

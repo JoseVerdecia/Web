@@ -1,0 +1,200 @@
+﻿/* Cabecera de cada sección de tabla (aunque no se usan en este componente, se mantienen por si acaso) */
+.tabla-seccion-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-left: 2px;
+}
+.tabla-seccion-titulo {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Tabla base */
+.siges-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    border: 1px solid var(--neutral-stroke-divider-rest);
+    overflow: hidden;
+}
+
+.siges-table thead tr {
+    background-color: var(--neutral-fill-stealth-rest);
+}
+.siges-table th:last-child,
+.siges-table td:last-child {
+    border-right: none;
+}
+.siges-table th {
+    padding: 9px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.78rem;
+    color: var(--neutral-foreground-2);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-right: 1px solid #d0d0d0;
+    border-bottom: 2px solid #c0c0c0;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.siges-table td {
+    padding: 8px 10px;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle;
+    line-height: 1.4;
+}
+
+.siges-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Solo la tabla cuantitativa alterna por bloques */
+.siges-table-cuantitativos tbody tr.fila-par {
+    background-color: #FFF2CA;
+}
+.siges-table-cuantitativos tbody tr:not(.fila-par) {
+    background-color: #ffffff;
+}
+
+/* Hover general */
+.siges-table tbody tr:hover {
+    background-color: #e2e2e2 !important;
+}
+
+/* Alineación de columnas numéricas */
+.col-meta,
+.col-real,
+.col-porcentaje {
+    text-align: center !important;
+}
+.siges-table th.col-meta,
+.siges-table th.col-real,
+.siges-table th.col-porcentaje {
+    text-align: center !important;
+}
+
+/* Anchos de columna – Tabla 1 */
+.col-id          { width: 50px;  text-align: center; }
+.col-oe          { width: 100px; }
+.col-indicador   { width: auto;  min-width: 200px; }
+.col-tipo        { width: 50px; }
+.col-meta        { width: 90px;  text-align: center; }
+.col-real        { width: 90px;  text-align: center; }
+.col-porcentaje  { width: 110px; text-align: center; }
+.col-evaluacion  { width: 130px; text-align: center; }
+
+/* Celdas especiales */
+.celda-id {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--neutral-foreground-2);
+}
+
+.celda-centro { text-align: center; }
+
+.celda-numero {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.celda-vacia {
+    color: #9C9C9C;
+}
+
+/* OE a que tributa */
+.oe-text {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--brand-color, #0078d4);
+    letter-spacing: 0.02em;
+}
+
+/* Nombre del indicador */
+.indicador-escencial {
+    font-weight: 600;
+}
+.indicador-necesario {
+    font-weight: 400;
+}
+
+/* Tipo de indicador (E / N) */
+.tipo-tag {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.tipo-e {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+}
+.tipo-n {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+.tipo-label {
+    font-size: 0.72rem;
+    color: var(--neutral-foreground-3);
+}
+
+/* Porcentaje – valor resaltado */
+.porcentaje-valor {
+    font-weight: 700;
+    font-size: 0.88rem;
+}
+
+/* Evaluación */
+.evaluacion-cell {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    line-height: 1.5;
+}
+.ev-sobrecumplido { background-color: #2563eb; }
+.ev-cumplido      { background-color: #16a34a; }
+.ev-parcial       { background-color: #eab308; }
+.ev-incumplido    { background-color: #ea580c; }
+.ev-noevaluado    { background-color: #9ca3af; }
+
+/* Tabla 2: Valores Cuantitativos */
+.siges-table-cuantitativos .fila-valor-base td {
+    border-bottom: 1px dashed var(--neutral-stroke-divider-rest);
+}
+
+.siges-table-cuantitativos .fila-valor-real td {
+    border-bottom: 2px solid var(--neutral-stroke-divider-rest);
+}
+
+.valor-label {
+    font-size: 0.82rem;
+    color: var(--neutral-foreground-2);
+    font-style: italic;
+}
+
+.col-id-cuant        { text-align: center; }
+.col-valores         { }
+.col-datos           { text-align: center; font-variant-numeric: tabular-nums; }
+.col-porcentaje-cuant { text-align: center; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .siges-table th,
+    .siges-table td {
+        padding: 6px 6px;
+        font-size: 0.78rem;
+    }
+}

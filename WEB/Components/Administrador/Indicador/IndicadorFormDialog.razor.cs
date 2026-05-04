@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components;
+﻿/*using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using WEB.Common;
 using WEB.Core.Extensions;
@@ -272,4 +272,4 @@ public partial class IndicadorFormDialog : ComponentBase, IDialogContentComponen
             .Where(a => !usedAreaIds.Contains(a.Id))
             .ToList();
     }
-}
+}*/

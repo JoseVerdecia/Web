@@ -1,110 +1,138 @@
 ﻿@page "/proceso"
+@attribute [Authorize(Roles=AppRoles.Administrador)]
+@using Microsoft.AspNetCore.Authorization
 @using WEB.Components.Administrador.Proceso
 @using WEB.Components.Shared
 @using WEB.Core.Mediator
+@using WEB.Data
 @using WEB.Services
 @rendermode RenderMode.InteractiveServer
 @inject IMediator Mediator
+@inject NavigationManager NavigationManager
 @inject ExcelExportService ExcelExportService
 @inject IJSRuntime JSRuntime
 @inject IDialogService DialogService
 
 <PageTitle>Procesos</PageTitle>
 <FluentLayout>
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
-        <FluentStack  Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
-            <Title ValueTitle="Procesos" Icono="@(new Icons.Filled.Size24.Flowchart())"/>
-
-            <FluentStack Width="inline-block" HorizontalAlignment="HorizontalAlignment.End">
-            @if (ActiveTabId == "tab-activos")
-            {
-               
-                <FluentMenuButton Text="Exportar">
-                    <FluentMenuItem Disabled="@(!activeProcesos.Any())" OnClick="ExportProcesos"> Excel</FluentMenuItem>
-                    <FluentMenuItem Disabled="@(!activeProcesos.Any())" OnClick="ExportProcesosPdf"> PDF</FluentMenuItem>
-                </FluentMenuButton>
-                <FluentButton
-                    Appearance="Appearance.Outline"
-                    OnClick="EliminarSeleccionados"
-                    Disabled="@(procesoDataGrid == null || !procesoDataGrid.HasSelection)"
-                    IconStart="@(new Icons.Regular.Size16.Delete())">
-                    Eliminar
-                </FluentButton>
-                
-               
-                <FluentButton 
-                    Appearance="Appearance.Accent"
-                    OnClick="@OpenCreateDialog" 
-                    IconStart="@(new Icons.Regular.Size20.AddSquare())">
-                    Crear
-                </FluentButton>
-                
-             
-           
-            }
-            else
-            {
-                
-                <FluentButton
-                    Appearance="Appearance.Outline"
-                    OnClick="@RestoreSelectedProcesos"
-                    Disabled="selectedDeletedProcesoIds.Count == 0"
-                    IconStart="@(new Icons.Regular.Size20.ArrowSync())">
-                    Restaurar
-                </FluentButton>
-                <FluentButton 
-                    OnClick="@DeleteSelectedPermanently"
-                    Disabled="@(selectedDeletedProcesoIds.Count == 0)"
-                    IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Error))">
-                    Eliminar
-                </FluentButton>
-                }
-            </FluentStack>
-        </FluentStack>
+    <!-- Grid principal: Spacing="5" equivale a 20px de separación -->
+    <FluentGrid Spacing="5" Style="width: 100%;">
         
-        <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
-            <FluentTab Id="tab-activos" Label="Activos">
-                @if (isLoadingActivos)
-                {
-                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
-                        <FluentProgressRing />
-                    </FluentStack>
-                }
-                else
-                {
-                    <div style="overflow-x: auto; width: 100%;">
-                    <div style="min-width: 700px;">
-                    <ProcesoDataGrid Procesos="activeProcesos"
-                                     OnEdit="OpenEditDialog"
-                                     @ref="@procesoDataGrid"
-                                     OnDelete="DeleteProceso"
-                                     SelectionChanged="OnGridSelectionChanged"
-                                     OnViewDetails="ViewProcesoDetails" />
-                    </div>
-                    </div>
-                }
-            </FluentTab>
+        <!-- CABECERA: Título y Botones -->
+        <FluentGridItem xs="12">
+            <FluentGrid Justify="JustifyContent.SpaceBetween" AlignItems="Alignment.Center" Spacing="3">
+                
+                <!-- Título: 100% ancho en móvil, tamaño automático en escritorio -->
+                <FluentGridItem xs="12" md="6">
+                    <Title ValueTitle="Procesos" Icono="@(new Icons.Filled.Size24.Flowchart())"/>
+                </FluentGridItem>
 
-            <FluentTab Id="tab-papelera" Label="Papelera">
-                @if (isLoadingPapelera)
-                {
-                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
-                        <FluentProgressRing />
+                <!-- Botones: 100% ancho en móvil, alineados a la derecha en escritorio -->
+                <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
+                    <!-- Stack con flex-wrap por si los botones no caben en tablets pequeñas -->
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" Gap="8" Style="flex-wrap: wrap;">
+                        @if (ActiveTabId == "tab-activos")
+                        {
+                            <FluentMenuButton Text="Exportar">
+                                <FluentMenuItem Disabled="@(!activeProcesos.Any())" OnClick="ExportProcesos"> Excel</FluentMenuItem>
+                                <FluentMenuItem Disabled="@(!activeProcesos.Any())" OnClick="ExportProcesosPdf"> PDF</FluentMenuItem>
+                            </FluentMenuButton>
+                            
+                            <FluentButton 
+                                Appearance="Appearance.Accent"
+                                OnClick="@(() => NavigationManager.NavigateTo("/proceso/indicadores"))">Datos SIGES</FluentButton>
+                            
+                            <FluentButton 
+                                Appearance="Appearance.Accent"
+                                OnClick="@(() => NavigationManager.NavigateTo("/proyecto-estrategico/procesos"))">
+                                PE
+                            </FluentButton>
+                            
+                            <FluentButton
+                                Appearance="Appearance.Outline"
+                                OnClick="EliminarSeleccionados"
+                                Disabled="@(procesoDataGrid == null || !procesoDataGrid.HasSelection)"
+                                IconStart="@(new Icons.Regular.Size16.Delete())">
+                                Eliminar
+                            </FluentButton>
+                            
+                            <FluentButton 
+                                Appearance="Appearance.Accent"
+                                OnClick="@OpenCreateDialog" 
+                                IconStart="@(new Icons.Regular.Size20.AddSquare())">
+                                Crear
+                            </FluentButton>
+                        }
+                        else
+                        {
+                            <FluentButton
+                                Appearance="Appearance.Outline"
+                                OnClick="@RestoreSelectedProcesos"
+                                Disabled="selectedDeletedProcesoIds.Count == 0"
+                                IconStart="@(new Icons.Regular.Size20.ArrowSync())">
+                                Restaurar
+                            </FluentButton>
+                            
+                            <FluentButton 
+                                OnClick="@DeleteSelectedPermanently"
+                                Disabled="@(selectedDeletedProcesoIds.Count == 0)"
+                                IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Error))">
+                                Eliminar
+                            </FluentButton>
+                        }
                     </FluentStack>
-                }
-                else
-                {
-                    <div style="overflow-x: auto; width: 100%;">
-                    <div style="min-width: 700px;">
-                    <ProcesoDeletedDataGrid Procesos="deletedProcesos"
-                                            SelectedIds="selectedDeletedProcesoIds"
-                                            SelectedIdsChanged="OnSelectedDeletedIdsChanged"
-                                            OnRestore="RestoreSingleProceso"
-                                            OnDeletePermanently="DeletePermanently" />
-                    </div>
-                    </div>
-                }
-            </FluentTab>
-        </FluentTabs>
-    </FluentStack>
+                </FluentGridItem>
+            </FluentGrid>
+        </FluentGridItem>
+
+        <!-- CONTENIDO: Tabs y Tablas -->
+        <FluentGridItem xs="12">
+            <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
+                <FluentTab Id="tab-activos" Label="Activos">
+                    @if (isLoadingActivos)
+                    {
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                            <FluentProgressRing />
+                        </FluentStack>
+                    }
+                    else
+                    {
+                        <!-- Patrón responsivo para tablas -->
+                        <div style="overflow-x: auto; width: 100%;">
+                            <div style="min-width: 700px;">
+                                <ProcesoDataGrid Procesos="activeProcesos"
+                                                 OnEdit="OpenEditDialog"
+                                                 @ref="@procesoDataGrid"
+                                                 OnDelete="DeleteProceso"
+                                                 SelectionChanged="OnGridSelectionChanged"
+                                                 OnViewDetails="ViewProcesoDetails" />
+                            </div>
+                        </div>
+                    }
+                </FluentTab>
+
+                <FluentTab Id="tab-papelera" Label="Papelera">
+                    @if (isLoadingPapelera)
+                    {
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                            <FluentProgressRing />
+                        </FluentStack>
+                    }
+                    else
+                    {
+                        <!-- Patrón responsivo para tablas -->
+                        <div style="overflow-x: auto; width: 100%;">
+                            <div style="min-width: 700px;">
+                                <ProcesoDeletedDataGrid Procesos="deletedProcesos"
+                                                        SelectedIds="selectedDeletedProcesoIds"
+                                                        SelectedIdsChanged="OnSelectedDeletedIdsChanged"
+                                                        OnRestore="RestoreSingleProceso"
+                                                        OnDeletePermanently="DeletePermanently" />
+                            </div>
+                        </div>
+                    }
+                </FluentTab>
+            </FluentTabs>
+        </FluentGridItem>
+    </FluentGrid>
 </FluentLayout>

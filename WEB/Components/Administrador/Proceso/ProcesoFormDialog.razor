@@ -6,10 +6,14 @@
 <FluentDialogBody>
     <FluentStack Orientation="Orientation.Vertical" VerticalGap="15" Style="width: 100%;">
         <FluentLabel Typo="Typography.PaneHeader">@TitleText</FluentLabel>
-        <FluentTextField @bind-Value="nombre"
-                         Label="Nombre del proceso"
-                         Required="true"
-                         Placeholder="Ej: Pre-Grado"/>
+        <FluentTextArea @bind-Value="nombre"
+                        Autofocus="true"
+                        Rows="6"
+                        Cols="62"
+                        Label="Nombre del proceso"
+                        Resize="TextAreaResize.Vertical"
+                        Required="true"
+                        Placeholder="Ej: Pre-Grado"/>
     </FluentStack>
 </FluentDialogBody>
 

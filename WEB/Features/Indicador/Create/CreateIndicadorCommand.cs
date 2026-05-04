@@ -8,12 +8,13 @@ namespace WEB.Features.Indicador.Create;
 public record CreateIndicadorCommand(
     string Nombre,
     string MetaCumplir,
-    string? MetaReal,
     IndicadorOrigen Origen,
     IndicadorTipo Tipo,
     string? Observacion,
     int ProcesoId,
     List<int> ObjetivoIds,
+    string? ValorTotal,       
+    string? ValorReal,
     Dictionary<int, string>? MetaCumplirPorArea // key: AreaId, value: MetaReal
 ) : IRequest<IndicadorDto>,IRequireAuthorization
 {

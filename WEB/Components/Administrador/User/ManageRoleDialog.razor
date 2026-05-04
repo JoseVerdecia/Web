@@ -1,4 +1,5 @@
-﻿@using WEB.Core.Mediator
+﻿@using Microsoft.FluentUI.AspNetCore.Components.Icons.Light
+@using WEB.Core.Mediator
 @using WEB.Data
 @using WEB.Interfaces
 @inject INotificationService Notification
@@ -31,22 +32,17 @@
                 Rol actual: <FluentBadge Appearance="Appearance.Accent">@Content.Role</FluentBadge>
             </FluentLabel>
 
-            <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+            <FluentStack Orientation="Orientation.Vertical">
 
                 @* Denegar rol (si aplica) *@
                 @if (Content.Role == AppRoles.JefeArea || Content.Role == AppRoles.JefeProceso)
                 {
-                    <FluentButton Appearance="Appearance.Outline"
+                    <FluentButton Appearance="Appearance.Accent"
+                                  IconStart="@(new Icons.Regular.Size20.Dismiss().WithColor(Color.Lightweight))"
                                   OnClick="@(Content.Role == AppRoles.JefeArea ? DenegarAreaAsync : DenegarProcesoAsync)"
                                   Disabled="@_isProcessing"
-                                  Style="width: 100%; justify-content: flex-start; padding: 8px 16px;">
-                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Width="100%" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
-                            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8">
-                                <FluentIcon Value="@(new Icons.Regular.Size20.PersonArrowLeft())" />
-                                <span>Denegar como @(Content.Role == AppRoles.JefeArea ? "Jefe de Área" : "Jefe de Proceso")</span>
-                            </FluentStack>
-                            <FluentIcon Value="@(new Icons.Regular.Size20.Dismiss())" Color="Color.Error" />
-                        </FluentStack>
+                                  Style="width: 100%; justify-content: flex-start;">
+                                Denegar como @(Content.Role == AppRoles.JefeArea ? "Jefe de Área" : "Jefe de Proceso")
                     </FluentButton>
 
                     <FluentLabel Typo="Typography.Body" Color="Color.Neutral" Style="margin-left: 8px;">
@@ -56,33 +52,29 @@
 
                     <FluentDivider Style="margin: 8px 0;" />
                 }
-
-                @* Asignar roles (si es usuario normal) *@
+                
                 @if (Content.Role == AppRoles.UsuarioNormal)
                 {
                     <FluentLabel Typo="Typography.Subject" Style="margin-bottom: 4px;">Asignar nuevo rol:</FluentLabel>
 
-                    <FluentButton Appearance="Appearance.Lightweight"
+                    <FluentButton Appearance="Appearance.Accent"
                                   OnClick="() => LoadAvailableAreasAsync()"
+                                  IconStart="@(new Icons.Regular.Size20.Building())"
                                   Disabled="@_isProcessing"
-                                  Style="width: 100%; justify-content: flex-start; padding: 8px 16px;"
+                                  Style="width: 100%;"
                                   Title="Asignar como responsable de un área específica">
-                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Width="100%">
-                            <FluentIcon Value="@(new Icons.Regular.Size20.Building())" />
-                            <span>Asignar como Jefe de Área</span>
-                        </FluentStack>
+                       Asignar como Jefe de Area
                     </FluentButton>
 
-                    <FluentButton Appearance="Appearance.Lightweight"
+                    <FluentButton Appearance="Appearance.Accent"
                                   OnClick="() => LoadAvailableProcesosAsync()"
+                                  IconStart="@(new Icons.Regular.Size20.Branch())"
                                   Disabled="@_isProcessing"
-                                  Style="width: 100%; justify-content: flex-start; padding: 8px 16px;"
+                                  Style="width: 100%;"
                                   Title="Asignar como responsable de un proceso específico">
-                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Width="100%">
-                            <FluentIcon Value="@(new Icons.Regular.Size20.Branch())" />
-                            <span>Asignar como Jefe de Proceso</span>
-                        </FluentStack>
+                        Asignar como Jefe de Proceso
                     </FluentButton>
+                   
                 }
 
                 @* Mensaje si no hay acciones disponibles *@

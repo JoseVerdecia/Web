@@ -1,0 +1,22 @@
+﻿@page "/indicadores/form/{Id:int?}"
+@attribute [Authorize(Roles = AppRoles.Administrador)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Data
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<PageTitle>@(Id == null ? "Crear Indicador" : "Editar Indicador #" + Id)</PageTitle>
+
+<IndicadorFormContent Id="@Id"
+                      OnSaved="@(() => Navigation.NavigateTo(ReturnUrl ?? "/indicadores"))"
+                      OnCanceled="@(() => Navigation.NavigateTo(ReturnUrl ?? "/indicadores"))"
+                      ReturnUrl="@ReturnUrl" />
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+    
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+}

@@ -74,9 +74,9 @@ public partial class AreaFormDialog : ComponentBase, IDialogContentComponent
                     Tipo : tipoArea
                 );
                 var updatedArea = await Mediator.Send(request);
-                if (updatedArea != null)
+                if (updatedArea.IsSuccess)
                 {
-                    await Dialog.CloseAsync(updatedArea);
+                    await Dialog.CloseAsync(updatedArea.Value);
                 }
             }
            

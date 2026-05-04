@@ -1,0 +1,32 @@
+﻿@page "/pendiente"
+@layout EmptyLayout
+@inject NavigationManager NavigationManager
+
+<PageTitle>Cuenta pendiente de activación</PageTitle>
+
+<FluentGrid Justify="JustifyContent.Center" Style="margin-top: 100px;">
+    <FluentGridItem xs="12" sm="8" md="6" lg="4">
+        <FluentCard Style="text-align: center; padding: 32px;">
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="16" HorizontalAlignment="HorizontalAlignment.Center">
+                <FluentIcon Value="@(new Icons.Regular.Size24.Clock())" Color="Color.Custom" CustomColor="#222E58" Style="width: 48px; height: 48px;" />
+                <FluentLabel Typo="Typography.H4" Style="color: #222E58;">
+                    ¡Registro exitoso!
+                </FluentLabel>
+                <FluentLabel Typo="Typography.Body" Color="Color.Neutral">
+                    Tu cuenta ha sido creada, pero necesita que un administrador te asigne un rol.
+                    Recibirás un correo electrónico cuando esto ocurra y entonces podrás iniciar sesión.
+                </FluentLabel>
+                <FluentDivider />
+                <FluentLabel Typo="Typography.Body" Color="Color.Neutral" Style="font-size: 14px;">
+                    Si tienes alguna duda, contacta al administrador del sistema.
+                    <FluentAnchor>admin@uho.com</FluentAnchor>
+                </FluentLabel>
+                
+                @* Enlace para volver al login *@
+                <FluentAnchor Appearance="Appearance.Hypertext" Href="Account/Login">
+                    ← Ir al inicio de sesión
+                </FluentAnchor>
+            </FluentStack>
+        </FluentCard>
+    </FluentGridItem>
+</FluentGrid>

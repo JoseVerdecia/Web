@@ -158,107 +158,7 @@ public partial class Indicador : ComponentBase
     {
         selectedIndicador = item;
     }
-
-    private async Task OpenCreateWizardDialog()
-    {
-        var width = "min(110vw, 850px)";
-        var parameters = new DialogParameters<CreateIndicadorRequest>
-        {
-            ShowTitle = false,
-            PreventDismissOnOverlayClick = true,
-            PrimaryAction = null,
-            SecondaryAction = null,
-            Modal = true,
-            Width = width,
-            ShowDismiss = false,
-        };
-
-        var emptyRequest = new CreateIndicadorRequest
-        {
-            Nombre = "",
-            MetaCumplir = "",
-            MetaReal = null,
-            Origen = "",
-            Tipo = "",
-            Observacion = null,
-            ProcesoId = 0,
-            ObjetivoIds = new List<int>(),
-            MetaCumplirPorArea = null
-        };
-
-        var dialog = await DialogService.ShowDialogAsync<IndicadorWizardDialog>(emptyRequest, parameters);
-        var result = await dialog.Result;
-
-        if (!result.Cancelled && result.Data is IndicadorDto newIndicador)
-        {
-            indicadoresDto.Add(newIndicador);
-            gridItems.Add(IndicadorDisplayItem.FromIndicadorDto(newIndicador));
-            StateHasChanged();
-        }
-    }
-
-    private async Task OpenEditDialog(IndicadorDisplayItem displayItem)
-    {
-        var indicadorDto = indicadoresDto.FirstOrDefault(i => i.Id == displayItem.Id);
-        if (indicadorDto == null) return;
-
-        Dictionary<int, string>? metasPorArea = null;
-        if (indicadorDto.Areas.Any())
-        {
-            metasPorArea = indicadorDto.Areas
-                .Where(ia => ia.AreaId > 0)
-                .ToDictionary(ia => ia.AreaId, ia => ia.MetaCumplir ?? string.Empty);
-        }
-
-        var parameters = new DialogParameters<UpdateIndicadorRequest>
-        {
-            ShowTitle = false,
-            PreventDismissOnOverlayClick = true,
-            PrimaryAction = null,
-            SecondaryAction = null,
-            Modal = true,
-            Width = "min(95vw, 850px)",
-            ShowDismiss = false,
-        };
-
-        var updateRequest = new UpdateIndicadorRequest
-        {
-            Id = indicadorDto.Id,
-            Nombre = indicadorDto.Nombre,
-            MetaCumplir = indicadorDto.MetaCumplir,
-            MetaReal = indicadorDto.MetaReal,
-            Origen = indicadorDto.Origen,
-            Tipo = indicadorDto.Tipo,
-            Observacion = indicadorDto.Observacion,
-            ProcesoId = indicadorDto.Proceso?.Id ?? 0,
-            ObjetivoIds = indicadorDto.Objetivos?.Select(o => o.Id).ToList(),
-            MetaCumplirPorArea = metasPorArea
-        };
-
-        var dialog = await DialogService.ShowDialogAsync<IndicadorWizardDialog>(updateRequest, parameters);
-        var result = await dialog.Result;
-
-        if (!result.Cancelled && result.Data is IndicadorDto updatedIndicador)
-        {
-            var indexDto = indicadoresDto.FindIndex(i => i.Id == updatedIndicador.Id);
-            if (indexDto >= 0) indicadoresDto[indexDto] = updatedIndicador;
-
-            var indexGrid = gridItems.FindIndex(i => i.Id == updatedIndicador.Id);
-            if (indexGrid >= 0)
-            {
-                var newItem = IndicadorDisplayItem.FromIndicadorDto(updatedIndicador);
-                gridItems[indexGrid] = newItem;
-
-                if (selectedIndicador?.Id == updatedIndicador.Id)
-                {
-                    selectedIndicador = null;
-                    StateHasChanged();
-                    selectedIndicador = newItem;
-                }
-            }
-            StateHasChanged();
-        }
-    }
+    
 
     private async Task DeleteIndicador(IndicadorDisplayItem displayItem)
     {
@@ -526,7 +426,12 @@ public partial class Indicador : ComponentBase
     }
     private async Task OnDeletedGridSelectionChanged()
     {
-       
+        selectedDeletedIds = deletedGridItems
+            .Where(i => i.IsSelected)
+            .Select(i => i.Id)
+            .ToHashSet();
+    
+        StateHasChanged(); 
         await Task.CompletedTask;
     }
     

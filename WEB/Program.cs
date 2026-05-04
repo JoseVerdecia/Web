@@ -42,6 +42,7 @@ builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuth
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<GlobalEvaluationService>();
 builder.Services.AddScoped<ExcelExportService>();
+builder.Services.AddScoped<AdminPendingUsersState>();
 builder.Services.AddScoped<IndicadorUpdateStateService>();
 builder.Services.AddApexCharts();
 builder.Services.AddScoped<IDeleteCascadeService, DeleteCascadeService>();

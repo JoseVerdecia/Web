@@ -52,7 +52,7 @@ public class CurrentUser:ICurrentUser
         await using var context = await _factory.CreateDbContextAsync(ct);
         if (context == null) return null;
     
-        return await context.Users.FirstOrDefaultAsync(u => u.Id == userId, ct);
+        return await context.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId, ct);
     }
 
     public async Task<string?> GetFullNameAsync()

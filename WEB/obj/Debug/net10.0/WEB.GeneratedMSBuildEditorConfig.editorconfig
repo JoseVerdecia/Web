@@ -242,6 +242,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZG1pbmlzdHJhZG9yXFByb2Nlc29cUHJvY2Vzb0Zvcm1EaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Administrador/Proceso/ProyectoEstrategicoProceso.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZG1pbmlzdHJhZG9yXFByb2Nlc29cUHJveWVjdG9Fc3RyYXRlZ2ljb1Byb2Nlc28ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Administrador/User/UserDataGrid.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZG1pbmlzdHJhZG9yXFVzZXJcVXNlckRhdGFHcmlkLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -258,12 +262,32 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xKZWZlQXJlYVxJbmRpY2Fkb3JcSW5kaWNhZG9yRGVBcmVhRGF0YUdyaWQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/JefeArea/Indicador/IndicadoresDeArea.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xKZWZlQXJlYVxJbmRpY2Fkb3JcSW5kaWNhZG9yZXNEZUFyZWEucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/JefeArea/Indicador/MetaRealDialog.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xKZWZlQXJlYVxJbmRpY2Fkb3JcTWV0YVJlYWxEaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/JefeProceso/Indicador/IndicadorJefeProceso.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xKZWZlUHJvY2Vzb1xJbmRpY2Fkb3JcSW5kaWNhZG9ySmVmZVByb2Nlc28ucmF6b3I=
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/JefeProceso/JPIndicadoresDeAreaPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xKZWZlUHJvY2Vzb1xKUEluZGljYWRvcmVzRGVBcmVhUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/JefeProceso/JPIndicadorFormPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xKZWZlUHJvY2Vzb1xKUEluZGljYWRvckZvcm1QYWdlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/JefeProceso/JPPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xKZWZlUHJvY2Vzb1xKUFBhZ2UucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/JefeProceso/JPSIGEsPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xKZWZlUHJvY2Vzb1xKUFNJR0VzUGFnZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/JefeProceso/JPTPEPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xKZWZlUHJvY2Vzb1xKUFRQRVBhZ2UucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Layout/AppLayout.razor]
@@ -306,20 +330,16 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xFdmFsdWF0aW9uLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xIb21lLnJhem9y
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Pages/IndicadoresDeArea.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbmRpY2Fkb3Jlc0RlQXJlYS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Pages/NotFound.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xOb3RGb3VuZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Pages/Objetivo.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xPYmpldGl2by5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Pages/Pendiente.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQZW5kaWVudGUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Pages/Proceso.razor]
@@ -344,10 +364,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/EnumSelect.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcRW51bVNlbGVjdC5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/EvaluacionBarChart.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcRXZhbHVhY2lvbkJhckNoYXJ0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/EvaluationBadge.razor]
@@ -382,48 +398,52 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcR3JhZmljb3NcUmFua2luZ0JhckNoYXJ0LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Graficos/StatCard.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcR3JhZmljb3NcU3RhdENhcmQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/IndicadorDeAreaDetailGrid.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcSW5kaWNhZG9yRGVBcmVhRGV0YWlsR3JpZC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/NotificacionBell.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTm90aWZpY2FjaW9uQmVsbC5yYXpvcg==
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/IndicadoresDeAreaContent.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcSW5kaWNhZG9yZXNEZUFyZWFDb250ZW50LnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/NotificacionDetalleDialog.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTm90aWZpY2FjaW9uRGV0YWxsZURpYWxvZy5yYXpvcg==
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/IndicadorFormContent.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcSW5kaWNhZG9yRm9ybUNvbnRlbnQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/NotificacionItem.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTm90aWZpY2FjaW9uSXRlbS5yYXpvcg==
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Notificacion/NotificacionBell.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTm90aWZpY2FjaW9uXE5vdGlmaWNhY2lvbkJlbGwucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/NotificacionLista.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTm90aWZpY2FjaW9uTGlzdGEucmF6b3I=
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Notificacion/NotificacionDetalleDialog.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTm90aWZpY2FjaW9uXE5vdGlmaWNhY2lvbkRldGFsbGVEaWFsb2cucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/NotificacionPanelContent.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTm90aWZpY2FjaW9uUGFuZWxDb250ZW50LnJhem9y
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Notificacion/NotificacionItem.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTm90aWZpY2FjaW9uXE5vdGlmaWNhY2lvbkl0ZW0ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/SettingsPanel.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcU2V0dGluZ3NQYW5lbC5yYXpvcg==
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Notificacion/NotificacionLista.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTm90aWZpY2FjaW9uXE5vdGlmaWNhY2lvbkxpc3RhLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/StatCard.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcU3RhdENhcmQucmF6b3I=
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Notificacion/NotificacionPanelContent.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcTm90aWZpY2FjaW9uXE5vdGlmaWNhY2lvblBhbmVsQ29udGVudC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/SuccessButton.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcU3VjY2Vzc0J1dHRvbi5yYXpvcg==
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Pages/IndicadoresDeAreaPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcUGFnZXNcSW5kaWNhZG9yZXNEZUFyZWFQYWdlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/SummaryCard.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcU3VtbWFyeUNhcmQucmF6b3I=
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Pages/IndicadorFormPage.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcUGFnZXNcSW5kaWNhZG9yRm9ybVBhZ2UucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/ThemeInitializer.razor]
-build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcVGhlbWVJbml0aWFsaXplci5yYXpvcg==
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/ProcesosDelObjetivoTable.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcUHJvY2Vzb3NEZWxPYmpldGl2b1RhYmxlLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Title.razor]
@@ -454,6 +474,10 @@ build_metadata.AdditionalFiles.CssScope = b-er2veiswjq
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xBZG1pbmlzdHJhZG9yXFVzZXJcTWFuYWdlUm9sZURpYWxvZy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-1lairw7ntb
 
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/JefeProceso/PEProcesoTable.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xKZWZlUHJvY2Vzb1xQRVByb2Nlc29UYWJsZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-xq7e63gv86
+
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Layout/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xMYXlvdXRcTmF2TWVudS5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-52vz10t17v
@@ -465,3 +489,23 @@ build_metadata.AdditionalFiles.CssScope = b-35uyj8wzrs
 [C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Pages/Indicador.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xJbmRpY2Fkb3IucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-9q0f3vccu9
+
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/IndicadoresDelProcesoSIGES.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcSW5kaWNhZG9yZXNEZWxQcm9jZXNvU0lHRVMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-d347y27vky
+
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Pages/ProcesosSIGES.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcUGFnZXNcUHJvY2Vzb3NTSUdFUy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-p7elw7tyui
+
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Pages/ProyectoEstrategicoObjetivos.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcUGFnZXNcUHJveWVjdG9Fc3RyYXRlZ2ljb09iamV0aXZvcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-uqix3o3kye
+
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/Pages/ProyectoEstrategicoProcesos.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcUGFnZXNcUHJveWVjdG9Fc3RyYXRlZ2ljb1Byb2Nlc29zLnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-3ajvocb0v1
+
+[C:/Users/Osvaldo el Heraldo/RiderProjects/Web/WEB/Components/Shared/ProcesoSIGEsTable.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xTaGFyZWRcUHJvY2Vzb1NJR0VzVGFibGUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-6f1i0mhlwm

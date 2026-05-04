@@ -16,97 +16,116 @@
 
 <PageTitle>Areas</PageTitle>
 <FluentLayout>
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
-        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
-            <Title ValueTitle="Areas" Icono="@(new Icons.Filled.Size24.Location())"/>
-
-            <FluentStack Width="inline-block" HorizontalAlignment="HorizontalAlignment.End">
-            @if (ActiveTabId == "tab-activas")
-            {
-                <FluentMenuButton Text="Exportar">
-                    <FluentMenuItem Disabled="@(!activeAreas.Any())" OnClick="ExportAreas">Excel</FluentMenuItem>
-                    <FluentMenuItem Disabled="@(!activeAreas.Any())" OnClick="ExportAreasPdf">PDF</FluentMenuItem>
-                </FluentMenuButton>
-                
-                    <FluentButton
-                        Appearance="Appearance.Outline"
-                        OnClick="EliminarSeleccionadas"
-                        Disabled="@(areaDataGrid == null || !areaDataGrid.HasSelection)"
-                        IconStart="@(new Icons.Regular.Size16.Delete())">
-                        Eliminar
-                    </FluentButton>
-                
-                    <FluentButton 
-                        Appearance="Appearance.Accent"
-                        OnClick="@OpenCreateDialog"
-                        IconStart="@(new Icons.Regular.Size20.AddSquare())">
-                        Crear
-                    </FluentButton>
-               
-            }
-            else
-            {
-                <FluentButton
-                    Appearance="Appearance.Outline"
-                    OnClick="@RestoreSelectedAreas"
-                    Disabled="selectedDeletedAreaIds.Count == 0"
-                    IconStart="@(new Icons.Regular.Size20.ArrowSync())">
-                    Restaurar
-                </FluentButton>
-                <FluentButton 
-                              OnClick="@DeleteSelectedPermanently"
-                              Disabled="@(selectedDeletedAreaIds.Count == 0)"
-                              IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Error))">
-                    Eliminar
-                </FluentButton>
-            }
-            </FluentStack>
-        </FluentStack>
+    <!-- Contenedor principal con Grid y Spacing (equivale a tu VerticalGap="20" -> Spacing="5" son 20px) -->
+    <FluentGrid Spacing="5" Style="width: 100%;">
         
-        <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
-            <FluentTab Id="tab-activas" Label="Activos">
-                @if (isLoadingActivas)
-                {
-                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
-                        <FluentProgressRing />
-                    </FluentStack>
-                }
-                else
-                {
-                    <div style="overflow-x: auto; width: 100%;">
-                    <div style="min-width: 700px;">
-                    <AreaDataGrid Areas="activeAreas"
-                                  @ref="areaDataGrid"
-                                  OnEdit="OpenEditDialog"
-                                  SelectionChanged="OnGridSelectionChanged"
-                                  OnDelete="DeleteArea"
-                                  OnViewDetails="ViewAreaDetails" />
-                    </div>
-                    </div>
-              
-                }
-            </FluentTab>
+        <!-- CABECERA: Título y Botones -->
+        <FluentGridItem xs="12">
+            <FluentGrid Justify="JustifyContent.SpaceBetween" AlignItems="Alignment.Center" Spacing="3">
+                
+                <!-- Título: Ocupa el 100% en móvil (xs="12") y se ajusta al contenido en escritorio (md="auto") -->
+                <FluentGridItem xs="12" md="6">
+                    <Title ValueTitle="Areas" Icono="@(new Icons.Filled.Size24.Location())"/>
+                </FluentGridItem>
 
-            <FluentTab Id="tab-papelera" Label="Papelera">
-                @if (isLoadingPapelera)
-                {
-                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
-                        <FluentProgressRing />
+                <!-- Botones: Ocupa el 100% en móvil y se alinea a la derecha en escritorio -->
+                <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
+                    <!-- Usamos un Stack con wrap para que los botones bajen a la siguiente línea si no caben -->
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" Gap="8" Style="flex-wrap: wrap;">
+                        @if (ActiveTabId == "tab-activas")
+                        {
+                            <FluentMenuButton Text="Exportar">
+                                <FluentMenuItem Disabled="@(!activeAreas.Any())" OnClick="ExportAreas">Excel</FluentMenuItem>
+                                <FluentMenuItem Disabled="@(!activeAreas.Any())" OnClick="ExportAreasPdf">PDF</FluentMenuItem>
+                            </FluentMenuButton>
+                        
+                            <FluentButton
+                                Appearance="Appearance.Outline"
+                                OnClick="EliminarSeleccionadas"
+                                Disabled="@(areaDataGrid == null || !areaDataGrid.HasSelection)"
+                                IconStart="@(new Icons.Regular.Size16.Delete())">
+                                Eliminar
+                            </FluentButton>
+                        
+                            <FluentButton 
+                                Appearance="Appearance.Accent"
+                                OnClick="@OpenCreateDialog"
+                                IconStart="@(new Icons.Regular.Size20.AddSquare())">
+                                Crear
+                            </FluentButton>
+                       
+                        }
+                        else
+                        {
+                            <FluentButton
+                                Appearance="Appearance.Outline"
+                                OnClick="@RestoreSelectedAreas"
+                                Disabled="selectedDeletedAreaIds.Count == 0"
+                                IconStart="@(new Icons.Regular.Size20.ArrowSync())">
+                                Restaurar
+                            </FluentButton>
+                            <FluentButton 
+                                OnClick="@DeleteSelectedPermanently"
+                                Disabled="@(selectedDeletedAreaIds.Count == 0)"
+                                IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Error))">
+                                Eliminar
+                            </FluentButton>
+                        }
                     </FluentStack>
-                }
-                else
-                {
-                    <div style="overflow-x: auto; width: 100%;">
-                    <div style="min-width: 700px;">
-                    <AreaDeletedDataGrid Areas="deletedAreas"
-                                         SelectedIds="selectedDeletedAreaIds"
-                                         SelectedIdsChanged="OnSelectedDeletedIdsChanged"
-                                         OnRestore="RestoreSingleArea"
-                                         OnDeletePermanently="DeletePermanently" />
-                    </div>
-                    </div>
-                }
-            </FluentTab>
-        </FluentTabs>
-    </FluentStack>
+                </FluentGridItem>
+            </FluentGrid>
+        </FluentGridItem>
+
+        <!-- CONTENIDO: Tabs y Tablas -->
+        <FluentGridItem xs="12">
+            <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
+                <FluentTab Id="tab-activas" Label="Activos">
+                    @if (isLoadingActivas)
+                    {
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                            <FluentProgressRing />
+                        </FluentStack>
+                    }
+                    else
+                    {
+                        <!-- Patrón responsivo para tablas correcto: scroll horizontal obligatorio si el contenido es menor a 700px -->
+                        <div style="overflow-x: auto; width: 100%;">
+                            <div style="min-width: 700px;">
+                                <AreaDataGrid Areas="activeAreas"
+                                              @ref="areaDataGrid"
+                                              OnEdit="OpenEditDialog"
+                                              SelectionChanged="OnGridSelectionChanged"
+                                              OnDelete="DeleteArea"
+                                              OnViewDetails="ViewAreaDetails" />
+                            </div>
+                        </div>
+                  
+                    }
+                </FluentTab>
+
+                <FluentTab Id="tab-papelera" Label="Papelera">
+                    @if (isLoadingPapelera)
+                    {
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                            <FluentProgressRing />
+                        </FluentStack>
+                    }
+                    else
+                    {
+                        <div style="overflow-x: auto; width: 100%;">
+                            <!-- Nota: Quité el height="200px" fijo que tenías aquí. Un height fijo en una tabla
+                                 responsiva corta los datos en pantallas pequeñas. Si necesitas límite, usa max-height -->
+                            <div style="min-width: 700px;">
+                                <AreaDeletedDataGrid Areas="deletedAreas"
+                                                     SelectedIds="selectedDeletedAreaIds"
+                                                     SelectedIdsChanged="OnSelectedDeletedIdsChanged"
+                                                     OnRestore="RestoreSingleArea"
+                                                     OnDeletePermanently="DeletePermanently" />
+                            </div>
+                        </div>
+                    }
+                </FluentTab>
+            </FluentTabs>
+        </FluentGridItem>
+    </FluentGrid>
 </FluentLayout>

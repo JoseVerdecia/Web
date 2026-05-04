@@ -1,10 +1,13 @@
 ﻿@rendermode InteractiveServer
 @using WEB.Components.Shared
 @using WEB.Core.Extensions
+@using WEB.Core.Mediator
 @using WEB.Core.Services
 @using WEB.Interfaces
+@using WEB.Features.Users.Get
+@inject AdminPendingUsersState PendingState
+@inject IMediator Mediator
 @using WEB.Data
-
 @inject ICurrentUser CurrentUser
 
 <div class="navmenu">
@@ -20,16 +23,22 @@
                     @if (CurrentUser.IsInRole(AppRoles.Administrador))
                     {
                         
-                        <FluentNavGroup  Title="Dashboard" Icon="@(new Icons.Regular.Size20.EarthLeaf())">
-                            <ChildContent>
-                                <FluentNavLink Href="/dashboard" Icon="@(new Icons.Regular.Size20.LeafOne())">Dashboard</FluentNavLink>
-                            </ChildContent>
-                        </FluentNavGroup>
+                        <FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.ChartMultiple())" Match="NavLinkMatch.All">Dashboard</FluentNavLink>
                         <FluentNavLink Href="/proceso" Icon="@(new Icons.Regular.Size20.Flowchart())" IconColor="Color.Accent">Proceso</FluentNavLink>
                         <FluentNavLink Href="/areas" Icon="@(new Icons.Regular.Size20.Location())">Áreas</FluentNavLink>
                         <FluentNavLink Href="/objetivos" Icon="@(new Icons.Regular.Size20.Flag())">Objetivos</FluentNavLink>
                         <FluentNavLink Href="/indicadores" Icon="@(new Icons.Regular.Size20.ArrowTrendingLines())">Indicadores</FluentNavLink>
-                        <FluentNavLink Href="/admin/users" Icon="@(new Icons.Regular.Size20.People())">Usuarios</FluentNavLink>
+                        <FluentCounterBadge Count="@PendingState.PendingCount"
+                                            BackgroundColor="@Color.Error"
+                                            Color="Color.Fill"
+                                            HorizontalPosition="@(expanded ? 95 : 70)"
+                                            VerticalPosition="60"
+                                            ShowWhen="@(count => count > 0)">
+                            <FluentNavLink Href="/admin/users"
+                                           Icon="@(new Icons.Regular.Size20.People())">
+                                Usuarios
+                            </FluentNavLink>
+                        </FluentCounterBadge>
                         <FluentNavLink Href="/evaluacion/programar" Icon="@(new Icons.Regular.Size20.ClipboardTask())">Evaluacion</FluentNavLink>
                     }
                     @if (CurrentUser.IsInRole(AppRoles.JefeProceso))
@@ -55,5 +64,20 @@
 @code {
     private bool expanded = false;
     private bool navGroupExpanded = true;
+ 
+    protected override async Task OnInitializedAsync()
+    {
+        
+        var result = await Mediator.Send(new GetPendingUsersCountRequest());
+        if (result.IsSuccess)
+            PendingState.SetCount(result.Value.Count);
+        
+        PendingState.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        PendingState.OnChange -= StateHasChanged;
+    }
     
 }

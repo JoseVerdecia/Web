@@ -1,6 +1,7 @@
 .meta-area-item[b-er2veiswjq] {
     display: flex;
     gap: 10px;
+    width : 100%;
     align-items: center;
     padding: 12px;
     background-color: var(--neutral-layer-2);

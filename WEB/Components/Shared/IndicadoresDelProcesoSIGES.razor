@@ -1,0 +1,149 @@
+﻿@using WEB.Core.Mediator
+@using WEB.Core.Extensions
+@using WEB.Enums
+@implements IDisposable
+@rendermode InteractiveServer
+@inject IMediator Mediator
+
+@if (isLoading)
+{
+    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+        <FluentProgressRing />
+    </FluentStack>
+}
+else if (indicadores == null || !indicadores.Any())
+{
+    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+        <FluentIcon Value="@(new Icons.Regular.Size24.DismissCircle())" Style="margin-bottom: 8px; opacity: 0.4;" />
+        <FluentLabel Typo="Typography.Subject">Este proceso no tiene indicadores registrados.</FluentLabel>
+    </FluentStack>
+}
+else
+{
+    var indicadoresOrdenados = indicadores.OrderBy(i => i.Id).ToList();
+    var indicadoresConValores = indicadoresOrdenados
+        .Where(i => i.IsMetaCumplirPorcentual)
+        .ToList();
+
+    <!-- Tabla 1: Indicadores -->
+    <div style="margin-bottom: 40px; margin-top: 10px;">
+        <div style="overflow-x: auto; width: 100%;">
+            <div style="min-width: 1000px;">
+                <table class="siges-table">
+                    <thead>
+                        <tr>
+                            <th class="col-id">ID</th>
+                            <th class="col-oe">OE A QUE TRIBUTA</th>
+                            <th class="col-indicador">INDICADORES (@indicadoresOrdenados.Count)</th>
+                            <th class="col-tipo">TIPO</th>
+                            <th class="col-meta">META</th>
+                            <th class="col-real">REAL</th>
+                            <th class="col-porcentaje">% CUMPLIMIENTO</th>
+                            <th class="col-evaluacion">EVALUACIÓN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ind in indicadoresOrdenados)
+                        {
+                            var pct = CalcularPorcentajeCumplimiento(ind);
+                            var tieneReal = !string.IsNullOrWhiteSpace(ind.MetaReal);
+                            <tr>
+                                <td class="col-id celda-id">@ind.Id.ToString("D2")</td>
+                                <td class="col-oe celda-centro">
+                                    @if (ind.Objetivos.Any())
+                                    {
+                                        <span class="oe-text">
+                                            @(string.Join("/", ind.Objetivos.OrderBy(o => o.NumeroObjetivo).Select(o => o.NumeroObjetivo)))
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="celda-vacia">—</span>
+                                    }
+                                </td>
+                                <td class="col-indicador">
+                                    <span class="@(ind.IsTipoEscencial ? "indicador-escencial" : "indicador-necesario")">
+                                        @ind.Nombre
+                                    </span>
+                                </td>
+                                <td class="col-tipo">
+                                    <span class="tipo-tag @(ind.Tipo == IndicadorTipo.Escencial ? "tipo-e" : "tipo-n")">
+                                        @(ind.Tipo == IndicadorTipo.Escencial ? "E" : "N")
+                                    </span>
+                                </td>
+                                <td class="col-meta celda-numero">@ind.MetaCumplir</td>
+                                <td class="col-real celda-numero">
+                                    @(tieneReal ? ind.MetaReal : "—")
+                                </td>
+                                <td class="col-porcentaje celda-numero">
+                                    <span class="porcentaje-valor" style="color: @pct.Color;">@pct.Text</span>
+                                </td>
+                                <td class="col-evaluacion celda-centro">
+                                    <span class="evaluacion-cell @GetEvaluacionClass(ind.Evaluacion)">
+                                        @ind.Evaluacion.GetDisplayName()
+                                    </span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla 2: Valores Cuantitativos (solo si hay) -->
+    @if (indicadoresConValores.Any())
+    {
+        <div style="margin-bottom: 32px;">
+            <div style="overflow-x: auto; width: 100%;">
+                <div style="min-width: 700px;">
+                    <table class="siges-table siges-table-cuantitativos">
+                        <thead>
+                            <tr>
+                                <th class="col-id-cuant" style="width: 70px;">ID</th>
+                                <th class="col-valores" style="width: 380px;">VALORES CUANTITATIVOS (@indicadoresConValores.Count)</th>
+                                <th class="col-datos" style="width: 140px;">Datos</th>
+                                <th class="col-porcentaje-cuant" style="width: 140px;">Porcentaje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var (ind, index) in indicadoresConValores.Select((ind, i) => (ind, i)))
+                            {
+                                var datosTotal = ind.ValorTotalAcumulado;
+                                var datosReal = ind.ValorRealAcumulado;
+                                var pctDatos = CalcularPorcentaje(datosTotal, datosReal);
+                                var tieneValorTotal = datosTotal.HasValue;
+                                var tieneValorReal = datosReal.HasValue;
+                                var esFilaPar = index % 2 == 0;
+                                var claseFila = esFilaPar ? "fila-par" : "";
+
+                                <!-- Fila 1: Valor Total -->
+                                <tr class="@claseFila fila-valor-base">
+                                    <td rowspan="2" class="col-id-cuant celda-id" style="vertical-align: middle; border-bottom: 2px solid var(--neutral-stroke-divider-rest);">
+                                        @ind.Id.ToString("D2")
+                                    </td>
+                                    <td class="col-valores"><span class="valor-label">@ind.ValorTotal</span></td>
+                                    <td class="col-datos celda-numero">
+                                        @(tieneValorTotal ? FormatearNumero(datosTotal.Value) : "—")
+                                    </td>
+                                    <td class="col-porcentaje-cuant celda-vacia">—</td>
+                                </tr>
+
+                                <!-- Fila 2: Valor Real + Porcentaje -->
+                                <tr class="@claseFila fila-valor-real">
+                                    <td class="col-valores"><span class="valor-label">@ind.ValorReal</span></td>
+                                    <td class="col-datos celda-numero">
+                                        @(tieneValorReal ? FormatearNumero(datosReal.Value) : "—")
+                                    </td>
+                                    <td class="col-porcentaje-cuant celda-numero">
+                                        <span class="porcentaje-valor" style="color: @pctDatos.Color;">@pctDatos.Text</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    }
+}

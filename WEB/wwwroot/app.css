@@ -52,7 +52,7 @@ body {
 }
 
 .content {
-    padding: 1.5rem 0 0 0.2rem;
+    padding: 0.5rem 0 0 0.2rem;
     padding-right: 10px;
     align-self: stretch !important;
     width: 100%;
@@ -289,3 +289,6 @@ td.selected-row {
 }
 
 
+::slotted(*){
+    overflow:hidden;
+}

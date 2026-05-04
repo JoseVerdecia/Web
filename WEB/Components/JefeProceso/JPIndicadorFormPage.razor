@@ -1,0 +1,18 @@
+﻿@page "/indicadores/jefeProceso/form/{Id:int?}"
+@layout AppLayout
+@attribute [Authorize(Roles = AppRoles.JefeProceso)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Data
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<PageTitle>@(Id == null ? "Crear Indicador" : "Editar Indicador #" + Id)</PageTitle>
+
+<IndicadorFormContent Id="@Id"
+                      OnSaved="@(() => Navigation.NavigateTo("/indicadores/jefeProceso"))"
+                      OnCanceled="@(() => Navigation.NavigateTo("/indicadores/jefeProceso"))" />
+                      
+@code{
+    [Parameter] public int? Id { get; set; }
+}

@@ -1,112 +1,137 @@
-﻿
+﻿@page "/objetivos"
+@attribute [Authorize(Roles=AppRoles.Administrador)]
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
 @using WEB.Components.Administrador.Objetivo
 @using WEB.Components.Shared
 @using WEB.Core.Mediator
+@using WEB.Data
 @using WEB.Services
 @inject IDialogService DialogService
 @inject IMediator Mediator
 @inject ExcelExportService ExcelExportService
+@inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-@page "/objetivos"
+
 @rendermode InteractiveServer
 
 <PageTitle>Objetivos</PageTitle>
 
 <FluentLayout>
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="20">
-        <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween">
-            <Title Icono="@(new Icons.Filled.Size20.Flag())" ValueTitle="Objetivos"></Title>
-            
-            <FluentStack Width="inline-block" HorizontalAlignment="HorizontalAlignment.End">
-            @if (ActiveTabId == "tab-activos")
-            {
-               
-                <FluentMenuButton Text="Exportar">
-                    <FluentMenuItem Disabled="@(!activeObjetivos.Any())" OnClick="ExportObjetivos">Excel</FluentMenuItem>
-                    <FluentMenuItem Disabled="@(!activeObjetivos.Any())" OnClick="ExportObjetivosPdf">PDF</FluentMenuItem>
-                </FluentMenuButton>
+    <!-- Grid principal: Spacing="5" equivale a tus 20px de separación -->
+    <FluentGrid Spacing="5" Style="width: 100%;">
+        
+        <!-- CABECERA: Título y Botones -->
+        <FluentGridItem xs="12">
+            <FluentGrid Justify="JustifyContent.SpaceBetween" AlignItems="Alignment.Center" Spacing="3">
                 
-                <FluentButton
-                    Appearance="Appearance.Outline"
-                    OnClick="EliminarSeleccionados"
-                    Disabled="@(objetivoDataGrid == null || !objetivoDataGrid.HasSelection)"
-                    IconStart="@(new Icons.Regular.Size16.Delete())">
-                    Eliminar
-                </FluentButton>
-               
-                <FluentButton 
-                    Appearance="Appearance.Accent"
-                    OnClick="@OpenCreateDialog"
-                    IconStart="@(new Size20.AddSquare())">
-                    Crear
-                </FluentButton>
-               
-            }
-            else
-            {
-                <FluentButton
-                    Appearance="Appearance.Outline"
-                    OnClick="@RestoreSelectedObjetivos"
-                    Disabled="selectedDeletedObjetivoIds.Count == 0"
-                    IconStart="@(new Size20.ArrowSync())">
-                    Restaurar
-                </FluentButton>
-                <FluentButton 
-                              OnClick="@DeleteSelectedPermanently"
-                              Disabled="@(selectedDeletedObjetivoIds.Count == 0)"
-                              IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Error))">
-                    Eliminar
-                </FluentButton>
-            }
-            </FluentStack>
-        </FluentStack>
+                <!-- Título: 100% ancho en móvil, se ajusta al contenido en escritorio -->
+                <FluentGridItem xs="12" md="6">
+                    <Title Icono="@(new Icons.Filled.Size20.Flag())" ValueTitle="Objetivos"></Title>
+                </FluentGridItem>
 
-        <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
-
-            <FluentTab Id="tab-activos" Label="Activos">
-                @if (isLoadingActivos)
-                {
-                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
-                        <FluentProgressRing/>
-                    </FluentStack>
-                }
-                else
-                {
-                    <div style="overflow-x: auto; width: 100%;">
-                        <div style="min-width: 700px;">
+                <!-- Botones: 100% ancho en móvil, alineados a la derecha en escritorio -->
+                <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
+                    <!-- Stack con flex-wrap para que los botones bajen si no caben en una tablet pequeña -->
+                    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" Gap="8" Style="flex-wrap: wrap;">
+                        @if (ActiveTabId == "tab-activos")
+                        {
+                            <FluentMenuButton Text="Exportar">
+                                <FluentMenuItem Disabled="@(!activeObjetivos.Any())" OnClick="ExportObjetivos">Excel</FluentMenuItem>
+                                <FluentMenuItem Disabled="@(!activeObjetivos.Any())" OnClick="ExportObjetivosPdf">PDF</FluentMenuItem>
+                            </FluentMenuButton>
                             
-                            <ObjetivoDataGrid Objetivos="@activeObjetivos"
-                                              OnEdit="OpenEditDialog"
-                                              @ref="objetivoDataGrid"
-                                              SelectionChanged="OnGridSelectionChanged"
-                                              OnDelete="DeleteObjetivo"
-                                              OnViewDetails="ViewObjetivoDetails"/>
-                        </div>
-                    </div>
-                }
-            </FluentTab>
-
-            <FluentTab Id="tab-papelera" Label="Papelera">
-                @if (isLoadingPapelera)
-                {
-                    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
-                        <FluentProgressRing/>
+                            <FluentButton 
+                                Appearance="Appearance.Accent"
+                                OnClick="@(() => NavigationManager.NavigateTo("/proyecto-estrategico/objetivos"))">
+                                PE
+                            </FluentButton>
+                            
+                            <FluentButton
+                                Appearance="Appearance.Outline"
+                                OnClick="EliminarSeleccionados"
+                                Disabled="@(objetivoDataGrid == null || !objetivoDataGrid.HasSelection)"
+                                IconStart="@(new Icons.Regular.Size16.Delete())">
+                                Eliminar
+                            </FluentButton>
+                           
+                            <FluentButton 
+                                Appearance="Appearance.Accent"
+                                OnClick="@OpenCreateDialog"
+                                IconStart="@(new Size20.AddSquare())">
+                                Crear
+                            </FluentButton>
+                        }
+                        else
+                        {
+                            <FluentButton
+                                Appearance="Appearance.Outline"
+                                OnClick="@RestoreSelectedObjetivos"
+                                Disabled="@(selectedDeletedObjetivoIds.Count == 0)"
+                                IconStart="@(new Size20.ArrowSync())">
+                                Restaurar
+                            </FluentButton>
+                            
+                            <FluentButton 
+                                OnClick="@DeleteSelectedPermanently"
+                                Disabled="@(selectedDeletedObjetivoIds.Count == 0)"
+                                IconStart="@(new Icons.Regular.Size16.Delete().WithColor(Color.Error))">
+                                Eliminar
+                            </FluentButton>
+                        }
                     </FluentStack>
-                }
-                else
-                {
-                    <div style="overflow-x: auto; width: 100%;">
-                    <div style="min-width: 700px;">
-                    <ObjetivoDeletedDataGrid Objetivos="deletedObjetivos"
-                                             SelectedIds="selectedDeletedObjetivoIds"
-                                             SelectedIdsChanged="OnSelectedDeletedIdsChanged"
-                                             OnRestore="RestoreSingleObjetivo"
-                                             OnDeletePermanently="DeletePermanently"/>
-                    </div>
-                    </div>
-                }
-            </FluentTab>
-        </FluentTabs>
-    </FluentStack>
+                </FluentGridItem>
+            </FluentGrid>
+        </FluentGridItem>
+
+        <!-- CONTENIDO: Tabs y Tablas -->
+        <FluentGridItem xs="12">
+            <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
+
+                <FluentTab Id="tab-activos" Label="Activos">
+                    @if (isLoadingActivos)
+                    {
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                            <FluentProgressRing/>
+                        </FluentStack>
+                    }
+                    else
+                    {
+                        <!-- Patrón responsivo para tablas: scroll horizontal si la pantalla es menor a 700px -->
+                        <div style="overflow-x: auto; width: 100%;">
+                            <div style="min-width: 700px;">
+                                <ObjetivoDataGrid Objetivos="@activeObjetivos"
+                                                  OnEdit="OpenEditDialog"
+                                                  @ref="objetivoDataGrid"
+                                                  SelectionChanged="OnGridSelectionChanged"
+                                                  OnDelete="DeleteObjetivo"
+                                                  OnViewDetails="ViewObjetivoDetails"/>
+                            </div>
+                        </div>
+                    }
+                </FluentTab>
+
+                <FluentTab Id="tab-papelera" Label="Papelera">
+                    @if (isLoadingPapelera)
+                    {
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+                            <FluentProgressRing/>
+                        </FluentStack>
+                    }
+                    else
+                    {
+                        <div style="overflow-x: auto; width: 100%;">
+                            <div style="min-width: 700px;">
+                                <ObjetivoDeletedDataGrid Objetivos="deletedObjetivos"
+                                                         SelectedIds="selectedDeletedObjetivoIds"
+                                                         SelectedIdsChanged="OnSelectedDeletedIdsChanged"
+                                                         OnRestore="RestoreSingleObjetivo"
+                                                         OnDeletePermanently="DeletePermanently"/>
+                            </div>
+                        </div>
+                    }
+                </FluentTab>
+            </FluentTabs>
+        </FluentGridItem>
+    </FluentGrid>
 </FluentLayout>

@@ -1,8 +1,9 @@
 ﻿@layout EmptyLayout
 @page "/Account/Login"
-
+@attribute [AllowAnonymous]
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using WEB.Data
 
@@ -37,12 +38,12 @@
                         <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
                             <FluentStack Orientation="Orientation.Horizontal">
                                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
-                                    <FluentTextField Name="Input.Email" @bind-Value="Input.Email" AutoComplete="username" Required="true" Placeholder="name@example.com" Label="Correo electrónico"/>
+                                    <FluentTextField TextFieldType="TextFieldType.Email" Name="Input.Email" @bind-Value="Input.Email" AutoComplete="username" Required="true" Placeholder="name@example.com" Label="Correo electrónico"/>
                                     <FluentValidationMessage For="() => Input.Email" class="text-danger"/>
                                 </FluentStack>
 
                                 <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
-                                    <FluentTextField type="password" Name="Input.Password" @bind-Value="Input.Password" AutoComplete="current-password" Required="true" Placeholder="*****" Label="Contraseña"/>
+                                    <FluentTextField TextFieldType="TextFieldType.Password" Name="Input.Password" @bind-Value="Input.Password" AutoComplete="current-password" Required="true" Placeholder="*****" Label="Contraseña"/>
                                     <FluentValidationMessage For="() => Input.Password" class="text-danger"/>
                                 </FluentStack>
                             </FluentStack>
@@ -69,31 +70,6 @@
             </FluentCard>
         </FluentGridItem>
         
-        @*<FluentGridItem xs="12" sm="6" HiddenWhen="GridItemHidden.Xs">
-            <FluentCard Style="height: 100%; display: flex; flex-direction: column; justify-content: center; overflow: hidden; background-color: #f9f9f9;">
-                <div style="padding: 32px; text-align: center;">
-                    
-                    <FluentStack Orientation="Orientation.Vertical" VerticalGap="20" HorizontalAlignment="HorizontalAlignment.Center">
-                        
-                        <FluentIcon Value="@(new Icons.Regular.Size24.Building())" Color="Color.Custom" CustomColor="#92B921" Style="width: 48px; height: 48px; margin: 0 auto;" />
-                        
-                        <FluentLabel Typo="Typography.H3" Style="margin: 0; color: #222E58;">Acceso Externo</FluentLabel>
-                        <FluentLabel Typo="Typography.Body" Color="Color.Neutral">
-                            Utilice otro servicio para iniciar sesión de forma rápida y segura.
-                        </FluentLabel>
-
-                        <FluentDivider />
-
-                        <ExternalLoginPicker />
-
-                        <FluentAnchor Appearance="Appearance.Hypertext" Href="Account/ResendEmailConfirmation" Style="font-size: 12px;">
-                            Reenviar email de confirmación
-                        </FluentAnchor>
-                    </FluentStack>
-
-                </div>
-            </FluentCard>
-        </FluentGridItem>*@
 
     </FluentGrid>
 
@@ -168,6 +144,11 @@
                     if (roles.Contains(AppRoles.JefeProceso))
                     {
                         RedirectManager.RedirectTo("/indicadores/jefeProceso");
+                        return;
+                    }
+                    if (roles.Contains(AppRoles.UsuarioNormal))
+                    {
+                        RedirectManager.RedirectTo("/pendiente");
                         return;
                     }
                 }

@@ -336,6 +336,12 @@ namespace WEB.Migrations
                     b.Property<decimal>("MetaRealDecimal")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<decimal?>("ValorReal")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal?>("ValorTotal")
+                        .HasColumnType("decimal(18,2)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AreaId");
@@ -399,6 +405,18 @@ namespace WEB.Migrations
 
                     b.Property<int>("Tipo")
                         .HasColumnType("int");
+
+                    b.Property<string>("ValorReal")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("ValorRealAcumulado")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ValorTotal")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal?>("ValorTotalAcumulado")
+                        .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 

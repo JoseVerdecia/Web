@@ -3,194 +3,174 @@
 @using WEB.Core.Extensions
 @using WEB.Enums
 
-        <FluentDataGrid Items="@FilteredItems.AsQueryable()"
-                        Pagination="@paginationState"
-                        GenerateHeader="GenerateHeaderOption.Sticky"
-                        GridTemplateColumns="0.3fr 1.5fr 0.3fr 0.8fr 1fr 0.3fr 0.3fr 0.5fr 0.8fr 1fr"
-                        MultiLine="true"
-                        ShowHover="true"
-                        Style="width: 100%;">
-            <ChildContent>
-                <SelectColumn TGridItem="IndicadorDisplayItem"
-                              SelectMode="DataGridSelectMode.Multiple"
-                              SelectFromEntireRow="false"
-                              Property="@(e => e.IsSelected)"
-                              OnSelect="@(async e => {
-                                            e.Item.IsSelected = e.Selected; 
+<!-- BARRA DE FILTROS FUERA DEL DATAGRID -->
+<FluentStack Orientation="Orientation.Horizontal" Gap="10" Wrap="true" Style="margin-bottom: 12px; align-items: center;">
+    <FluentSearch @bind-Value="nameFilter" 
+                  @bind-Value:after="ResetPagination"
+                  Immediate="true"
+                  Placeholder="Buscar nombre..." 
+                  Style="min-width: 200px; max-width: 300px; flex-grow: 1;" />
+    
+    <FluentSelect Items="evaluacionOptions"
+                  @bind-Value="evaluacionFilter"
+                  @bind-Value:after="ResetPagination"
+                  OptionValue="opt => opt.Value"
+                  OptionText="opt => opt.Text"
+                  Placeholder="Evaluación"
+                  Style="min-width: 150px;" />
+
+    <FluentSelect Items="origenOptions"
+                  @bind-Value="origenFilter"
+                  @bind-Value:after="ResetPagination"
+                  OptionValue="opt => opt.Value"
+                  OptionText="opt => opt.Text"
+                  Placeholder="Origen"
+                  Style="min-width: 150px;" />
+
+    <FluentSelect Items="tipoOptions"
+                  @bind-Value="tipoFilter"
+                  @bind-Value:after="ResetPagination"
+                  OptionValue="opt => opt.Value"
+                  OptionText="opt => opt.Text"
+                  Placeholder="Tipo"
+                  Style="min-width: 150px;" />
+
+    <FluentSelect Items="procesoOptions"
+                  @bind-Value="procesoFilter"
+                  @bind-Value:after="ResetPagination"
+                  OptionValue="opt => opt.Value"
+                  OptionText="opt => opt.Text"
+                  Placeholder="Proceso"
+                  Style="min-width: 180px;" />
+
+    <FluentButton Appearance="Appearance.Outline" 
+                  IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                  OnClick="ClearAllFilters"
+                  Title="Limpiar todos los filtros">
+        Limpiar
+    </FluentButton>
+</FluentStack>
+
+<!-- DATAGRID LIMPIO -->
+<FluentDataGrid Items="@FilteredItems.AsQueryable()"
+                Pagination="@paginationState"
+                GenerateHeader="GenerateHeaderOption.Sticky"
+                GridTemplateColumns="0.3fr 1.5fr 0.3fr 0.8fr 1fr 0.3fr 0.3fr 0.5fr 0.8fr 1fr"
+                MultiLine="true"
+                ShowHover="true"
+                Style="width: 100%;">
+    <ChildContent>
+        <SelectColumn TGridItem="IndicadorDisplayItem"
+                      SelectMode="DataGridSelectMode.Multiple"
+                      SelectFromEntireRow="false"
+                      Property="@(e => e.IsSelected)"
+                      OnSelect="@(async e => {
+                                    e.Item.IsSelected = e.Selected; 
+                                    StateHasChanged(); 
+                                    await SelectionChanged.InvokeAsync(); 
+                                })"
+                      SelectAll="@Items.All(i => i.IsSelected)"
+                      SelectAllChanged="@(async all => { 
+                                            Items.ForEach(i => i.IsSelected = (all == true)); 
                                             StateHasChanged(); 
                                             await SelectionChanged.InvokeAsync(); 
-                                        })"
-                              SelectAll="@Items.All(i => i.IsSelected)"
-                              SelectAllChanged="@(async all => { 
-                                                    Items.ForEach(i => i.IsSelected = (all == true)); 
-                                                    StateHasChanged(); 
-                                                    await SelectionChanged.InvokeAsync(); 
-                                                })" />
+                                        })" />
 
-                <TemplateColumn Title="Nombre"
-                                Align="Align.Start"
-                                Filtered="@(!string.IsNullOrWhiteSpace(nameFilter))">
-                    <ColumnOptions>
-                        <FluentSearch Autofocus="true"
-                                      Immediate="true"
-                                      @bind-Value="nameFilter"
-                                      Placeholder="Buscar nombre..."
-                                      Style="width: 100%;"/>
-                    </ColumnOptions>
-                    <ChildContent>
-                        @{ var tooltipId = $"obs-del-{context.Id}"; }
-                        @if (!string.IsNullOrWhiteSpace(context.Observacion))
-                        {
-                            <FluentTooltip Anchor="@tooltipId" MaxWidth="300px" Delay="200" Position="TooltipPosition.Top">
-                                <div style="white-space: pre-wrap; font-size: 12px;">@context.Observacion</div>
-                            </FluentTooltip>
-                        }
-                        <span class="parent-name" id="@tooltipId">@context.Nombre</span>
-                    </ChildContent>
-                </TemplateColumn>
-
-                <PropertyColumn
-                    HeaderTooltip="Cumplir"
-                    Property="@(i => i.MetaCumplir)"
-                    Align="Align.Center"
-                    Title="Meta"/>
-
-                <TemplateColumn HeaderTooltip="Meta real" Title="Real" Align="Align.Center">
-                    @(context.MetaReal ?? "—")
-                </TemplateColumn>
-
-                <TemplateColumn Title="Evaluación"
-                                Align="Align.Start"
-                                Filtered="@(!string.IsNullOrWhiteSpace(evaluacionFilter))">
-                    <ColumnOptions>
-                        <FluentSelect Items="evaluacionOptions"
-                                      Value="evaluacionFilter"
-                                      Position="SelectPosition.Above"
-                                      Disabled="@(evaluacionOptions == null || !evaluacionOptions.Any())"
-                                      ValueChanged="@(async v => { evaluacionFilter = v; await ResetPagination(); })"
-                                      OptionValue="opt => opt.Value"
-                                      OptionText="opt => opt.Text"
-                                      Placeholder="Filtrar evaluación"/>
-                        <FluentButton Appearance="Appearance.Outline"
-                                      IconStart="@(new Icons.Regular.Size20.ArrowReset())"
-                                      OnClick="ClearEvaluacionFilter"
-                                      Title="Limpiar filtro"/>
-                    </ColumnOptions>
-                    <ChildContent>
-                        <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
-                            @context.Evaluacion.GetDisplayName()
-                        </span>
-                    </ChildContent>
-                </TemplateColumn>
-
-                <TemplateColumn Title="Origen"
-                                Align="Align.Center"
-                                Filtered="@(!string.IsNullOrWhiteSpace(origenFilter))">
-                    <ColumnOptions>
-                        <FluentSelect Items="origenOptions"
-                                      Value="origenFilter"
-                                      Position="SelectPosition.Below"
-                                      Disabled="@(!FilteredItems.Any())"
-                                      ValueChanged="@(async v => { origenFilter = v; await ResetPagination(); })"
-                                      OptionValue="opt => opt.Value"
-                                      OptionText="opt => opt.Text"
-                                      Placeholder="Filtrar origen"/>
-                        <FluentButton Appearance="Appearance.Outline"
-                                      IconStart="@(new Icons.Regular.Size20.ArrowReset())"
-                                      OnClick="ClearOrigenFilter"
-                                      Title="Limpiar filtro"/>
-                    </ColumnOptions>
-                    <ChildContent>
-                        @if (context.Origen == IndicadorOrigen.MES.GetDisplayName())
-                        {
-                            <FluentBadge Appearance="Appearance.Accent">@context.Origen</FluentBadge>
-                        }
-                        else
-                        {
-                            <FluentBadge Appearance="Appearance.Neutral">@context.Origen</FluentBadge>
-                        }
-                    </ChildContent>
-                </TemplateColumn>
-
-                <TemplateColumn Title="Tipo"
-                                Align="Align.Center"
-                                Filtered="@(!string.IsNullOrWhiteSpace(tipoFilter))">
-                    <ColumnOptions>
-                        <FluentSelect Items="tipoOptions"
-                                      Value="tipoFilter"
-                                      Disabled="@(!FilteredItems.Any())"
-                                      Position="SelectPosition.Below"
-                                      ValueChanged="@(async v => { tipoFilter = v; await ResetPagination(); })"
-                                      OptionValue="opt => opt.Value"
-                                      OptionText="opt => opt.Text"
-                                      Placeholder="Filtrar tipo"/>
-                        <FluentButton Appearance="Appearance.Outline"
-                                      IconStart="@(new Icons.Regular.Size20.ArrowReset())"
-                                      OnClick="ClearTipoFilter"
-                                      Title="Limpiar filtro"/>
-                    </ColumnOptions>
-                    <ChildContent>
-                        @if (context.IsEscencial)
-                        {
-                            <b>@context.Tipo</b>
-                        }
-                        else
-                        {
-                            @context.Tipo
-                        }
-                    </ChildContent>
-                </TemplateColumn>
-
-                <TemplateColumn Title="Proceso"
-                                Align="Align.Start"
-                                Filtered="@(!string.IsNullOrWhiteSpace(procesoFilter))">
-                    <ColumnOptions>
-                        <FluentSelect Items="procesoOptions"
-                                      Value="procesoFilter"
-                                      Disabled="@(procesoOptions == null || !procesoOptions.Any())"
-                                      Position="SelectPosition.Below"
-                                      ValueChanged="@(async v => { procesoFilter = v; await ResetPagination(); })"
-                                      OptionValue="opt => opt.Value"
-                                      OptionText="opt => opt.Text"
-                                      Placeholder="Filtrar proceso"/>
-                        <FluentButton Appearance="Appearance.Outline"
-                                      IconStart="@(new Icons.Regular.Size20.ArrowReset())"
-                                      OnClick="ClearProcesoFilter"
-                                      Title="Limpiar filtro"/>
-                    </ColumnOptions>
-                    <ChildContent>
-                        @(context.ProcesoNombre ?? "Sin proceso")
-                    </ChildContent>
-                </TemplateColumn>
-
-                <TemplateColumn Title="OE" Align="Align.Start">
-                    <span class="objetivos-badge">@FormatObjetivos(context.ObjetivosFormatted)</span>
-                </TemplateColumn>
-
-                <TemplateColumn Title="Eliminado" Align="Align.Center">
-                    <FluentBadge Appearance="Appearance.Accent">
-                        @context.DeleteAt?.ToString("dd/MM/yyyy")
-                    </FluentBadge>
-                </TemplateColumn>
-
-                <TemplateColumn Title="Acciones" Align="Align.Start">
-                    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                        <FluentButton Appearance="Appearance.Accent"
-                                      IconStart="@(new Icons.Regular.Size16.ArrowUndo())"
-                                      OnClick="() => OnRestore.InvokeAsync(context)"
-                                      Title="Restaurar indicador" />
-                        <FluentButton Appearance="Appearance.Outline"
-                                      IconStart="@(new Icons.Regular.Size16.Delete())"
-                                      OnClick="() => OnDeletePermanently.InvokeAsync(context)"
-                                      Title="Eliminar permanentemente" />
-                    </FluentStack>
-                </TemplateColumn>
+        <TemplateColumn Title="Nombre" Align="Align.Start">
+            <ChildContent>
+                @{ var tooltipId = $"obs-del-{context.Id}"; }
+                @if (!string.IsNullOrWhiteSpace(context.Observacion))
+                {
+                    <FluentTooltip Anchor="@tooltipId" MaxWidth="300px" Delay="200" Position="TooltipPosition.Top">
+                        <div style="white-space: pre-wrap; font-size: 12px;">@context.Observacion</div>
+                    </FluentTooltip>
+                }
+                <span class="parent-name" id="@tooltipId">@context.Nombre</span>
             </ChildContent>
+        </TemplateColumn>
 
-            <EmptyContent>
-                <EmptyDataGridContent Mensaje="No hay indicadores eliminados" />
-            </EmptyContent>
-        </FluentDataGrid>
+        <PropertyColumn HeaderTooltip="Cumplir"
+                        Property="@(i => i.MetaCumplir)"
+                        Align="Align.Center"
+                        Title="Meta"/>
 
+        <TemplateColumn HeaderTooltip="Meta real" Title="Real" Align="Align.Center">
+            @(context.MetaReal ?? "—")
+        </TemplateColumn>
 
-        <FluentPaginator State="@paginationState" />
+        <TemplateColumn Title="Evaluación" Align="Align.Start">
+            <ChildContent>
+                <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
+                    @context.Evaluacion.GetDisplayName()
+                </span>
+            </ChildContent>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Origen" Align="Align.Center">
+            <ChildContent>
+                @if (context.Origen == IndicadorOrigen.MES.GetDisplayName())
+                {
+                    <FluentBadge Appearance="Appearance.Accent">@context.Origen</FluentBadge>
+                }
+                else
+                {
+                    <FluentBadge Appearance="Appearance.Neutral">@context.Origen</FluentBadge>
+                }
+            </ChildContent>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Tipo" Align="Align.Center">
+            <ChildContent>
+                @if (context.IsEscencial)
+                {
+                    <b>@context.Tipo</b>
+                }
+                else
+                {
+                    @context.Tipo
+                }
+            </ChildContent>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Proceso" Align="Align.Start">
+            <ChildContent>
+                @(context.ProcesoNombre ?? "Sin proceso")
+            </ChildContent>
+        </TemplateColumn>
+
+        <TemplateColumn Title="OE" Align="Align.Start">
+            <ChildContent>
+                <span class="objetivos-badge">@FormatObjetivos(context.ObjetivosFormatted)</span>
+            </ChildContent>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Eliminado" Align="Align.Center">
+            <ChildContent>
+                <FluentBadge Appearance="Appearance.Accent">
+                    @context.DeleteAt?.ToString("dd/MM/yyyy")
+                </FluentBadge>
+            </ChildContent>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Acciones" Align="Align.Start">
+            <ChildContent>
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentButton Appearance="Appearance.Accent"
+                                  IconStart="@(new Icons.Regular.Size16.ArrowUndo())"
+                                  OnClick="() => OnRestore.InvokeAsync(context)"
+                                  Title="Restaurar indicador" />
+                    <FluentButton Appearance="Appearance.Outline"
+                                  IconStart="@(new Icons.Regular.Size16.Delete())"
+                                  OnClick="() => OnDeletePermanently.InvokeAsync(context)"
+                                  Title="Eliminar permanentemente" />
+                </FluentStack>
+            </ChildContent>
+        </TemplateColumn>
+    </ChildContent>
+
+    <EmptyContent>
+        <EmptyDataGridContent Mensaje="No hay indicadores eliminados" />
+    </EmptyContent>
+</FluentDataGrid>
+
+<FluentPaginator State="@paginationState" />

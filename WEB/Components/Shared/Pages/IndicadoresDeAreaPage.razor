@@ -1,0 +1,21 @@
+﻿@page "/indicadores/{Id:int}/areas"
+@attribute [Authorize(Roles = AppRoles.Administrador)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Data
+@rendermode InteractiveServer
+@inject NavigationManager Navigation
+
+<PageTitle>Áreas del Indicador @Id</PageTitle>
+
+<FluentBreadcrumb>
+    <FluentBreadcrumbItem Href="/indicadores">Indicadores</FluentBreadcrumbItem>
+    <FluentBreadcrumbItem>Áreas de @Id</FluentBreadcrumbItem>
+</FluentBreadcrumb>
+
+<IndicadoresDeAreaContent Id="@Id" />
+
+@code{
+    [Parameter]
+    public int Id { get; set; }
+}

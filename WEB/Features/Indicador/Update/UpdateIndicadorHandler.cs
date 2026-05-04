@@ -17,15 +17,12 @@ namespace WEB.Features.Indicador.Update;
 public class UpdateIndicadorHandler : IRequestHandler<UpdateIndicadorCommand, IndicadorDto>
 {
     private readonly IUnitOfWorkAccessor _uow;
-    /*private readonly IOutputCacheStore _cacheStore;*/
     private readonly ICurrentUser _currentUser;
-    //private readonly IHubContext<DashboardHub> _hubContext;
 
-    public UpdateIndicadorHandler(IUnitOfWorkAccessor uow,ICurrentUser currentUser/*,IHubContext<DashboardHub> hubContext*/)
+    public UpdateIndicadorHandler(IUnitOfWorkAccessor uow,ICurrentUser currentUser)
     {
         _uow = uow;
         _currentUser = currentUser;
-     //   _hubContext = hubContext;
     }
 
     public async Task<Result<IndicadorDto>> Handle(UpdateIndicadorCommand command, CancellationToken cancellationToken)
@@ -39,9 +36,8 @@ public class UpdateIndicadorHandler : IRequestHandler<UpdateIndicadorCommand, In
             .BindAsync(indicador => Task.FromResult(ActualizarIndicador(indicador, command)))
             .TapAsync(indicador => ActualizarObjetivos(indicador, command))
             .TapAsync(indicador => ActualizarAreas(indicador, command))
+            .TapAsync(RecalcularPadreSiPorcentual)
             .TapAsync(_ => _uow.Current.SaveAsync())
-           // .TapInvalidateCacheAsync(_cacheStore,cancellationToken,CacheTags.AllIndicadores,CacheTags.IndicadorById)
-        //    .TapAsync(_=> _hubContext.Clients.Group(GroupNames.Administradores).SendAsync("StatsUpdated", cancellationToken))
             .BindAsync(RecargarRelaciones)
             .Map(indicador => indicador.MapToDto());
     }
@@ -58,6 +54,18 @@ public class UpdateIndicadorHandler : IRequestHandler<UpdateIndicadorCommand, In
         return indicador == null
             ? Result<IndicadorModel>.NotFound("Indicador no encontrado")
             : Result<IndicadorModel>.Success(indicador);
+    }
+    private async Task RecalcularPadreSiPorcentual(IndicadorModel indicador)
+    {
+        if (indicador.IsMetaCumplirPorcentaje)
+        {
+            var areas = indicador.IndicadoresDeArea.ToList();
+            var result = EvaluacionHelper.RecalcularIndicadorPadre(indicador, areas);
+            if (result.IsFailure)
+            {
+                Console.WriteLine("Error al recalcular indicador padre: " + result.Errors.FirstOrDefault()?.Message);
+            }
+        }
     }
 
     private async Task<Result<IndicadorModel>> ValidarProceso(IndicadorModel indicador, UpdateIndicadorCommand command)
@@ -113,6 +121,7 @@ public class UpdateIndicadorHandler : IRequestHandler<UpdateIndicadorCommand, In
 
         return Result<IndicadorModel>.Success(indicador);
     }
+    
     private Result<IndicadorModel> ActualizarIndicador(IndicadorModel indicador, UpdateIndicadorCommand command)
     {
       
@@ -121,11 +130,12 @@ public class UpdateIndicadorHandler : IRequestHandler<UpdateIndicadorCommand, In
         indicador.Tipo = command.Tipo;
         indicador.Observacion = command.Observacion;
         indicador.ProcesoId = command.ProcesoId;
+        indicador.ValorTotal = command.ValorTotal;
+        indicador.ValorReal = command.ValorReal;
         
-        return IndicadorDomainService.AplicarMetasYEvaluar(
+        return IndicadorDomainService.ActualizarMetaCumplir(
             indicador, 
-            command.MetaCumplir, 
-            command.MetaReal);
+            command.MetaCumplir);
     }
 
     private async Task ActualizarObjetivos(IndicadorModel indicador, UpdateIndicadorCommand command)
@@ -143,21 +153,18 @@ public class UpdateIndicadorHandler : IRequestHandler<UpdateIndicadorCommand, In
     {
         var nuevasMetas = command.MetaCumplirPorArea ?? new Dictionary<int, string>();
         var nuevasAreaIds = nuevasMetas.Keys.ToHashSet();
-
-        // Eliminar las que ya no están
+        
         var areasAEliminar = indicador.IndicadoresDeArea
             .Where(a => !nuevasAreaIds.Contains(a.AreaId))
             .ToList();
         foreach (var area in areasAEliminar)
             indicador.IndicadoresDeArea.Remove(area);
-
-        // Actualizar o agregar
+        
         foreach (var kvp in nuevasMetas)
         {
             var areaExistente = indicador.IndicadoresDeArea.FirstOrDefault(a => a.AreaId == kvp.Key);
             if (areaExistente != null)
             {
-                //Al actualizar la meta a cumplir, recalcular evaluación automáticamente
                 var resultadoEvaluacion = EvaluacionHelper.ActualizarMetaCumplir(areaExistente, kvp.Value);
                 if (resultadoEvaluacion.IsFailure)
                 {
@@ -175,13 +182,13 @@ public class UpdateIndicadorHandler : IRequestHandler<UpdateIndicadorCommand, In
                 var resultadoParseo = EvaluacionHelper.ActualizarMetaCumplir(nuevoIndicadorDeArea, kvp.Value);
                 if (resultadoParseo.IsFailure)
                 {
-                    // Error en parseo - saltar este indicador
                     continue;
                 }
                 
                 indicador.IndicadoresDeArea.Add(nuevoIndicadorDeArea);
             }
         }
+        
     }
   
 

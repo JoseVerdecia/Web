@@ -1,0 +1,58 @@
+﻿@using Microsoft.FluentUI.AspNetCore.Components
+@using WEB.Core.Mediator
+@using WEB.Enums
+@inject IMediator Mediator
+
+@if (isLoadingObjetivos)
+{
+    <FluentProgressRing />
+}
+else if (!objetivos.Any())
+{
+    <FluentLabel>No hay objetivos registrados.</FluentLabel>
+}
+else
+{
+    <FluentTabs @bind-ActiveTabId="activeTabId" OnTabChange="HandleTabChange">
+        @foreach (var objetivo in objetivos)
+        {
+            var objetivoId = objetivo.Id;
+            var tabId = $"tab-objetivo-{objetivoId}";
+            <FluentTab Id="@tabId" Label="@($"Objetivo#{objetivo.NumeroObjetivo}")">
+                @if (loadingIndicadores.Contains(objetivoId))
+                {
+                    <FluentProgressRing />
+                }
+                else if (!indicadoresPorObjetivo.ContainsKey(objetivoId))
+                {
+                    <FluentLabel>No hay indicadores para este objetivo (con este proceso).</FluentLabel>
+                }
+                else
+                {
+                    var indicadores = indicadoresPorObjetivo[objetivoId];
+                    <table class="pe-table">
+                        <thead>
+                            <tr>
+                                <th>Proceso</th>
+                                <th>INDICADOR</th>
+                                <th>@DateTime.Now.Year</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var ind in indicadores)
+                            {
+                                <tr>
+                                    <td class="celda-proceso">@ind.Proceso?.Nombre</td>
+                                    <td class="@(ind.Tipo == IndicadorTipo.Escencial ? "fila-escencial" : "")">
+                                        @ind.Nombre
+                                    </td>
+                                    <td class="celda-meta">@ind.MetaCumplir</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </FluentTab>
+        }
+    </FluentTabs>
+}

@@ -30,29 +30,7 @@ public partial class IndicadorDeletedDataGrid : ComponentBase
     private List<SelectOption<string?>> procesoOptions = new();
 
     private PaginationState paginationState = new() { ItemsPerPage = 10 };
-
-    /*private IEnumerable<IndicadorDisplayItem> SelectedIndicadores
-    {
-        get => Items.Where(i => SelectedIds.Contains(i.Id));
-        set
-        {
-            SelectedIds = value.Select(i => i.Id).ToHashSet();
-            SelectedIdsChanged.InvokeAsync(SelectedIds);
-        }
-    }*/
-
-    /*private bool SelectAllCheckbox
-    {
-        get => SelectedIds.Count == FilteredItems.Count();
-        set
-        {
-            if (value)
-                SelectedIds = FilteredItems.Select(i => i.Id).ToHashSet();
-            else
-                SelectedIds.Clear();
-            SelectedIdsChanged.InvokeAsync(SelectedIds);
-        }
-    }*//**/
+    
 
     protected override void OnInitialized()
     {
@@ -64,7 +42,16 @@ public partial class IndicadorDeletedDataGrid : ComponentBase
     {
         LoadDynamicOptions();
     }
-
+    private async Task ClearAllFilters()
+    {
+        nameFilter = string.Empty;
+        evaluacionFilter = string.Empty;
+        origenFilter = string.Empty;
+        tipoFilter = string.Empty;
+        procesoFilter = string.Empty;
+    
+        await ResetPagination();
+    }
     private void LoadDynamicOptions()
     {
         evaluacionOptions = Items

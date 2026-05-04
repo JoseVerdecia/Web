@@ -23,11 +23,12 @@ public static class IndicadorDomainService
   public static Result<IndicadorModel> CrearIndicador(
     string nombre,
     string metaCumplir,
-    string? metaReal,
     IndicadorOrigen origen,
     IndicadorTipo tipo,
     string? observacion,
     int procesoId,
+    string? valorTotal,
+    string? valorReal,
     IEnumerable<int> objetivoIds,
     Dictionary<int, string> metasPorArea)
 {
@@ -38,18 +39,7 @@ public static class IndicadorDomainService
     string? metaRealSincronizada = null;
     decimal metaRealDecimal = 0;
     bool isRealPorcentaje = false;
-
-  
-    if (!string.IsNullOrWhiteSpace(metaReal))
-    {
-        if (!MetaHelper.TryParsearMeta(metaReal, out decimal realVal, out bool realPorc))
-            return Result<IndicadorModel>.Fail($"La meta real '{metaReal}' no tiene un formato válido.");
-        
-        metaRealSincronizada = MetaHelper.SincronizarMetaReal(metaCumplir, metaReal);
-     
-        if (!MetaHelper.TryParsearMeta(metaRealSincronizada, out metaRealDecimal, out isRealPorcentaje))
-            return Result<IndicadorModel>.Fail("Error interno al sincronizar la meta real.");
-    }
+    
 
     // Validar metas por área
     foreach (var kvp in metasPorArea)
@@ -65,16 +55,16 @@ public static class IndicadorDomainService
         MetaCumplir = metaCumplir,
         MetaCumplirDecimal = metaCumplirDecimal,
         IsMetaCumplirPorcentaje = isCumplirPorcentaje,
-        MetaReal = metaRealSincronizada ?? metaReal,
+        MetaReal = null,
         MetaRealDecimal = metaRealDecimal,
         IsMetaRealPorcentaje = isRealPorcentaje,
         Origen = origen,
         Tipo = tipo,
         Observacion = observacion,
+        ValorTotal = valorTotal,
+        ValorReal = valorReal,
         ProcesoId = procesoId,
-        Evaluacion = string.IsNullOrWhiteSpace(metaReal) 
-            ? Evaluacion.NoEvaluado 
-            : EvaluacionHelper.EvaluarIndicador(metaRealDecimal, metaCumplirDecimal)
+        Evaluacion = Evaluacion.NoEvaluado 
     };
     
     foreach (var kvp in metasPorArea)
@@ -96,10 +86,9 @@ public static class IndicadorDomainService
     return Result<IndicadorModel>.Success(indicador);
 }
     
-    public static Result<IndicadorModel> AplicarMetasYEvaluar(
+    public static Result<IndicadorModel> ActualizarMetaCumplir(
         IndicadorModel indicador, 
-        string metaCumplir, 
-        string? metaReal)
+        string metaCumplir)
     {
         if (!MetaHelper.TryParsearMeta(metaCumplir, out decimal metaCumplirDecimal, out bool isCumplirPorcentaje))
             return Result<IndicadorModel>.Fail($"La meta a cumplir '{metaCumplir}' no tiene un formato válido.");
@@ -108,28 +97,16 @@ public static class IndicadorDomainService
         decimal metaRealDecimal = 0;
         bool isRealPorcentaje = false;
 
-        if (!string.IsNullOrWhiteSpace(metaReal))
-        {
-            if (!MetaHelper.TryParsearMeta(metaReal, out decimal realVal, out bool realPorc))
-                return Result<IndicadorModel>.Fail($"La meta real '{metaReal}' no tiene un formato válido.");
-
-            metaRealSincronizada = MetaHelper.SincronizarMetaReal(metaCumplir, metaReal);
-
-            if (!MetaHelper.TryParsearMeta(metaRealSincronizada, out metaRealDecimal, out isRealPorcentaje))
-                return Result<IndicadorModel>.Fail("Error interno al sincronizar la meta real.");
-        }
+        
         
         indicador.MetaCumplir = metaCumplir;
         indicador.MetaCumplirDecimal = metaCumplirDecimal;
         indicador.IsMetaCumplirPorcentaje = isCumplirPorcentaje;
-    
-        indicador.MetaReal = metaRealSincronizada ?? metaReal;
+        
         indicador.MetaRealDecimal = metaRealDecimal;
         indicador.IsMetaRealPorcentaje = isRealPorcentaje;
-        
-        indicador.Evaluacion = string.IsNullOrWhiteSpace(metaReal) 
-            ? Evaluacion.NoEvaluado 
-            : EvaluacionHelper.EvaluarIndicador(metaRealDecimal, metaCumplirDecimal);
+
+        indicador.Evaluacion = Evaluacion.NoEvaluado;
 
         return Result<IndicadorModel>.Success(indicador);
     }

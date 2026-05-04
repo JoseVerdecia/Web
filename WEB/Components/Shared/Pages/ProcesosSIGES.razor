@@ -1,0 +1,74 @@
+﻿@page "/proceso/indicadores"
+@attribute [Authorize(Roles = AppRoles.Administrador)]
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled
+@using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Services
+@using WEB.Components
+@inject ExcelExportService ExcelExportService
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject NavigationManager NavigationManager
+
+<PageTitle>Proyecto Estratégico</PageTitle>
+<FluentLayout>
+    <FluentGrid Spacing="5" Style="width: 100%;">
+        <FluentGridItem xs="12">
+            <FluentGrid Justify="JustifyContent.SpaceBetween" AlignItems="Alignment.Center" Spacing="3">
+                <FluentGridItem xs="5" md="8">
+                    <Title ValueTitle="Proyecto Estratégico" Icono="@(new Icons.Filled.Size24.Flowchart())" />
+                </FluentGridItem>
+                <FluentStack HorizontalAlignment="HorizontalAlignment.End" xs="3" md="4" Orientation="Orientation.Horizontal">
+                    <FluentMenuButton Text="Exportar">
+                        <FluentMenuItem Disabled="@(!procesos.Any())" OnClick="@ExportToExcel">Excel</FluentMenuItem>
+                        <FluentMenuItem Disabled="@(!procesos.Any())" OnClick="@ExportToPdf">PDF</FluentMenuItem>
+                    </FluentMenuButton>
+                    <FluentGridItem Justify="JustifyContent.FlexEnd">
+                        <FluentButton Appearance="Appearance.Accent"
+                                      OnClick="@(() => NavigationManager.NavigateTo("/proceso"))"
+                                      IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                            Volver
+                        </FluentButton>
+                    </FluentGridItem>
+                </FluentStack>
+            </FluentGrid>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            @if (isLoadingProcesos)
+            {
+                <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 60px;">
+                    <FluentProgressRing />
+                </FluentStack>
+            }
+            else if (!procesos.Any())
+            {
+                <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 60px;">
+                    <FluentIcon Value="@(new Icons.Regular.Size48.Database())" Style="margin-bottom: 16px; opacity: 0.5;" />
+                    <FluentLabel Typo="Typography.Subject">No hay procesos activos</FluentLabel>
+                    <FluentLabel Typo="Typography.Subject">Cree al menos un proceso para visualizar el proyecto estratégico.</FluentLabel>
+                </FluentStack>
+            }
+            else
+            {
+                <FluentTabs @bind-ActiveTabId="@activeTabId"
+                            OnTabChange="HandleTabChange"
+                            Size="TabSize.Medium">
+                    @foreach (var proceso in procesos)
+                    {
+                        var procesoId = proceso.Id;
+                        var tabId = $"tab-{procesoId}";
+                        <FluentTab Id="@tabId" Label="@proceso.Nombre">
+                            <ProcesoSIGEsTable ProcesoId="procesoId" />
+                        </FluentTab>
+                    }
+                </FluentTabs>
+            }
+        </FluentGridItem>
+    </FluentGrid>
+</FluentLayout>

@@ -5,11 +5,8 @@
 @using Color = Microsoft.FluentUI.AspNetCore.Components.Color
 @using Orientation = Microsoft.FluentUI.AspNetCore.Components.Orientation
 
-<FluentCard Appearance="Appearance.Filled" Style="padding: 20px; background: var(--neutral-layer-2); height: 100%;">
+<FluentCard AreaRestricted="false" Appearance="Appearance.Filled" Style="padding: 20px; background: var(--neutral-layer-2); height: 100%;">
     <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">@Title</FluentLabel>
-    <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="display: block; margin-top: 2px; margin-bottom: 12px;">
-        Seleccione un área para ver el rendimiento de sus indicadores.
-    </FluentLabel>
 
     <FluentSelect Items="@AreaOptions"
                   Value="@SelectedAreaIdStr"
@@ -17,7 +14,7 @@
                   OptionValue="@(opt => opt.Value)"
                   OptionText="@(opt => opt.Text)"
                   Placeholder="Seleccionar área..."
-                  Style="margin-bottom: 16px; max-width: 400px;" />
+                  Style="margin-bottom: 16px;margin-top: 10px; max-width: 400px;" />
 
     @if (SelectedAreaId == null)
     {
@@ -36,17 +33,8 @@
     }
     else
     {
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <FluentBadge Appearance="Appearance.Neutral" Style="font-size: 11px;">
-                @CurrentIndicadores.Count indicadores
-            </FluentBadge>
-            <FluentBadge Appearance="Appearance.Neutral" Color="@CumplimientoColor" Style="font-size: 11px;">
-                Cumplimiento: @PorcentajeArea.ToString("F1")%
-            </FluentBadge>
-        </div>
-
-        <div class="chart-wrapper" style="min-height: 220px;">
-            <ApexChart TItem="IndicadorAreaEvaluacionDto" Options="@ChartOptions">
+        <div class="chart-wrapper">
+            <ApexChart @key="SelectedAreaId" TItem="IndicadorAreaEvaluacionDto" Options="@ChartOptions">
                 <ApexPointSeries TItem="IndicadorAreaEvaluacionDto"
                                  Items="@CurrentIndicadores"
                                  SeriesType="SeriesType.Area"
@@ -125,9 +113,7 @@
             {
                 Labels = new XAxisLabels
                 {
-                    Style = new AxisLabelStyle { FontSize = "10px" },
-                    Rotate = -30,
-                    HideOverlappingLabels = true
+                   Show = false
                 }
             },
             Yaxis = new List<YAxis>

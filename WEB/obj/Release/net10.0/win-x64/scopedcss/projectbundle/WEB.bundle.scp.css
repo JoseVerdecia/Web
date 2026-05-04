@@ -118,6 +118,7 @@
 .meta-area-item[b-er2veiswjq] {
     display: flex;
     gap: 10px;
+    width : 100%;
     align-items: center;
     padding: 12px;
     background-color: var(--neutral-layer-2);
@@ -485,10 +486,7 @@
     color: var(--neutral-stroke-focus);
 }
 
-/* Forzar el salto de línea en todo el grid sin romper nada */
-[b-9q0f3vccu9] fluent-data-grid-cell {
-    overflow: hidden !important;
-    white-space: normal !important;
-    word-break: break-word !important;
-}
 
+[b-9q0f3vccu9] .fluent-splitter .fluent-splitter-panel:first-child {
+    overflow: visible !important;
+}

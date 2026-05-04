@@ -17,6 +17,7 @@
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NotificacionStateService NotificacionState
 @inject IndicadorUpdateStateService IndicadorUpdateState
+@inject AdminPendingUsersState PendingState
 @inject IMediator Mediator
 @rendermode InteractiveServer
 
@@ -160,7 +161,7 @@
         
         _hubConnection.On<NotificacionSignalRDto>("RecibirNotificacion", (notificacion) =>
         {
-            Console.WriteLine($"🔔 RecibirNotificacion recibida. Id: {notificacion.Id}, Count: {notificacion.CountNoLeidas}");
+            Console.WriteLine($"RecibirNotificacion recibida. Id: {notificacion.Id}, Count: {notificacion.CountNoLeidas}");
             InvokeAsync(async () =>
             {
                 NotificacionState.UpdateCount(notificacion.CountNoLeidas);
@@ -178,7 +179,14 @@
             });
         });
         
-        
+        _hubConnection.On("NuevoUsuarioRegistrado", () =>
+        {
+            InvokeAsync(() =>
+            {
+                PendingState.SetCount(PendingState.PendingCount + 1);
+                StateHasChanged();
+            });
+        });
         
         _hubConnection.On<dynamic>("SolicitudActualizada", (data) =>
         {

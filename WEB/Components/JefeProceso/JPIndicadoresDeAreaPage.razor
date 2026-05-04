@@ -1,0 +1,25 @@
+﻿@page "/indicadores/jefeProceso/{Id:int}/areas"
+@layout AppLayout
+@attribute [Authorize(Roles = AppRoles.JefeProceso)]
+@inject NavigationManager NavigationManager
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Data
+@rendermode InteractiveServer
+
+<PageTitle>Áreas del Indicador @Id</PageTitle>
+
+<FluentStack HorizontalAlignment="HorizontalAlignment.End">
+    <FluentButton Appearance="Appearance.Accent"
+                  OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso"))"
+                  IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+        Volver
+    </FluentButton>
+</FluentStack>
+
+<IndicadoresDeAreaContent Id="@Id" />
+
+@code{
+    [Parameter]
+    public int Id { get; set; }
+}

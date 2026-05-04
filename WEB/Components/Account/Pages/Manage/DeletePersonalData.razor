@@ -19,9 +19,7 @@
 <FluentGrid>
     <FluentGridItem sm="6">
         <div class="alert alert-warning" role="alert">
-
             <strong>Eliminar estos datos supondrá la eliminación permanente de su cuenta, y esta no podrá recuperarse.</strong>
-
         </div>
         <EditForm Model="Input" FormName="delete-user" OnValidSubmit="OnValidSubmitAsync" method="post">
             <DataAnnotationsValidator/>
@@ -40,7 +38,6 @@
 
 @code {
     private string? message;
-    private ApplicationUser? user;
     private bool requirePassword;
     private CancellationTokenSource _cancellationToken = new(); 
     [CascadingParameter] private HttpContext HttpContext { get; set; } = default!;
@@ -50,31 +47,46 @@
     protected override async Task OnInitializedAsync()
     {
         Input ??= new();
-        user = await CurrentUser.GetUserAsync(_cancellationToken.Token);
-        if (user is null)
+        
+      
+        var currentUser = await CurrentUser.GetUserAsync(_cancellationToken.Token);
+        if (currentUser is null)
         {
             RedirectManager.RedirectToInvalidUser(UserManager, HttpContext);
             return;
         }
 
-        requirePassword = await UserManager.HasPasswordAsync(user);
+     
+        requirePassword = !string.IsNullOrEmpty(currentUser.PasswordHash);
     }
 
     private async Task OnValidSubmitAsync()
     {
-        if (user is null)
+        
+        var userId = await CurrentUser.GetUserIdAsync();
+        if (string.IsNullOrEmpty(userId))
         {
             RedirectManager.RedirectToInvalidUser(UserManager, HttpContext);
             return;
         }
 
-        if (requirePassword && !await UserManager.CheckPasswordAsync(user, Input.Password))
+       
+        var managedUser = await UserManager.FindByIdAsync(userId);
+        if (managedUser is null)
+        {
+            RedirectManager.RedirectToInvalidUser(UserManager, HttpContext);
+            return;
+        }
+
+        
+        if (requirePassword && !await UserManager.CheckPasswordAsync(managedUser, Input.Password))
         {
             message = "Error: Incorrect password.";
             return;
         }
 
-        var result = await UserManager.DeleteAsync(user);
+       
+        var result = await UserManager.DeleteAsync(managedUser);
         if (!result.Succeeded)
         {
             throw new InvalidOperationException("Unexpected error occurred deleting user.");
@@ -82,15 +94,14 @@
 
         await SignInManager.SignOutAsync();
 
-        var userId = await UserManager.GetUserIdAsync(user);
         Logger.LogInformation("User with ID '{UserId}' deleted themselves.", userId);
 
-        RedirectManager.RedirectToCurrentPage();
+     
+        RedirectManager.RedirectTo("/");
     }
 
     private sealed class InputModel
     {
         [DataType(DataType.Password)] public string Password { get; set; } = "";
     }
-
 }

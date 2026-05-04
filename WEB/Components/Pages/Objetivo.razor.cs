@@ -397,7 +397,7 @@ public partial class Objetivo : ComponentBase
     }
 
     #endregion
-
+    
     public void Dispose()
     {
         _cts.Cancel();

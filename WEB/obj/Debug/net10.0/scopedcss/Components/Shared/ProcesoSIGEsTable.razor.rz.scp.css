@@ -1,0 +1,200 @@
+/* Cabecera de cada sección de tabla (aunque no se usan en este componente, se mantienen por si acaso) */
+.tabla-seccion-header[b-6f1i0mhlwm] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding-left: 2px;
+}
+.tabla-seccion-titulo[b-6f1i0mhlwm] {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Tabla base */
+.siges-table[b-6f1i0mhlwm] {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    border: 1px solid var(--neutral-stroke-divider-rest);
+    overflow: hidden;
+}
+
+.siges-table thead tr[b-6f1i0mhlwm] {
+    background-color: var(--neutral-fill-stealth-rest);
+}
+.siges-table th:last-child[b-6f1i0mhlwm],
+.siges-table td:last-child[b-6f1i0mhlwm] {
+    border-right: none;
+}
+.siges-table th[b-6f1i0mhlwm] {
+    padding: 9px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.78rem;
+    color: var(--neutral-foreground-2);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    border-right: 1px solid #d0d0d0;
+    border-bottom: 2px solid #c0c0c0;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.siges-table td[b-6f1i0mhlwm] {
+    padding: 8px 10px;
+    border-right: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: middle;
+    line-height: 1.4;
+}
+
+.siges-table tbody tr:last-child td[b-6f1i0mhlwm] {
+    border-bottom: none;
+}
+
+/* Solo la tabla cuantitativa alterna por bloques */
+.siges-table-cuantitativos tbody tr.fila-par[b-6f1i0mhlwm] {
+    background-color: #FFF2CA;
+}
+.siges-table-cuantitativos tbody tr:not(.fila-par)[b-6f1i0mhlwm] {
+    background-color: #ffffff;
+}
+
+/* Hover general */
+.siges-table tbody tr:hover[b-6f1i0mhlwm] {
+    background-color: #e2e2e2 !important;
+}
+
+/* Alineación de columnas numéricas */
+.col-meta[b-6f1i0mhlwm],
+.col-real[b-6f1i0mhlwm],
+.col-porcentaje[b-6f1i0mhlwm] {
+    text-align: center !important;
+}
+.siges-table th.col-meta[b-6f1i0mhlwm],
+.siges-table th.col-real[b-6f1i0mhlwm],
+.siges-table th.col-porcentaje[b-6f1i0mhlwm] {
+    text-align: center !important;
+}
+
+/* Anchos de columna – Tabla 1 */
+.col-id[b-6f1i0mhlwm]          { width: 50px;  text-align: center; }
+.col-oe[b-6f1i0mhlwm]          { width: 100px; }
+.col-indicador[b-6f1i0mhlwm]   { width: auto;  min-width: 200px; }
+.col-tipo[b-6f1i0mhlwm]        { width: 50px; }
+.col-meta[b-6f1i0mhlwm]        { width: 90px;  text-align: center; }
+.col-real[b-6f1i0mhlwm]        { width: 90px;  text-align: center; }
+.col-porcentaje[b-6f1i0mhlwm]  { width: 110px; text-align: center; }
+.col-evaluacion[b-6f1i0mhlwm]  { width: 130px; text-align: center; }
+
+/* Celdas especiales */
+.celda-id[b-6f1i0mhlwm] {
+    font-weight: 700;
+    font-size: 0.82rem;
+    color: var(--neutral-foreground-2);
+}
+
+.celda-centro[b-6f1i0mhlwm] { text-align: center; }
+
+.celda-numero[b-6f1i0mhlwm] {
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.celda-vacia[b-6f1i0mhlwm] {
+    color: #9C9C9C;
+}
+
+/* OE a que tributa */
+.oe-text[b-6f1i0mhlwm] {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--brand-color, #0078d4);
+    letter-spacing: 0.02em;
+}
+
+/* Nombre del indicador */
+.indicador-escencial[b-6f1i0mhlwm] {
+    font-weight: 600;
+}
+.indicador-necesario[b-6f1i0mhlwm] {
+    font-weight: 400;
+}
+
+/* Tipo de indicador (E / N) */
+.tipo-tag[b-6f1i0mhlwm] {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 3px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.tipo-e[b-6f1i0mhlwm] {
+    background-color: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffc107;
+}
+.tipo-n[b-6f1i0mhlwm] {
+    background-color: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+}
+.tipo-label[b-6f1i0mhlwm] {
+    font-size: 0.72rem;
+    color: var(--neutral-foreground-3);
+}
+
+/* Porcentaje – valor resaltado */
+.porcentaje-valor[b-6f1i0mhlwm] {
+    font-weight: 700;
+    font-size: 0.88rem;
+}
+
+/* Evaluación */
+.evaluacion-cell[b-6f1i0mhlwm] {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    font-size: 0.82rem;
+    white-space: nowrap;
+    line-height: 1.5;
+}
+.ev-sobrecumplido[b-6f1i0mhlwm] { background-color: #2563eb; }
+.ev-cumplido[b-6f1i0mhlwm]      { background-color: #16a34a; }
+.ev-parcial[b-6f1i0mhlwm]       { background-color: #eab308; }
+.ev-incumplido[b-6f1i0mhlwm]    { background-color: #ea580c; }
+.ev-noevaluado[b-6f1i0mhlwm]    { background-color: #9ca3af; }
+
+/* Tabla 2: Valores Cuantitativos */
+.siges-table-cuantitativos .fila-valor-base td[b-6f1i0mhlwm] {
+    border-bottom: 1px dashed var(--neutral-stroke-divider-rest);
+}
+
+.siges-table-cuantitativos .fila-valor-real td[b-6f1i0mhlwm] {
+    border-bottom: 2px solid var(--neutral-stroke-divider-rest);
+}
+
+.valor-label[b-6f1i0mhlwm] {
+    font-size: 0.82rem;
+    color: var(--neutral-foreground-2);
+    font-style: italic;
+}
+
+.col-id-cuant[b-6f1i0mhlwm]        { text-align: center; }
+.col-valores[b-6f1i0mhlwm]         { }
+.col-datos[b-6f1i0mhlwm]           { text-align: center; font-variant-numeric: tabular-nums; }
+.col-porcentaje-cuant[b-6f1i0mhlwm] { text-align: center; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .siges-table th[b-6f1i0mhlwm],
+    .siges-table td[b-6f1i0mhlwm] {
+        padding: 6px 6px;
+        font-size: 0.78rem;
+    }
+}
