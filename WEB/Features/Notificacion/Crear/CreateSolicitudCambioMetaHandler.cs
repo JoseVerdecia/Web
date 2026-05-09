@@ -1,7 +1,6 @@
 ﻿using WEB.Core.Helpers;
 using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Data.IRepository;
 using WEB.Enums;
 using WEB.Features.Notificacion.Dto;
 using WEB.Interfaces;
@@ -60,7 +59,7 @@ public class CrearSolicitudCambioMetaHandler : IRequestHandler<CrearSolicitudCam
         {
             DestinatarioId = indicadorDeArea.Indicador.Proceso.JefeProcesoId,
             RemitenteId = request.RemitenteId,
-            Cabecera = "Solicitud de cambio de meta",
+            Cabecera = "Solicitud",
             Cuerpo = $"El área '{indicadorDeArea.Area.Nombre}' solicita cambiar la meta del indicador '{indicadorDeArea.Indicador.Nombre}'",
             Tipo = TipoNotificacion.SolicitudCambioMeta,
             Estado = EstadoNotificacion.Pendiente,

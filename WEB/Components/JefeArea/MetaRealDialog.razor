@@ -1,0 +1,46 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Interfaces
+@inject IMediator Mediator
+@inject IUnitOfWorkAccessor UnitOfWorkAccessor
+@attribute [Authorize(Roles = AppRoles.JefeArea)]
+
+<FluentDialogBody>
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="16" Style="width: 100%;">
+       
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="12" Style="flex: 1;">
+            @if (_isPorcentual)
+            {
+                <FluentNumberField @bind-Value="_valorTotal" Label="@_valorTotalLabel" />
+                <FluentNumberField @bind-Value="_valorReal" Label="@_valorRealLabel" />
+            }
+            else
+            {   
+                <FluentNumberField @bind-Value="_metaRealNumerico" Label="Meta Real" />
+            }
+            
+            @if (!string.IsNullOrEmpty(_error))
+            {
+                <FluentLabel Color="Color.Error">@_error</FluentLabel>
+            }
+        </FluentStack>
+    
+    
+        <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" Style="flex: 2;">
+            <FluentTextArea @bind-Value="_valoracionCualitativa"
+                            Label="Valoración Cualitativa"
+                            Rows="12"
+                            Cols="60"
+                            Resize="TextAreaResize.Vertical"
+                            Placeholder="Escriba aquí su valoración…" />
+        </FluentStack>
+    </FluentStack>
+</FluentDialogBody>
+
+<FluentDialogFooter>
+    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.Right">
+        <FluentButton Appearance="Appearance.Stealth" OnClick="Cancel">Cancelar</FluentButton>
+        <FluentButton Appearance="Appearance.Accent" OnClick="Save">Asignar</FluentButton>
+    </FluentStack>
+</FluentDialogFooter>

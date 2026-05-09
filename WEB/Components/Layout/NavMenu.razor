@@ -1,6 +1,4 @@
 ﻿@rendermode InteractiveServer
-@using WEB.Components.Shared
-@using WEB.Core.Extensions
 @using WEB.Core.Mediator
 @using WEB.Core.Services
 @using WEB.Interfaces
@@ -18,12 +16,13 @@
     <nav class="sitenav" aria-labelledby="main-menu">
         <FluentNavMenu Id="main-menu" Collapsible="true" Width="250" Title="Navigation menu" @bind-Expanded="expanded" CustomToggle="true">
             
-            <AuthorizeView>
+            <AuthorizeView Roles="@(AppRoles.Administrador)">
                 <Authorized>
                     @if (CurrentUser.IsInRole(AppRoles.Administrador))
                     {
                         
-                        <FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.ChartMultiple())" Match="NavLinkMatch.All">Dashboard</FluentNavLink>
+                        <FluentNavLink Href="/" Icon="@(new Icons.Regular.Size20.Home())" Match="NavLinkMatch.All">Inicio</FluentNavLink>
+                        <FluentNavLink Href="/dashboard" Icon="@(new Icons.Regular.Size20.ChartMultiple())" Match="NavLinkMatch.All">Dashboard</FluentNavLink>
                         <FluentNavLink Href="/proceso" Icon="@(new Icons.Regular.Size20.Flowchart())" IconColor="Color.Accent">Proceso</FluentNavLink>
                         <FluentNavLink Href="/areas" Icon="@(new Icons.Regular.Size20.Location())">Áreas</FluentNavLink>
                         <FluentNavLink Href="/objetivos" Icon="@(new Icons.Regular.Size20.Flag())">Objetivos</FluentNavLink>
@@ -39,7 +38,7 @@
                                 Usuarios
                             </FluentNavLink>
                         </FluentCounterBadge>
-                        <FluentNavLink Href="/evaluacion/programar" Icon="@(new Icons.Regular.Size20.ClipboardTask())">Evaluacion</FluentNavLink>
+                        <FluentNavLink Href="/evaluacion/programar-periodo" Icon="@(new Icons.Regular.Size20.ClipboardTask())">Evaluacion</FluentNavLink>
                     }
                     @if (CurrentUser.IsInRole(AppRoles.JefeProceso))
                     {
@@ -64,14 +63,20 @@
 @code {
     private bool expanded = false;
     private bool navGroupExpanded = true;
- 
+    
     protected override async Task OnInitializedAsync()
     {
-        
-        var result = await Mediator.Send(new GetPendingUsersCountRequest());
-        if (result.IsSuccess)
-            PendingState.SetCount(result.Value.Count);
-        
+        try
+        {
+            var result = await Mediator.Send(new GetPendingUsersCountRequest());
+            if (result.IsSuccess)
+                PendingState.SetCount(result.Value.Count);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error al cargar usuarios pendientes: {ex.Message}");
+        }
+    
         PendingState.OnChange += StateHasChanged;
     }
 

@@ -6,5 +6,5 @@ namespace WEB.Features.IndicadorDeArea.Get;
 
 public record GetIndicadorDeAreaRequest(int id):IRequest<IndicadorDeAreaDto>,IRequireAuthorization
 {
-    public string[] Roles => new[] { AppRoles.JefeArea };
+    public string[] Roles => new[] { AppRoles.JefeArea,AppRoles.JefeProceso };
 }

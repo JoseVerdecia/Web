@@ -1,0 +1,62 @@
+﻿@page "/objetivos-siges"
+@attribute [Authorize(Roles = AppRoles.Administrador)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Services
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject ExportPdfService ExportPdfService
+@inject IJSRuntime  JSRuntime
+@inject ExcelExportService ExcelExportService
+@inject NavigationManager Navigation
+
+
+<FluentLayout>
+    <FluentGrid Spacing="4">
+        <FluentGridItem xs="12">
+            @if (isLoadingObjetivos)
+            {
+                <FluentProgressRing />
+            }
+            else if (!objetivos.Any())
+            {
+            <FluentLabel>No hay objetivos registrados.</FluentLabel>
+            }
+            else
+            {
+                <FluentStack Width="100%" HorizontalAlignment="HorizontalAlignment.End">
+                    <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar">
+                        <FluentMenuItem Disabled="isExporting" OnClick="ExportCurrentObjectiveToExcel">Excel</FluentMenuItem>
+                        <FluentMenuItem OnClick="ExportCurrentObjectiveToPdf">PDF</FluentMenuItem>
+                    </FluentMenuButton>
+                    <FluentButton Appearance="Appearance.Accent"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowLeft())"
+                                  OnClick="@(() => Navigation.NavigateTo("/objetivos"))">
+                        Volver
+                    </FluentButton>
+                </FluentStack>
+             
+                @if (!string.IsNullOrEmpty(currentObjetivoNombre))
+                {
+                    <FluentCard Style="margin-top:10px; margin-bottom:15px; padding:16px;" Height="fit-content">
+                        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
+                            @currentObjetivoNombre
+                        </FluentLabel>
+                    </FluentCard>
+                }
+            <FluentTabs @bind-ActiveTabId="activeTabId" OnTabChange="HandleTabChange">
+                @foreach (var obj in objetivos)
+                {
+                <FluentTab Id="@($"tab-{obj.Id}")" Label="@($"Objetivo {obj.NumeroObjetivo}")">
+                    <ObjetivoSIGEsTable ObjetivoId="obj.Id" />
+                </FluentTab>
+                }
+            </FluentTabs>
+            }
+        </FluentGridItem>
+    </FluentGrid>
+</FluentLayout>
+
+

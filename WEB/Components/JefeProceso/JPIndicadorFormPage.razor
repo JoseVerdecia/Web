@@ -7,7 +7,7 @@
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
 
-<PageTitle>@(Id == null ? "Crear Indicador" : "Editar Indicador #" + Id)</PageTitle>
+
 
 <IndicadorFormContent Id="@Id"
                       OnSaved="@(() => Navigation.NavigateTo("/indicadores/jefeProceso"))"

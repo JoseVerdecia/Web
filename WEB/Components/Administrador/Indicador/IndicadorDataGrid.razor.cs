@@ -23,7 +23,9 @@ public partial class IndicadorDataGrid : ComponentBase
         item.IsSelected = selected;
         await SelectionChanged.InvokeAsync();
     }
-
+    
+    private void NavigateToHistorial(int id) => NavigationManager.NavigateTo($"/notificaciones/indicador/{id}");
+    
     private async Task OnSelectAllChanged(bool? all)
     {
         Items.ForEach(i => i.IsSelected = (all == true));
@@ -121,16 +123,7 @@ public partial class IndicadorDataGrid : ComponentBase
             (string.IsNullOrEmpty(procesoFilter) || 
              i.ProcesoNombre == procesoFilter)
         );
-
-    private async Task HandleRowClick(FluentDataGridRow<IndicadorDisplayItem> row)
-    {
-        if (row.Item != null)
-        {
-            _selectedItemId = row.Item.Id; 
-            await OnRowSelected.InvokeAsync(row.Item);
-            StateHasChanged();
-        }
-    }
+    
         
     
     

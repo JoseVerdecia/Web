@@ -9,16 +9,20 @@ public class IndicadorDeAreaDto
     public string AreaNombre { get; set; } = null!;
 
     public int IndicadorPadreId { get; set; }
+    public IndicadorTipo IndicadorPadreTipo { get; set; }
+    public string ProcesoNombre { get; set; }
     
     public string MetaCumplirIndicadorPadre { get; set; }
     public string NombreIndicadorPadre { get; set; }
     public string? MetaReal { get; set; }
+    public decimal MetaRealDecimal { get; set; }
     public string MetaCumplir { get; set; }
+    public decimal MetaCumplirDecimal { get; set; }
     public bool IsMetaCumplirPorcentual { get; set; }
-    
+    public bool IsRealPorcentual { get; set; }
     public decimal? ValorTotal {get; set; }
     public decimal? ValorReal { get; set; }
-    
+    public string? ValorCualitativo {get;set;}
     public string? ValorTotalLabel { get; set; }
     public string? ValorRealLabel { get; set; }
     public AreaTipo Tipo { get; set; }

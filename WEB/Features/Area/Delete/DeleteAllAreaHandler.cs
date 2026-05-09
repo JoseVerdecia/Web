@@ -1,8 +1,6 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Data.IRepository;
 using WEB.Interfaces;
-using WEB.Models;
 
 namespace WEB.Features.Area.Delete;
 

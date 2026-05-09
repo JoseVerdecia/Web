@@ -1,7 +1,14 @@
 ﻿@using WEB.Common
 @using WEB.Core.Extensions
+@using WEB.Core.Services
+@using WEB.Data
 @using WEB.Enums
 @using WEB.Features.IndicadorDeArea.Dto
+@using WEB.Interfaces
+@inject NavigationManager NavigationManager
+@inject ICurrentUser CurrentUser
+@inject EvaluationPeriodService EvaluationPeriod
+
 @if (Areas == null || !Areas.Any())
 {
     <FluentCard Style="padding: 20px; text-align: center;">
@@ -15,7 +22,6 @@ else
                     DisplayMode="DataGridDisplayMode.Table"
                      ShowHover="true"
                     Pagination="@paginationState"
-                    GridTemplateColumns="@(IndicadorEsPorcentual ? "1fr 0.5fr 0.5fr 0.5fr 0.5fr 1.5fr" : "1fr 0.5fr 0.5fr 1.5fr")"
                     MultiLine="true"
                     Style="width: 100%;">
 
@@ -35,17 +41,22 @@ else
                 </ChildContent>
             </TemplateColumn>
         
-            <PropertyColumn Property="@(a => a.MetaCumplir)" Title="Meta" Align="Align.Center" />
-            
             @if (IndicadorEsPorcentual)
             {
-                <PropertyColumn Property="@(a => a.ValorTotal)" Title="Valor Total" Align="Align.Center" />
-                <PropertyColumn Property="@(a => a.ValorReal)" Title="Valor Real" Align="Align.Center" />
+                <TemplateColumn Title="Valor Total" Align="Align.Center">
+                    @FormatearDecimal(context.ValorTotal)
+                </TemplateColumn>
+                <TemplateColumn Title="Valor Real" Align="Align.Center">
+                    @FormatearDecimal(context.ValorReal)
+                </TemplateColumn>
             }
-        
-            <TemplateColumn Title="Real" Align="Align.Center">
-                @(context.MetaReal ?? "—")
-            </TemplateColumn>
+        @if (EvaluationPeriod.IsActive)
+            {
+                <TemplateColumn Title="Real" Align="Align.Center">
+                    @(context.MetaReal ?? "—")
+                </TemplateColumn>
+            }
+          
             
             <TemplateColumn Title="Tipo"
                             Align="Align.Center"
@@ -69,30 +80,47 @@ else
                     </FluentBadge>
                 </ChildContent>
             </TemplateColumn>
-        
-            <TemplateColumn Title="Evaluación"
-                            Align="Align.Center"
-                            Filtered="@(!string.IsNullOrWhiteSpace(evaluacionFilter))">
-                <ColumnOptions>
-                    <FluentSelect Items="evaluacionOptions"
-                                  Position="SelectPosition.Below"
-                                  Value="evaluacionFilter"
-                                  ValueChanged="@(async v => { evaluacionFilter = v; await ResetPagination(); })"
-                                  OptionValue="opt => opt.Value"
-                                  OptionText="opt => opt.Text"
-                                  Placeholder="Filtrar evaluación"/>
+            
+            @if (EvaluationPeriod.IsActive)
+            {
+                <TemplateColumn Title="Evaluación"
+                                Align="Align.Center"
+                                Filtered="@(!string.IsNullOrWhiteSpace(evaluacionFilter))">
+                    <ColumnOptions>
+                        <FluentSelect Items="evaluacionOptions"
+                                      Position="SelectPosition.Below"
+                                      Value="evaluacionFilter"
+                                      ValueChanged="@(async v => { evaluacionFilter = v; await ResetPagination(); })"
+                                      OptionValue="opt => opt.Value"
+                                      OptionText="opt => opt.Text"
+                                      Placeholder="Filtrar evaluación"/>
                     
-                    <FluentButton Appearance="Appearance.Outline"
-                                  IconStart="@(new Icons.Regular.Size20.ArrowReset())"
-                                  OnClick="ClearEvaluacionFilter"
-                                  Title="Limpiar filtro"/>
-                </ColumnOptions>
-                <ChildContent>
-                    <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
-                        @context.Evaluacion.GetDisplayName()
-                    </span>
-                </ChildContent>
-            </TemplateColumn>
+                        <FluentButton Appearance="Appearance.Outline"
+                                      IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                                      OnClick="ClearEvaluacionFilter"
+                                      Title="Limpiar filtro"/>
+                    </ColumnOptions>
+                    <ChildContent>
+                        <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
+                            @context.Evaluacion.GetDisplayName()
+                        </span>
+                    </ChildContent>
+                </TemplateColumn>
+            }
+        
+          
+            @if (CurrentUser.IsInRole(AppRoles.JefeProceso))
+            {
+                @if (EvaluationPeriod.IsActive)
+                {
+                    <TemplateColumn Title="Acciones" Align="Align.Center">
+                        <FluentButton IconStart="@(new Icons.Regular.Size16.Edit())"
+                                      Appearance="Appearance.Lightweight"
+                                      OnClick="@(() => NavigateToEvaluate(context.Id))"
+                                      Title="Evaluar indicador de área"/>
+                    </TemplateColumn>
+                }
+            }
         </ChildContent>
         
         <EmptyContent>
@@ -141,6 +169,13 @@ else
     .ToList();
     }
 
+    private string FormatearDecimal(decimal? valor)
+    {
+        if (valor == null) return "—";
+        if (valor % 1 == 0) return valor.Value.ToString("N0");
+        return valor.Value.ToString("N2");
+    }
+    
     private IEnumerable<IndicadorDeAreaDto> FilteredItems =>
         Areas.Where(i =>
             (string.IsNullOrEmpty(nameFilter) || i.AreaNombre.Contains(nameFilter, StringComparison.OrdinalIgnoreCase)) &&
@@ -162,5 +197,9 @@ else
     {
         evaluacionFilter = null;
         await ResetPagination();
+    }
+    private void NavigateToEvaluate(int id)
+    {
+        NavigationManager.NavigateTo($"/evaluar/indicador-de-area/{id}");
     }
 }

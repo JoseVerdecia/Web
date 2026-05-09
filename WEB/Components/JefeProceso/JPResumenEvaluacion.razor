@@ -1,0 +1,125 @@
+﻿@page "/resumen-proceso-jefe"
+@layout AppLayout
+@attribute [Authorize(Roles = AppRoles.JefeProceso)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Core.Extensions
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Interfaces
+@using WEB.Services
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@inject IJSRuntime JSRuntime
+@inject ExcelExportService ExportService
+@inject ExportPdfService ExportPdfService
+@inject NavigationManager NavigationManager
+
+
+<FluentLayout>
+    <FluentGrid Spacing="4">
+       
+        <FluentGridItem xs="12">
+            <FluentGrid Spacing="2" Justify="JustifyContent.SpaceBetween" Style="width: 100%;">
+                <FluentGridItem xs="12" md="6" Style="padding-bottom: 8px;">
+                    <Title Icono="@(new Icons.Regular.Size24.AppsList())" ValueTitle="Resumen de Evaluacion" />
+                </FluentGridItem>
+                <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
+                    <FluentStack Orientation="Orientation.Horizontal"
+                                 Wrap="true"
+                                 HorizontalGap="8"
+                                 VerticalGap="8"
+                                 HorizontalAlignment="HorizontalAlignment.End">
+                        <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar">
+                            <FluentMenuItem  OnClick="@(() => ExportToExcel())">Excel</FluentMenuItem>
+                            <FluentMenuItem OnClick="@(() => ExportToPdf())">PDF</FluentMenuItem>
+                        </FluentMenuButton>
+                        <FluentButton Appearance="Appearance.Accent"
+                                      OnClick="@(() => NavigationManager.NavigateTo("/jefe-proceso/evaluacion"))"
+                                      IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                            Volver
+                        </FluentButton>
+                    </FluentStack>
+                </FluentGridItem>
+            </FluentGrid>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            @if (isLoading)
+            {
+                <FluentProgressRing />
+            }
+            else if (datosProceso == null)
+            {
+                <FluentLabel>No se encontró su proceso o no tiene indicadores registrados.</FluentLabel>
+            }
+            else
+            {
+                <div style="overflow-x: auto;">
+                        <table class="resumen-table">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">PROCESOS</th>
+                                <th rowspan="2">CATEGORÍA</th>
+                                <th rowspan="2">TOTAL</th>
+                                <th colspan="2">SOBRE-CUMPLIDOS</th>
+                                <th colspan="2">CUMPLIDOS</th>
+                                <th colspan="2">SC+C</th>
+                                <th colspan="2">PARCIALMENTE CUMPLIDO</th>
+                                <th colspan="2">SC+C+PC</th>
+                                <th colspan="2">INCUMPLIDOS</th>
+                                <th rowspan="2">NO EVALUADOS</th>
+                                <th rowspan="2">EVALUACIÓN DEL PROCESO</th>
+                            </tr>
+                            <tr>
+                                <th>TOTAL</th><th>%</th>
+                                <th>TOTAL</th><th>%</th>
+                                <th>TOTAL</th><th>%</th>
+                                <th>TOTAL</th><th>%</th>
+                                <th>TOTAL</th><th>%</th>
+                                <th>TOTAL</th><th>%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var fila in datosProceso.Filas)
+                            {
+                                var esPrimeraFila = fila == datosProceso.Filas.First();
+                                <tr class="@(fila.Nombre == "Indicadores esenciales" ? "fila-esencial" : "")">
+                                    @if (esPrimeraFila)
+                                    {
+                                        <td class="celda-proceso" rowspan="@datosProceso.Filas.Count">
+                                            @datosProceso.NombreProceso
+                                        </td>
+                                    }
+                                    <td>@fila.Nombre</td>
+                                    <td class="celda-numero">@fila.Total</td>
+                                    <td class="celda-numero">@fila.Sobrecumplidos</td>
+                                    <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajeS)</td>
+                                    <td class="celda-numero">@fila.Cumplidos</td>
+                                    <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajeC)</td>
+                                    <td class="celda-numero">@fila.SCplusC</td>
+                                    <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajeSCplusC)</td>
+                                    <td class="celda-numero">@fila.ParcialmenteCumplidos</td>
+                                    <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajePC)</td>
+                                    <td class="celda-numero">@fila.SCplusCplusPC</td>
+                                    <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajeSCplusCplusPC)</td>
+                                    <td class="celda-numero">@fila.Incumplidos</td>
+                                    <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajeI)</td>
+                                    <td class="celda-numero">@fila.NoEvaluados</td>
+                                    @if (esPrimeraFila)
+                                    {
+                                        <td class="celda-evaluacion" rowspan="@datosProceso.Filas.Count">
+                                            @datosProceso.EvaluacionProceso.GetDisplayName()
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </FluentGridItem>
+    </FluentGrid>
+</FluentLayout>

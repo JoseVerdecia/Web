@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.OutputCaching;
-using Microsoft.AspNetCore.SignalR;
-using WEB.Core.Mediator;
+﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Core.Services;
-using WEB.Data.IRepository;
 using WEB.Features.Indicador.Dto;
 using WEB.Interfaces;
 using WEB.Models;

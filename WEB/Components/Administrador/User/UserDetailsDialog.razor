@@ -21,8 +21,7 @@
                 <FluentBadge Appearance="@GetBadgeAppearance(Content.Role)">@Content.Role</FluentBadge>
             </FluentStack>
         </FluentStack>
-
-        <!-- Datos del usuario -->
+        
         <FluentStack Orientation="Orientation.Vertical" VerticalGap="8" Style="padding: 8px 0;">
             <FluentLabel><b>Email confirmado:</b> @(Content.EmailConfirmed ? "✅ Sí" : "❌ No")</FluentLabel>
 
@@ -45,8 +44,7 @@
                 </FluentMessageBar>
             }
         </FluentStack>
-
-        <!-- Acciones según rol -->
+        
         <FluentDivider Role="DividerRole.Presentation" />
         
         <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" HorizontalGap="8">

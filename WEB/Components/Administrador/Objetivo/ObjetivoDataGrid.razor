@@ -1,10 +1,13 @@
 ﻿@using WEB.Components.Shared
 @using WEB.Core.Extensions
+@using WEB.Core.Services
 @using WEB.Features.Objetivo.Dto
+@inject EvaluationPeriodService EvaluationPeriod
+
 <FluentDataGrid Items="@FilteredObjetivos.AsQueryable()"
                 Pagination="@paginationState"
                 ResizableColumns="true"
-                GridTemplateColumns="0.5fr 4.4fr 1fr 1fr 1fr"
+                GridTemplateColumns="@(EvaluationPeriod.IsActive ? "0.5fr 4.4fr 1fr 1fr 1fr" : "0.5fr 4.4fr 1fr 1fr")"
                 MultiLine="true"
                 Style="width: 100%;">
     <ChildContent>
@@ -29,13 +32,17 @@
             OBJETIVO#@context.NumeroObjetivo
         </TemplateColumn>
 
-        <TemplateColumn Align="Align.Center" Title="Evaluacion">
-            <ChildContent>
-                <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
-                    @context.Evaluacion.GetDisplayName()
-                </span>
-            </ChildContent>
-        </TemplateColumn>
+        @if (EvaluationPeriod.IsActive)
+        {
+            <TemplateColumn Align="Align.Center" Title="Evaluacion">
+                <ChildContent>
+                    <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
+                        @context.Evaluacion.GetDisplayName()
+                    </span>
+                </ChildContent>
+            </TemplateColumn>
+        }
+       
 
         <TemplateColumn Title="Acciones" Align="Align.Center">
             <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5" HorizontalAlignment="HorizontalAlignment.Center">

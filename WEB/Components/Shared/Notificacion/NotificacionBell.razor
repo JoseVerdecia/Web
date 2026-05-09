@@ -1,10 +1,8 @@
-﻿@using Microsoft.AspNetCore.SignalR.Client
-@using WEB.Common
+﻿@using WEB.Common
 @using WEB.Core.Mediator
 @using WEB.Core.Services
 @using WEB.Features.Notificacion.GetCount
 @using WEB.Interfaces
-@using WEB.Models
 @inject INotificationService NotificationService
 @inject ICurrentUser CurrentUser
 @inject NavigationManager Navigation
@@ -23,7 +21,7 @@
                         ShowOverflow="true">
         <FluentIcon Value="@(new Icons.Regular.Size24.Alert())"
                     Size="20"
-                    Color="Color.Neutral" />
+                    Color="Color.Accent" />
     </FluentCounterBadge>
 </FluentAnchor>
 

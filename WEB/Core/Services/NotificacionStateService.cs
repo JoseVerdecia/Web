@@ -29,7 +29,6 @@ public class NotificacionStateService
     
     public void AddNotificacion(NotificacionDto notif)
     {
-        // evitar duplicados
         if (Notificaciones.Any(n => n.Id == notif.Id))
             return;
 

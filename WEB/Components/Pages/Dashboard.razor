@@ -1,5 +1,5 @@
-﻿@page "/"
-@attribute [Authorize]
+﻿@page "/dashboard"
+@attribute [Authorize(Roles = AppRoles.Administrador)]
 @using ApexCharts
 @using Microsoft.AspNetCore.Authorization
 @using WEB.Components.Shared
@@ -28,7 +28,7 @@
     }
 </style>
 
-<PageTitle>Dashboard</PageTitle>
+
 
 @if (CurrentUser.IsInRole(AppRoles.Administrador))
 {
@@ -200,9 +200,10 @@
     private string? Error { get; set; }
     private DashboardUnificadoDto? Datos { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadDataAsync();
+        if(firstRender)
+            await LoadDataAsync();
     }
 
     private async Task LoadDataAsync()
@@ -226,6 +227,7 @@
         finally
         {
             Cargando = false;
+            StateHasChanged();
         }
     }
 }

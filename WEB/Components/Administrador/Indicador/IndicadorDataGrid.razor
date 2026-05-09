@@ -1,9 +1,13 @@
 ﻿@using WEB.Common
 @using WEB.Components.Shared
 @using WEB.Core.Extensions
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Interfaces
 @using WEB.Enums
 @inject NavigationManager NavigationManager
-
+@inject ICurrentUser CurrentUser
+@inject EvaluationPeriodService EvaluationPeriod
 
 <FluentStack Orientation="Orientation.Horizontal" Gap="10" Wrap="true" Style="margin-bottom: 12px; align-items: center;">
     <FluentSearch @bind-Value="nameFilter"
@@ -12,13 +16,17 @@
                   Placeholder="Buscar nombre..."
                   Style="min-width: 200px; max-width: 300px; flex-grow: 1;" />
 
-    <FluentSelect Items="evaluacionOptions"
-                  @bind-Value="evaluacionFilter"
-                  @bind-Value:after="ResetPagination"
-                  OptionValue="opt => opt.Value"
-                  OptionText="opt => opt.Text"
-                  Placeholder="Evaluación"
-                  Style="min-width: 150px;" />
+    @if (EvaluationPeriod.IsActive)
+    {
+        <FluentSelect Items="evaluacionOptions"
+                      @bind-Value="evaluacionFilter"
+                      @bind-Value:after="ResetPagination"
+                      OptionValue="opt => opt.Value"
+                      OptionText="opt => opt.Text"
+                      Placeholder="Evaluación"
+                      Style="min-width: 150px;" />
+    }
+  
 
     <FluentSelect Items="origenOptions"
                   @bind-Value="origenFilter"
@@ -57,11 +65,10 @@
                 Pagination="@paginationState"
                 GenerateHeader="GenerateHeaderOption.Sticky"
                 DisplayMode="DataGridDisplayMode.Table"
-                GridTemplateColumns="0.5fr 2fr 0.3fr 0.3fr 1fr 0.3fr 0.3fr 1fr 1fr 0.5fr"
+                GridTemplateColumns="@(EvaluationPeriod.IsActive ? "1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr" : "1fr 2fr 1fr 1fr 1fr 1fr 1fr 1fr")"
                 MultiLine="true"
                 ShowHover="true"
                 RowClass="@GetRowClass"
-                OnRowDoubleClick="(FluentDataGridRow<IndicadorDisplayItem> row) => HandleRowClick(row)"
                 Style="width: 100%; overflow: visible !important;">
     <ChildContent>
         <SelectColumn TGridItem="IndicadorDisplayItem"
@@ -98,17 +105,21 @@
                         Align="Align.Center"
                         Title="Meta"/>
 
-        <TemplateColumn HeaderTooltip="Meta real del indicador" Title="Real" Align="Align.Center">
-            @(context.MetaReal ?? "—")
-        </TemplateColumn>
+        @if (EvaluationPeriod.IsActive)
+        {
+            <TemplateColumn HeaderTooltip="Meta real del indicador" Title="Real" Align="Align.Center">
+                @(context.MetaReal ?? "—")
+            </TemplateColumn>
 
-        <TemplateColumn Title="Evaluación" Align="Align.Center">
-            <ChildContent>
-                <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
-                    @context.Evaluacion.GetDisplayName()
-                </span>
-            </ChildContent>
-        </TemplateColumn>
+            <TemplateColumn Title="Evaluación" Align="Align.Center">
+                <ChildContent>
+                    <span style="color: @context.Evaluacion.GetBadgeColor();font-size: 12px; font-weight: bold;">
+                        @context.Evaluacion.GetDisplayName()
+                    </span>
+                </ChildContent>
+            </TemplateColumn>
+        }
+      
 
         <TemplateColumn Title="Origen" HeaderTooltip="Origen del Indicador (MES/INTERNO)" Align="Align.Center">
             <ChildContent>
@@ -149,16 +160,45 @@
         </TemplateColumn>
 
         <TemplateColumn Title="Acciones" Align="Align.Start">
-            <ChildContent>
+    <ChildContent>
+        @if (CurrentUser.IsInRole(AppRoles.JefeProceso))
+        {
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="5">
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
-                    <FluentButton StopPropagation="true" Appearance="Appearance.Accent" IconStart="@(new Icons.Regular.Size16.Edit())" OnClick="@(() => NavigateToEdit(context.Id))" Title="Editar indicador"/>
+                    <FluentButton StopPropagation="true" Appearance="Appearance.Accent"
+                                  IconStart="@(new Icons.Regular.Size16.Edit())"
+                                  OnClick="@(() => NavigateToEdit(context.Id))" Title="Editar indicador"/>
                     <FluentButton StopPropagation="true" Appearance="Appearance.Lightweight"
                                   IconStart="@(new Icons.Regular.Size16.Grid())"
                                   OnClick="@(() => NavigateToAreas(context.Id))" Title="Ver áreas"/>
-                    <FluentButton StopPropagation="true" Appearance="Appearance.Outline" IconStart="@(new Icons.Regular.Size16.Delete())" OnClick="() => OnDelete.InvokeAsync(context)" Title="Eliminar indicador"/>
                 </FluentStack>
-            </ChildContent>
-        </TemplateColumn>
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                    <FluentButton StopPropagation="true" Appearance="Appearance.Outline"
+                                  IconStart="@(new Icons.Regular.Size16.Delete())"
+                                  OnClick="() => OnDelete.InvokeAsync(context)" Title="Eliminar indicador"/>
+                    <FluentButton StopPropagation="true" Appearance="Appearance.Lightweight"
+                                  IconStart="@(new Icons.Regular.Size16.History())"
+                                  OnClick="@(() => NavigateToHistorial(context.Id))"
+                                  Title="Historial de solicitudes" />
+                </FluentStack>
+            </FluentStack>
+        }
+        else
+        {
+            <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="5">
+                <FluentButton StopPropagation="true" Appearance="Appearance.Accent"
+                              IconStart="@(new Icons.Regular.Size16.Edit())"
+                              OnClick="@(() => NavigateToEdit(context.Id))" Title="Editar indicador"/>
+                <FluentButton StopPropagation="true" Appearance="Appearance.Lightweight"
+                              IconStart="@(new Icons.Regular.Size16.Grid())"
+                              OnClick="@(() => NavigateToAreas(context.Id))" Title="Ver áreas"/>
+                <FluentButton StopPropagation="true" Appearance="Appearance.Outline"
+                              IconStart="@(new Icons.Regular.Size16.Delete())"
+                              OnClick="() => OnDelete.InvokeAsync(context)" Title="Eliminar indicador"/>
+            </FluentStack>
+        }
+    </ChildContent>
+</TemplateColumn>
     </ChildContent>
 
     <EmptyContent>

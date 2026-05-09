@@ -1,10 +1,6 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Data.IRepository;
 using WEB.Features.Area.Dto;
-using WEB.Features.Proceso;
-using WEB.Features.Proceso.Dto;
-using WEB.Features.Proceso.Get;
 using WEB.Interfaces;
 using WEB.Models;
 

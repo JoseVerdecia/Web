@@ -1,0 +1,105 @@
+﻿@layout AppLayout
+@page "/ja-objetivos-siges"
+@attribute [Authorize(Roles = AppRoles.JefeArea)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Interfaces
+@using WEB.Services
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject ExportPdfService ExportPdfService
+@inject ExcelExportService ExcelExportService
+@inject JefeAreaExportServices JefeAreaExportServices
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+@inject ICurrentUser CurrentUser
+
+
+<FluentLayout>
+    <FluentGrid Spacing="4">
+      
+        <FluentGridItem xs="12">
+            <FluentStack Orientation="Orientation.Horizontal"
+                         Wrap="true"
+                         Justify="JustifyContent.SpaceBetween"
+                         VerticalGap="8">
+                <Title ValueTitle="@($"Área: {nombreArea}")" Icono="@(new Icons.Regular.Size20.ChartMultiple())" />
+
+                <FluentStack Orientation="Orientation.Horizontal"
+                             Wrap="true"
+                             HorizontalGap="8"
+                             VerticalGap="8"
+                             HorizontalAlignment="HorizontalAlignment.End">
+                    <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar">
+                        <FluentMenuItem OnClick="ExportCurrentObjectiveToExcel">Excel</FluentMenuItem>
+                        <FluentMenuItem OnClick="ExportCurrentObjectiveToPdf">PDF</FluentMenuItem>
+                    </FluentMenuButton>
+                    
+                    <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar Objetivos SIGES">
+                        <FluentMenuItem OnClick="ExportAllObjectiveToExcel">Excel</FluentMenuItem>
+                        <FluentMenuItem OnClick="ExportAllObjectiveToPdf">PDF</FluentMenuItem>
+                    </FluentMenuButton>
+                    
+                    <FluentButton Appearance="Appearance.Accent"
+                                  OnClick="@(() => NavigationManager.NavigateTo("/indicador-de-area"))"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                        Volver
+                    </FluentButton>
+                </FluentStack>
+            </FluentStack>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            @if (isLoading)
+            {
+                <FluentProgressRing />
+            }
+            else if (areaId == null)
+            {
+                <FluentLabel>No tiene un área asignada.</FluentLabel>
+            }
+            else if (!objetivos.Any())
+            {
+                <FluentLabel>No hay objetivos registrados.</FluentLabel>
+            }
+            else
+            {
+                @if (!string.IsNullOrEmpty(currentObjetivoNombre))
+                {
+                    <FluentCard Style="margin-bottom:15px;" Height="fit-content">
+                        <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
+                            @currentObjetivoNombre
+                        </FluentLabel>
+                    </FluentCard>
+                }
+
+                
+                <div class="tabs-scroll-container">
+                    <FluentTabs @bind-ActiveTabId="activeTabId" OnTabChange="HandleTabChange">
+                        @foreach (var obj in objetivos)
+                        {
+                            <FluentTab Id="@($"tab-{obj.Id}")" Label="@($"Objetivo {obj.NumeroObjetivo}")">
+                                <JAObjetivosSIGEsTable ObjetivoId="obj.Id" AreaId="areaId.Value" />
+                            </FluentTab>
+                        }
+                    </FluentTabs>
+                </div>
+            }
+        </FluentGridItem>
+    </FluentGrid>
+</FluentLayout>
+
+<style>
+   
+    @@media (max-width: 959px) {
+        .tabs-scroll-container {
+            overflow-x: auto;
+        }
+        .tabs-scroll-container ::deep fluent-tabs {
+            white-space: nowrap;
+        }
+    }
+</style>

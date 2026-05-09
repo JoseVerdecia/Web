@@ -1,12 +1,7 @@
-﻿using System.Globalization;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
-using WEB.Common;
-using WEB.Core.Result;
-using WEB.Enums;
-using WEB.Features.Indicador.Dto;
-using WEB.Features.Indicador.GetAll;
+using WEB.Core.Mediator;
 using WEB.Features.Proceso.Dto;
 using WEB.Features.Proceso.GetAll;
 using WEB.Services;

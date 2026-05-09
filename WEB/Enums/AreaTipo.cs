@@ -7,6 +7,12 @@ public enum AreaTipo
     [Display(Name = "Facultad")]
     Facultad,
     
-    [Display(Name = "Municipio")]
-    Municipio
+    [Display(Name = "CUM/FUM")]
+    CUMFUM,
+    
+    [Display(Name = "Direccion General")]
+    DireccionGeneral,
+    
+    [Display(Name = "Departamento")]
+    Departamento,
 }

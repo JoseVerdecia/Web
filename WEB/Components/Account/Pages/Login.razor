@@ -14,12 +14,12 @@
 @inject IdentityRedirectManager RedirectManager
 
 
-<PageTitle>Iniciar Sesion</PageTitle>
 
-
-    <FluentGrid Justify="JustifyContent.Center" Spacing="4" AdaptiveRendering="true" Style="width: 100%; max-width: 950px; height: 90vh; max-height: 650px;">
+<div style="display: flex; justify-content: center; align-items: center; min-height: 100vh; width: 100%;">
+    <FluentGrid Justify="JustifyContent.Center" Spacing="4" AdaptiveRendering="true" Style="width: 100%; max-width: 950px;">
         
-        <FluentGridItem xs="12" sm="6">
+      
+        <FluentGridItem xs="12" md="6">
             <FluentCard Style="height: 100%; display: flex; flex-direction: column; overflow: hidden;">
                 <div style="padding: 24px 28px; display: flex; flex-direction: column; height: 100%; overflow-y: auto;">
                     
@@ -33,23 +33,34 @@
 
                     <StatusMessage Message="@errorMessage" />
                     
-                    <EditForm  Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login" Style="flex: 1;">
+                    <EditForm Model="Input" method="post" OnValidSubmit="LoginUser" FormName="login" Style="flex: 1;">
                         <DataAnnotationsValidator />
                         <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
-                            <FluentStack Orientation="Orientation.Horizontal">
-                                <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
-                                    <FluentTextField TextFieldType="TextFieldType.Email" Name="Input.Email" @bind-Value="Input.Email" AutoComplete="username" Required="true" Placeholder="name@example.com" Label="Correo electrónico"/>
-                                    <FluentValidationMessage For="() => Input.Email" class="text-danger"/>
-                                </FluentStack>
+                            
+                            <FluentTextField TextFieldType="TextFieldType.Email" 
+                                             Name="Input.Email" 
+                                             @bind-Value="Input.Email" 
+                                             AutoComplete="username" 
+                                             Required="true" 
+                                             Placeholder="name@example.com" 
+                                             Label="Correo electrónico" 
+                                             Style="width: 100%;"/>
+                            <FluentValidationMessage For="() => Input.Email" class="text-danger"/>
 
-                                <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
-                                    <FluentTextField TextFieldType="TextFieldType.Password" Name="Input.Password" @bind-Value="Input.Password" AutoComplete="current-password" Required="true" Placeholder="*****" Label="Contraseña"/>
-                                    <FluentValidationMessage For="() => Input.Password" class="text-danger"/>
-                                </FluentStack>
-                            </FluentStack>
-                           
-
-                            <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center">
+                            <FluentTextField TextFieldType="TextFieldType.Password" 
+                                             Name="Input.Password" 
+                                             @bind-Value="Input.Password" 
+                                             AutoComplete="current-password" 
+                                             Required="true" 
+                                             Placeholder="*****" 
+                                             Label="Contraseña" 
+                                             Style="width: 100%;"/>
+                            <FluentValidationMessage For="() => Input.Password" class="text-danger"/>
+                            
+                            <FluentStack Orientation="Orientation.Horizontal" 
+                                         HorizontalAlignment="HorizontalAlignment.SpaceBetween" 
+                                         VerticalAlignment="VerticalAlignment.Center"
+                                         Wrap="true">
                                 <FluentCheckbox Name="Input.RememberMe" @bind-Value="Input.RememberMe" Label="Recordarme"/>
                                 <FluentAnchor Appearance="Appearance.Hypertext" Href="Account/ForgotPassword" Style="font-size: 13px;">¿Olvidaste tu contraseña?</FluentAnchor>
                             </FluentStack>
@@ -69,9 +80,9 @@
                 </div>
             </FluentCard>
         </FluentGridItem>
-        
 
     </FluentGrid>
+</div>
 
 
 @code {
@@ -128,29 +139,13 @@
         {
             Logger.LogInformation("Usuario conectado.");
             
-            if (string.IsNullOrEmpty(ReturnUrl))
+            if (string.IsNullOrEmpty(ReturnUrl) || ReturnUrl == "/")
             {
                 var user = await UserManager.FindByEmailAsync(Input.Email);
                 if (user != null)
                 {
-                    var roles = await UserManager.GetRolesAsync(user);
-
-                    if (roles.Contains(AppRoles.JefeArea))
-                    {
-                        RedirectManager.RedirectTo("/indicador-de-area");
-                        return;
-                    }
-
-                    if (roles.Contains(AppRoles.JefeProceso))
-                    {
-                        RedirectManager.RedirectTo("/indicadores/jefeProceso");
-                        return;
-                    }
-                    if (roles.Contains(AppRoles.UsuarioNormal))
-                    {
-                        RedirectManager.RedirectTo("/pendiente");
-                        return;
-                    }
+                    RedirectManager.RedirectTo("/");
+                    return;
                 }
             }
             

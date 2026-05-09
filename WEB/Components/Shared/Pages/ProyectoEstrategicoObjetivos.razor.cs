@@ -5,8 +5,6 @@ using WEB.Features.Indicador.Dto;
 using WEB.Features.Indicador.GetAll;
 using WEB.Features.Objetivo.Dto;
 using WEB.Features.Objetivo.GetAll;
-using WEB.Models;
-using WEB.Services;
 
 namespace WEB.Components.Shared.Pages;
 

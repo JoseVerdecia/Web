@@ -1,0 +1,16 @@
+.siges-table[b-mojhug9bi7] { width: 100%; border-collapse: collapse; font-size: 0.85rem; border: 1px solid #d0d0d0; }
+.siges-table th[b-mojhug9bi7] { background-color: #D2D6D9; color: #212E58; font-weight: bold; padding: 8px; border: 1px solid #c0c0c0; text-align: center; text-transform: uppercase; }
+.siges-table td[b-mojhug9bi7] { padding: 6px 8px; border: 1px solid #d0d0d0; vertical-align: middle; }
+.celda-numero[b-mojhug9bi7] { text-align: center; font-variant-numeric: tabular-nums; }
+.celda-proceso[b-mojhug9bi7] { font-weight: 600; background-color: var(--neutral-fill-stealth-rest); text-align: left !important; }
+.celda-id[b-mojhug9bi7] { font-weight: 700; text-align: center; }
+.celda-tipo[b-mojhug9bi7] { text-align: center; }
+.tipo-tag[b-mojhug9bi7] { display: inline-block; padding: 1px 7px; border-radius: 3px; font-size: 0.75rem; font-weight: 700; }
+.tipo-e[b-mojhug9bi7] { background-color: #fff3cd; color: #856404; border: 1px solid #ffc107; }
+.tipo-n[b-mojhug9bi7] { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+.evaluacion-cell[b-mojhug9bi7] { display: inline-block; padding: 3px 12px; border-radius: 4px; color: white; font-weight: 600; font-size: 0.82rem; }
+.ev-sobrecumplido[b-mojhug9bi7] { background-color: #2563eb; }
+.ev-cumplido[b-mojhug9bi7]      { background-color: #16a34a; }
+.ev-parcialmente-cumplido[b-mojhug9bi7] { background-color: #eab308; }
+.ev-incumplido[b-mojhug9bi7]    { background-color: #ea580c; }
+.ev-noevaluado[b-mojhug9bi7]    { background-color: #9ca3af; }

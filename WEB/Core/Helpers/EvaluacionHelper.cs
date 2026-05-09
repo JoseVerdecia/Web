@@ -1,9 +1,6 @@
 ﻿using System.Globalization;
-using Microsoft.EntityFrameworkCore;
 using WEB.Common;
-using WEB.Data.IRepository;
 using WEB.Enums;
-using WEB.Core.Result;
 using WEB.Models;
 
 namespace WEB.Core.Helpers;
@@ -214,6 +211,8 @@ public static class EvaluacionHelper
         area.Evaluacion = (metaRealDecimal == 0 && area.MetaCumplirDecimal == 0)
             ? Evaluacion.NoEvaluado
             : EvaluarIndicador(metaRealDecimal, area.MetaCumplirDecimal);
+        
+        area.IsMetaRealPorcentaje = padre.IsMetaCumplirPorcentaje;
 
         return Result.Result.Success();
     }
@@ -262,6 +261,19 @@ public static class EvaluacionHelper
 
         padre.Evaluacion = EvaluarIndicador(realCalculado, padre.MetaCumplirDecimal);
         return Result.Result.Success();
+    }
+    
+    public static string GetEvaluacionClass(this Evaluacion evaluacion)
+    {
+        return evaluacion switch
+        {
+            Evaluacion.Sobrecumplido => "ev-sobrecumplido",
+            Evaluacion.Cumplido => "ev-cumplido",
+            Evaluacion.ParcialmenteCumplido => "ev-parcialmente-cumplido",
+            Evaluacion.Incumplido => "ev-incumplido",
+            Evaluacion.NoEvaluado => "ev-noevaluado",
+            _ => ""
+        };
     }
     
 }

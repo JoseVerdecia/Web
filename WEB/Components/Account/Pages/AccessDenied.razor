@@ -1,8 +1,12 @@
-﻿@page "/Account/AccessDenied"
+﻿@layout EmptyLayout
+@page "/Account/AccessDenied"
 
-<PageTitle>Access denied</PageTitle>
+
 
 <header>
-    <h1 class="text-danger">Acceso denegado</h1>
-    <p class="text-danger">No tienes acceso a este recurso</p>
+    <FluentStack Orientation="Orientation.Vertical" HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+        <h1 style="color: white" class="text-danger">Acceso denegado</h1>
+        <p style="color: white" class="text-danger">No tienes acceso a este recurso</p>
+    </FluentStack>
+ 
 </header>

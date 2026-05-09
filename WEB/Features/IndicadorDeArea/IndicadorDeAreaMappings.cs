@@ -1,5 +1,4 @@
-﻿using Microsoft.FluentUI.AspNetCore.Components.Extensions;
-using WEB.Features.IndicadorDeArea.Dto;
+﻿using WEB.Features.IndicadorDeArea.Dto;
 using WEB.Models;
 
 namespace WEB.Features.IndicadorDeArea;
@@ -20,14 +19,20 @@ public static class IndicadorDeAreaMapping
             AreaId = model.AreaId,
             AreaNombre = model.Area.Nombre,
             IndicadorPadreId = model.Indicador.Id,
+            IndicadorPadreTipo = model.Indicador.Tipo,
             ValorTotal = model.ValorTotal,
             ValorReal = model.ValorReal,
             MetaCumplirIndicadorPadre = model.Indicador.MetaCumplir,
             NombreIndicadorPadre = model.Indicador.Nombre,
+            ProcesoNombre = model.Indicador.Proceso.Nombre,
             MetaCumplir = model.MetaCumplir,
+            MetaCumplirDecimal = model.MetaCumplirDecimal,
+            MetaRealDecimal = model.MetaRealDecimal,
             ValorTotalLabel = model.Indicador.ValorTotal,
             ValorRealLabel = model.Indicador.ValorReal,
+            ValorCualitativo =  model.ValorCualitativo,
             IsMetaCumplirPorcentual = model.IsMetaCumplirPorcentaje,
+            IsRealPorcentual = model.IsMetaRealPorcentaje,
             MetaReal = model.MetaReal,
             Evaluacion = model.Evaluacion,
             Tipo = model.Area.Tipo

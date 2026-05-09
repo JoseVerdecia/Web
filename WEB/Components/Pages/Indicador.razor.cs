@@ -4,9 +4,6 @@ using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled;
 using Microsoft.JSInterop;
 using WEB.Common;
 using WEB.Components.Administrador.Indicador;
-using WEB.Core.Extensions;
-using WEB.Core.Mediator;
-using WEB.Enums;
 using WEB.Features.Indicador.Delete;
 using WEB.Features.Indicador.Dto;
 using WEB.Features.Indicador.GetAll;
@@ -24,6 +21,7 @@ public partial class Indicador : ComponentBase
     private IndicadorDisplayItem? selectedIndicador;
     private IndicadorDataGrid indicadorDataGrid = default!;
     private IndicadorDeletedDataGrid deletedDataGrid = default!;
+    
     // Datos eliminados
     private List<IndicadorDisplayItem> deletedGridItems = new();
     private HashSet<int> selectedDeletedIds = new();
@@ -37,11 +35,13 @@ public partial class Indicador : ComponentBase
     private string ActiveTabId = "tab-activos";
     
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Console.WriteLine(">>> OnInitializedAsync ejecutado");
-        _cancellationToken = new CancellationTokenSource();
-        await LoadIndicadoresActivos();
+        if (firstRender)
+        {
+            _cancellationToken = new CancellationTokenSource();
+            await LoadIndicadoresActivos();
+        }
     }
 
     private async Task HandleTabChange(FluentTab tab)

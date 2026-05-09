@@ -1,0 +1,93 @@
+﻿@layout AppLayout
+@page "/jp-objetivos-siges"
+@attribute [Authorize(Roles = AppRoles.JefeProceso)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Interfaces
+@using WEB.Services
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject ExportPdfService ExportPdfService
+@inject ExcelExportService ExcelExportService
+@inject NavigationManager NavigationManager
+@inject JefeProcesoExportServices JefeProcesoExportServices
+@inject IJSRuntime JS
+@inject ICurrentUser CurrentUser
+
+
+<FluentLayout>
+    <FluentGrid Spacing="4">
+      
+        <FluentGridItem xs="12">
+            <FluentGrid Spacing="2" Justify="JustifyContent.SpaceBetween" Style="width: 100%;">
+                <FluentGridItem xs="12" md="6" Style="padding-bottom: 8px;">
+                    <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@procesoActual?.Nombre" />
+                </FluentGridItem>
+                <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
+                    <FluentStack Orientation="Orientation.Horizontal"
+                                 Wrap="true"
+                                 HorizontalGap="8"
+                                 VerticalGap="8"
+                                 HorizontalAlignment="HorizontalAlignment.End">
+                        <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar">
+                            <FluentMenuItem OnClick="ExportCurrentObjectiveToExcel">Excel</FluentMenuItem>
+                            <FluentMenuItem OnClick="ExportCurrentObjectiveToPdf">PDF</FluentMenuItem>
+                        </FluentMenuButton>
+                        <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar Objetivos">
+                            <FluentMenuItem OnClick="ExportAllObjectiveToExcel">Excel</FluentMenuItem>
+                            <FluentMenuItem OnClick="ExportAllObjectiveToPdf">PDF</FluentMenuItem>
+                        </FluentMenuButton>
+                        <FluentButton Appearance="Appearance.Accent"
+                                      OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso"))"
+                                      IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                            Volver
+                        </FluentButton>
+                    </FluentStack>
+                </FluentGridItem>
+            </FluentGrid>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            @if (isLoading)
+            {
+                <FluentProgressRing />
+            }
+            else if (procesoActual == null)
+            {
+                <FluentLabel>No tienes un proceso asignado.</FluentLabel>
+            }
+            else if (!objetivos.Any())
+            {
+                <FluentLabel>El proceso no tiene objetivos con indicadores.</FluentLabel>
+            }
+            else
+            {
+               
+                <div class="tabs-scroll-container">
+                    <FluentTabs @bind-ActiveTabId="activeTabId" OnTabChange="HandleTabChange">
+                        @foreach (var obj in objetivos)
+                        {
+                            <FluentTab Id="@($"tab-{obj.Id}")" Label="@($"Objetivo {obj.NumeroObjetivo}")">
+                                <JPObjetivosSIGEsTable ObjetivoId="obj.Id" ProcesoId="procesoActual.Id" />
+                            </FluentTab>
+                        }
+                    </FluentTabs>
+                </div>
+            }
+        </FluentGridItem>
+    </FluentGrid>
+</FluentLayout>
+
+<style>
+    @@media (max-width: 959px) {
+        .tabs-scroll-container {
+            overflow-x: auto;
+        }
+        .tabs-scroll-container ::deep fluent-tabs {
+            white-space: nowrap;
+        }
+    }
+</style>

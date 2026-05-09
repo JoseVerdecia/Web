@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
-using WEB.Core.Services;
 using WEB.Data;
 using WEB.Features.Area.Denegar;
 using WEB.Features.Proceso.Denegar;

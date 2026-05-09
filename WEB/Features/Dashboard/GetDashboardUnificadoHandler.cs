@@ -93,7 +93,7 @@ public class GetDashboardUnificadoHandler : IRequestHandler<GetDashboardUnificad
             dto.IndicadoresEscenciales = indicadores.Count(i => i.Tipo == Enums.IndicadorTipo.Escencial);
             dto.IndicadoresNecesarios = indicadores.Count(i => i.Tipo == Enums.IndicadorTipo.Necesario);
             dto.AreasFacultad = areas.Count(a => a.Tipo == Enums.AreaTipo.Facultad);
-            dto.AreasMunicipio = areas.Count(a => a.Tipo == Enums.AreaTipo.Municipio);
+            dto.AreasMunicipio = areas.Count(a => a.Tipo == Enums.AreaTipo.CUMFUM);
 
             // ── ProcesosConteo: solo procesos que tienen al menos un indicador asociado ──
             var procesoIdsConIndicadores = new HashSet<int>(

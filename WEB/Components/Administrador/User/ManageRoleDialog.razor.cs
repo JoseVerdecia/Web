@@ -1,7 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
-using WEB.Core.Mediator;
-using WEB.Core.Services;
 using WEB.Data;
 using WEB.Features.Area.Assign;
 using WEB.Features.Area.Available;
@@ -27,8 +25,6 @@ public partial class ManageRoleDialog : ComponentBase, IDialogContentComponent
     private AvailableUserDto? _selectedItem;
     private List<AvailableUserDto>? _availableItems;
     
-    
-    // Nuevo campo para la búsqueda en listas
     private string _searchText = string.Empty;
     
     private static Appearance GetBadgeAppearance(string role) => role switch
@@ -61,7 +57,7 @@ public partial class ManageRoleDialog : ComponentBase, IDialogContentComponent
         _selectedItem = null;
         _availableItems = null;
         _errorMessage = null;
-        _searchText = string.Empty; // Limpiar búsqueda al volver
+        _searchText = string.Empty; 
     }
 
     private async Task DenegarAreaAsync()
@@ -162,9 +158,7 @@ public partial class ManageRoleDialog : ComponentBase, IDialogContentComponent
         _isProcessing = false;
         StateHasChanged();
     }
-
-    // Eliminado el método OnItemSelected (ya no se usa con bind-SelectedOption)
-
+    
     private async Task ConfirmAssignmentAsync()
     {
         if (_selectedItem is null || Content is null) return;

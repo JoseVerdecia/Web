@@ -1,21 +1,23 @@
-﻿@using Microsoft.AspNetCore.SignalR.Client
-@using WEB.Components.Shared
+﻿@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.SignalR.Client
+@using WEB.Common
+@using WEB.Components.Shared.Notificacion
 @using WEB.Core.Extensions
 @using WEB.Core.Mediator
 @using WEB.Core.Services
 @using WEB.Interfaces
 @using WEB.Data
 @using WEB.Enums
-@using WEB.Features.Notificacion.Dto
 @using WEB.Features.Notificacion.GetByUser
 @using WEB.Features.Notificacion.GetCount
-@using WEB.Models
 @implements IDisposable
 @inject ICurrentUser CurrentUser
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthStateProvider
 @inject NotificacionStateService NotificacionState
+@inject UserManager<ApplicationUser> UserManager
+@inject ProfilePictureService PictureService
 @inject IndicadorUpdateStateService IndicadorUpdateState
 @inject AdminPendingUsersState PendingState
 @inject IMediator Mediator
@@ -26,16 +28,30 @@
     
     <AuthorizeView>
         <Authorized>
+            <FluentInputFile @ref="_profilePictureUploader"
+                             Mode="InputFileMode.SaveToTemporaryFolder"
+                             Accept="image/*"
+                             Multiple="false"
+                             MaximumFileSize="@(5 * 1024 * 1024)"
+                             OnCompleted="OnProfilePictureUploadedAsync"
+                             DragDropZoneVisible="false"
+                             Style="display: none;" />
             <FluentProfileMenu Status="@PresenceStatus.Available"
                                @bind-Open="isProfileMenuOpen"
                                HeaderLabel="Mi perfil"
+                               Image="@appUser?.ProfilePictureUrl"
                                Initials="@appUser?.FullName.GetInitials()"
                                FullName="@appUser?.FullName"
                                EMail="@appUser?.Email"
                                TopCorner="true"
                                PopoverStyle="min-width: 280px;">
                 <HeaderTemplate>
-                   
+                    <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="8">
+                        <FluentButton Appearance="Appearance.Stealth"
+                                      IconStart="@(new Icons.Regular.Size20.ImageEdit())"
+                                      Title="Cambiar foto de perfil"
+                                      OnClick="@(() => _profilePictureUploader?.ShowFilesDialogAsync())"/>
+                    </FluentStack>
                 </HeaderTemplate>
                 <FooterTemplate>
                     <FluentStack Orientation="Orientation.Horizontal">
@@ -45,7 +61,7 @@
                                       OnClick="GoToAccount">
                             <span style="margin-left: 8px;">Ver cuenta</span>
                         </FluentButton>
-                        
+
                         <form method="post" action="Account/Logout">
                             <AntiforgeryToken/>
                             <input type="hidden" name="ReturnUrl" value="@currentUrl"/>
@@ -57,10 +73,10 @@
                             </FluentButton>
                         </form>
                     </FluentStack>
-                   
+
                 </FooterTemplate>
             </FluentProfileMenu>
-           
+
         </Authorized>
     </AuthorizeView>
     @if (CurrentUser.IsInRole(AppRoles.JefeArea) || CurrentUser.IsInRole(AppRoles.JefeProceso))
@@ -81,7 +97,52 @@
     private bool isProfileMenuOpen = false;
     private HubConnection? _hubConnection;
     private bool _isInitialized = false;
+    private FluentInputFile? _profilePictureUploader;
 
+    private async Task OnProfilePictureUploadedAsync(IEnumerable<FluentInputFileEventArgs> files)
+    {
+        var fileList = files?.ToList();
+        if (fileList == null || !fileList.Any() || fileList[0].LocalFile == null || appUser == null)
+            return;
+
+        var file = fileList[0];
+        try
+        {
+            var newUrl = await PictureService.SaveFromLocalFileAsync(
+                file.LocalFile.FullName,
+                file.Name,
+                appUser.Id);
+
+            
+            var freshUser = await UserManager.FindByIdAsync(appUser.Id);
+            if (freshUser == null)
+            {
+                Console.WriteLine("Usuario no encontrado al intentar actualizar foto.");
+                return;
+            }
+
+            freshUser.ProfilePictureUrl = newUrl;
+            var result = await UserManager.UpdateAsync(freshUser);
+
+            if (result.Succeeded)
+            {
+            
+                appUser.ProfilePictureUrl = newUrl; 
+                StateHasChanged();
+                NavigationManager.Refresh(forceReload: true);
+            }
+            else
+            {
+               
+                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+                Console.WriteLine($"Error al actualizar foto: {errors}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Excepción en subida: {ex.Message}");
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
@@ -230,8 +291,7 @@
             var userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (!string.IsNullOrEmpty(userId))
             {
-                // Recargar count al reconectarse
-                // Aquí podrías llamar al handler de GetCount
+                // Aquí puedo llamar al handler de GetCount
             }
         };
 
@@ -300,18 +360,7 @@
             NotificacionState.SetNotificaciones(result.Value);
         }
     }
-
-    public record NotificacionSignalRDto
-    {
-        public int Id { get; init; }
-        public string Cabecera { get; init; } = null!;
-        public string Cuerpo { get; init; } = null!;
-        public string Tipo { get; init; } = null!;
-        public string Estado { get; init; } = null!;
-        public DateTime CreatedAt { get; init; }
-        public string? RemitenteNombre { get; init; }
-        public int CountNoLeidas { get; init; }
-    }
+    
 
 
 }

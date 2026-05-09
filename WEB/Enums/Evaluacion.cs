@@ -10,18 +10,18 @@ public enum Evaluacion
     NoEvaluado,
     
     [Display(Name = "Sobrecumplido")]
-    [BadgeColor("#037036")]
+    [BadgeColor("#1B74B6")]
     Sobrecumplido,
     
     [Display(Name = "Cumplido")]
-    [BadgeColor("#05B353")]
+    [BadgeColor("#34B66B")]
     Cumplido,
     
     [Display(Name = "Parcialmente")]
-    [BadgeColor("#f97316")]
+    [BadgeColor("#F7BC20")]
     ParcialmenteCumplido,
     
     [Display(Name = "Incumplido")]
-    [BadgeColor("#dc2626")]
+    [BadgeColor("#ED7425")]
     Incumplido
 }

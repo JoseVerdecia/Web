@@ -1,5 +1,6 @@
 ﻿@using WEB.Core.Mediator
 @using WEB.Core.Extensions
+@using WEB.Core.Helpers
 @using WEB.Enums
 @implements IDisposable
 @rendermode InteractiveServer
@@ -25,7 +26,7 @@ else
         .Where(i => i.IsMetaCumplirPorcentual)
         .ToList();
 
-    <!-- Tabla 1: Indicadores -->
+   
     <div style="margin-bottom: 40px; margin-top: 10px;">
         <div style="overflow-x: auto; width: 100%;">
             <div style="min-width: 1000px;">
@@ -45,7 +46,7 @@ else
                     <tbody>
                         @foreach (var ind in indicadoresOrdenados)
                         {
-                            var pct = CalcularPorcentajeCumplimiento(ind);
+                            var pct = ind.GetTextAndColor();
                             var tieneReal = !string.IsNullOrWhiteSpace(ind.MetaReal);
                             <tr>
                                 <td class="col-id celda-id">@ind.Id.ToString("D2")</td>
@@ -79,7 +80,7 @@ else
                                     <span class="porcentaje-valor" style="color: @pct.Color;">@pct.Text</span>
                                 </td>
                                 <td class="col-evaluacion celda-centro">
-                                    <span class="evaluacion-cell @GetEvaluacionClass(ind.Evaluacion)">
+                                    <span class="evaluacion-cell @(ind.Evaluacion.GetEvaluacionClass())">
                                         @ind.Evaluacion.GetDisplayName()
                                     </span>
                                 </td>
@@ -91,7 +92,7 @@ else
         </div>
     </div>
 
-    <!-- Tabla 2: Valores Cuantitativos (solo si hay) -->
+   
     @if (indicadoresConValores.Any())
     {
         <div style="margin-bottom: 32px;">
@@ -111,29 +112,27 @@ else
                             {
                                 var datosTotal = ind.ValorTotalAcumulado;
                                 var datosReal = ind.ValorRealAcumulado;
-                                var pctDatos = CalcularPorcentaje(datosTotal, datosReal);
+                                var pctDatos = ind.GetTextAndColor();
                                 var tieneValorTotal = datosTotal.HasValue;
                                 var tieneValorReal = datosReal.HasValue;
                                 var esFilaPar = index % 2 == 0;
                                 var claseFila = esFilaPar ? "fila-par" : "";
-
-                                <!-- Fila 1: Valor Total -->
+                                
                                 <tr class="@claseFila fila-valor-base">
                                     <td rowspan="2" class="col-id-cuant celda-id" style="vertical-align: middle; border-bottom: 2px solid var(--neutral-stroke-divider-rest);">
                                         @ind.Id.ToString("D2")
                                     </td>
                                     <td class="col-valores"><span class="valor-label">@ind.ValorTotal</span></td>
                                     <td class="col-datos celda-numero">
-                                        @(tieneValorTotal ? FormatearNumero(datosTotal.Value) : "—")
+                                        @(tieneValorTotal ? datosTotal.Value.FormatearDecimal() : "—")
                                     </td>
                                     <td class="col-porcentaje-cuant celda-vacia">—</td>
                                 </tr>
-
-                                <!-- Fila 2: Valor Real + Porcentaje -->
+                                
                                 <tr class="@claseFila fila-valor-real">
                                     <td class="col-valores"><span class="valor-label">@ind.ValorReal</span></td>
                                     <td class="col-datos celda-numero">
-                                        @(tieneValorReal ? FormatearNumero(datosReal.Value) : "—")
+                                        @(tieneValorReal ? datosReal.Value.FormatearDecimal() : "—")
                                     </td>
                                     <td class="col-porcentaje-cuant celda-numero">
                                         <span class="porcentaje-valor" style="color: @pctDatos.Color;">@pctDatos.Text</span>

@@ -1,0 +1,103 @@
+﻿@layout AppLayout
+@page "/ja-evaluacion"
+@attribute [Authorize(Roles = AppRoles.JefeArea)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Features.Area.Get
+@using WEB.Interfaces
+@using WEB.Services
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@inject ExcelExportService ExportService
+@inject NavigationManager NavigationManager
+@inject ExportPdfService ExportPdfService
+@inject IJSRuntime JSRuntime
+
+
+
+@if (isLoading)
+{
+    <FluentProgressRing />
+}
+else if (areaId == null)
+{
+    <FluentLabel>No tiene un área asignada.</FluentLabel>
+}
+else
+{
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+        
+        <!-- Cabecera responsiva -->
+        <FluentStack Orientation="Orientation.Horizontal"
+                     Wrap="true"
+                     VerticalGap="8"
+                     HorizontalGap="12"
+                     HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+            <Title ValueTitle="@nombreArea" Icono="@(new Icons.Regular.Size24.ChartMultiple())" />
+            <FluentStack Orientation="Orientation.Horizontal"
+                         Wrap="true"
+                         HorizontalGap="8"
+                         VerticalGap="8"
+                         HorizontalAlignment="HorizontalAlignment.End">
+                <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar">
+                    <FluentMenuItem OnClick="@ExportExcel">Excel</FluentMenuItem>
+                    <FluentMenuItem OnClick="@ExportPdf">PDF</FluentMenuItem>
+                </FluentMenuButton>
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/indicador-de-area"))"
+                              IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                    Volver
+                </FluentButton>
+            </FluentStack>
+        </FluentStack>
+        
+        <div class="table-scroll-container">
+            <JAEvaluacionTable AreaId="areaId.Value" />
+        </div>
+    </FluentStack>
+}
+
+<style>
+   
+    @@media (max-width: 959px) {
+        .table-scroll-container {
+            overflow-x: auto;
+        }
+    }
+</style>
+
+@code {
+    private int? areaId;
+    private string? nombreArea;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await CurrentUser.GetUserAsync();
+        var result = await Mediator.Send(new GetAreaByJefeIdRequest(user.Id));
+        if (result.IsSuccess && result.Value != null)
+        {
+            areaId = result.Value.Id;
+            nombreArea = result.Value.Nombre;
+        }
+        isLoading = false;
+    }
+
+    private async Task ExportExcel()
+    {
+        if (areaId == null) return;
+        var data = await ExportService.ExportEvaluacionAreaToExcelAsync(areaId.Value);
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"Evaluacion_Area_{areaId}.xlsx", Convert.ToBase64String(data));
+    }
+
+    private async Task ExportPdf()
+    {
+        if (areaId == null) return;
+        var data = await ExportPdfService.ExportEvaluacionAreaToPdfAsync(areaId.Value);
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"Evaluacion_Area_{areaId}.pdf", Convert.ToBase64String(data));
+    }
+}

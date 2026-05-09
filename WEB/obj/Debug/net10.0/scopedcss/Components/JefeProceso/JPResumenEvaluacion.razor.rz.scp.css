@@ -1,0 +1,32 @@
+.resumen-table[b-q87d0ns8ag] {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+    border: 1px solid var(--neutral-stroke-divider-rest);
+}
+.resumen-table th[b-q87d0ns8ag], .resumen-table td[b-q87d0ns8ag] {
+    border: 1px solid var(--neutral-stroke-divider-rest);
+    padding: 6px 4px;
+    vertical-align: middle;
+    text-align: center;
+}
+.resumen-table th[b-q87d0ns8ag] {
+    background-color: var(--neutral-fill-stealth-rest);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+.celda-proceso[b-q87d0ns8ag] {
+    text-align: left !important;
+    font-weight: 600;
+    background-color: var(--neutral-fill-stealth-rest);
+}
+.celda-evaluacion[b-q87d0ns8ag] {
+    font-weight: 600;
+    background-color: var(--neutral-fill-stealth-rest);
+}
+.celda-numero[b-q87d0ns8ag] {
+    text-align: center;
+}
+.fila-esencial td:not(.celda-proceso):not(.celda-evaluacion)[b-q87d0ns8ag] {
+    color: #FF0000;
+}

@@ -25,4 +25,6 @@ public interface INotificationRepository:IRepository<NotificacionModel>
     
     Task MarcarComoLeidaAsync(int notificacionId, CancellationToken cancellationToken);
     Task MarcarTodasComoLeidasAsync(string usuarioId, CancellationToken cancellationToken);
+
+    Task<List<NotificacionModel>> GetByIndicadorIdAsync(int indicadorId, CancellationToken cancellationToken);
 }

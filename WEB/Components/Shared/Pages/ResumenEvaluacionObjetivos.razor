@@ -1,0 +1,47 @@
+﻿@page "/resumen-evaluacion-objetivos"
+@attribute [Authorize(Roles = AppRoles.Administrador)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Services
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime JSRuntime
+@inject ExcelExportService ExportService
+@inject ExportPdfService ExportPdfService
+@inject NavigationManager NavigationManager
+
+
+
+<FluentLayout>
+    <FluentGrid Spacing="4">
+        <FluentGridItem xs="12">
+            <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                <Title Icono="@(new Icons.Regular.Size24.AppsList())" ValueTitle="Resumen de Objetivos"></Title>
+                <FluentStack Width="fit-content" HorizontalAlignment="HorizontalAlignment.End">
+                    <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar">
+                        <FluentMenuItem OnClick="@(() => ExportToExcel())">Excel</FluentMenuItem>
+                        <FluentMenuItem OnClick="@(() => ExportToPdf())">PDF</FluentMenuItem>
+                    </FluentMenuButton>
+                    <FluentButton Appearance="Appearance.Accent"
+                                  OnClick="@(() => NavigationManager.NavigateTo("/proceso"))"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                        Volver
+                    </FluentButton>
+                </FluentStack>
+            </FluentStack>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            @if (isLoading)
+            {
+                <FluentProgressRing />
+            }
+            else
+            {
+                <ResumenObjetivoTable Datos="datosObjetivos" />
+            }
+        </FluentGridItem>
+    </FluentGrid>
+</FluentLayout>

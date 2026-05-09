@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using WEB.Core.Helpers;
-using WEB.Core.Mediator;
 using WEB.Features.Proceso.Create;
 using WEB.Features.Proceso.Dto;
 using WEB.Features.Proceso.Update;

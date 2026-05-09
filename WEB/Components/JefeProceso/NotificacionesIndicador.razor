@@ -1,0 +1,175 @@
+﻿@layout AppLayout
+@page "/notificaciones/indicador/{IndicadorId:int}"
+@attribute [Authorize(Roles = AppRoles.JefeProceso)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Common
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Enums
+@using WEB.Features.Notificacion.Dto
+@using WEB.Features.Notificacion.GetByIndicador
+@inject IMediator Mediator
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<FluentLayout>
+    <FluentGrid Spacing="4">
+        <FluentGridItem xs="12">
+            <FluentStack Orientation="Orientation.Horizontal" 
+                         HorizontalAlignment="HorizontalAlignment.SpaceBetween" 
+                         VerticalAlignment="VerticalAlignment.Center">
+                @if (!isLoading && notificaciones.Any())
+                {
+                    <Title Icono="@(new Icons.Regular.Size20.Note())" 
+                           ValueTitle="@notificaciones.First().IndicadorNombre" />
+                }
+                else
+                {
+                    <Title Icono="@(new Icons.Regular.Size20.Note())" 
+                           ValueTitle="Historial de solicitudes" />
+                }
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso"))"
+                              IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                    Volver
+                </FluentButton>
+            </FluentStack>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            @if (isLoading)
+            {
+                <FluentProgressRing />
+            }
+            else if (!notificaciones.Any())
+            {
+                <FluentStack HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center" Style="min-height: 300px; width: 100%;">
+                    <FluentCard Width="fit-content" Style="padding: 40px 60px; text-align: center; background: var(--neutral-layer-2); border-radius: 8px;">
+                        <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Orientation="Orientation.Vertical" VerticalGap="12">
+                            <FluentLabel Typo="Typography.Subject" Color="Color.Neutral">
+                                No hay solicitudes de cambio para este indicador.
+                            </FluentLabel>
+                        </FluentStack>
+                    </FluentCard>
+                </FluentStack>
+            }
+            else
+            {
+                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" Style="margin-bottom: 12px;">
+                    <FluentSelect Items="@areasOptions"
+                                  @bind-Value="@areaFilter"
+                                  Placeholder="Filtrar área"
+                                  OptionText="@(opt => opt.Text)"
+                                  OptionValue="@(opt => opt.Value)"
+                                  Style="min-width: 180px;" />
+                    <FluentSelect Items="@estadosOptions"
+                                  @bind-Value="@estadoFilter"
+                                  Placeholder="Filtrar estado"
+                                  OptionText="@(opt => opt.Text)"
+                                  OptionValue="@(opt => opt.Value)"
+                                  Style="min-width: 160px;" />
+                    <FluentButton Appearance="Appearance.Outline"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                                  OnClick="ClearFilters"
+                                  Title="Limpiar filtros" />
+                </FluentStack>
+
+                <FluentDataGrid Items="@FilteredItems.AsQueryable()"
+                                ResizableColumns="true"
+                                DisplayMode="DataGridDisplayMode.Table"
+                                GenerateHeader="GenerateHeaderOption.Sticky"
+                                ShowHover="true"
+                                Pagination="@pagination"
+                                Style="width: 100%;">
+                    <ChildContent>
+                        <TemplateColumn Width="100px" Title="Fecha" Align="Align.Start">
+                            @context.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                        </TemplateColumn>
+                        <TemplateColumn Width="140px" Title="Área" Align="Align.Start">
+                            @context.AreaNombre
+                        </TemplateColumn>
+                        <TemplateColumn Width="110px" Title="Meta" Align="Align.Center">
+                            @context.MetaAnterior
+                        </TemplateColumn>
+                        <TemplateColumn Width="140px" Title="Propuesta" Align="Align.Center">
+                            @context.NuevaMetaPropuesta
+                        </TemplateColumn>
+                        <TemplateColumn Width="100px" Title="Estado" Align="Align.Center">
+                            <span class="estado-badge @GetEstadoClass(context.Estado)">
+                                @context.Estado
+                            </span>
+                        </TemplateColumn>
+                        <TemplateColumn Title="Mensaje" Align="Align.Start">
+                            @context.MensajePersonalizado
+                        </TemplateColumn>
+                    </ChildContent>
+                    <EmptyContent>
+                        <FluentLabel>No hay solicitudes para mostrar.</FluentLabel>
+                    </EmptyContent>
+                </FluentDataGrid>
+
+                <div style="flex-shrink: 0; padding-top: 10px;">
+                    <FluentPaginator State="@pagination" />
+                </div>
+            }
+        </FluentGridItem>
+    </FluentGrid>
+</FluentLayout>
+
+@code {
+    [Parameter] public int IndicadorId { get; set; }
+    private List<NotificacionDto> notificaciones = new();
+    private bool isLoading = true;
+    private PaginationState pagination = new() { ItemsPerPage = 10 };
+
+    private string? areaFilter;
+    private string? estadoFilter;
+    private List<SelectOption<string?>> areasOptions = new();
+    private List<SelectOption<string?>> estadosOptions = new();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var result = await Mediator.Send(new GetNotificacionesByIndicadorRequest(IndicadorId));
+            if (result.IsSuccess && result.Value != null)
+                notificaciones = result.Value;
+
+            areasOptions = notificaciones
+                .Select(n => n.AreaNombre)
+                .Where(s => !string.IsNullOrWhiteSpace(s))
+                .Distinct()
+                .Select(s => new SelectOption<string?> { Value = s, Text = s })
+                .ToList();
+
+            estadosOptions = notificaciones
+                .Select(n => n.Estado.ToString())
+                .Distinct()
+                .Select(s => new SelectOption<string?> { Value = s, Text = s })
+                .ToList();
+
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private IEnumerable<NotificacionDto> FilteredItems =>
+        notificaciones.Where(n =>
+            (string.IsNullOrEmpty(areaFilter) || n.AreaNombre == areaFilter) &&
+            (string.IsNullOrEmpty(estadoFilter) || n.Estado.ToString() == estadoFilter));
+
+    private void ClearFilters()
+    {
+        areaFilter = null;
+        estadoFilter = null;
+    }
+
+    private string GetEstadoClass(EstadoNotificacion estado) => estado switch
+    {
+        EstadoNotificacion.Pendiente => "estado-pendiente",
+        EstadoNotificacion.Aceptada  => "estado-aceptada",
+        EstadoNotificacion.Rechazada => "estado-rechazada",
+        _ => ""
+    };
+}

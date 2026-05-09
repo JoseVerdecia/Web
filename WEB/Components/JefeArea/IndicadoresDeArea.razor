@@ -1,0 +1,77 @@
+﻿@layout AppLayout
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Interfaces
+@page "/indicador-de-area"
+@attribute [Authorize(Roles=AppRoles.JefeArea)]
+@inject IDialogService DialogService
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@rendermode InteractiveServer
+@inject IndicadorUpdateStateService IndicadorUpdateState
+@inject NavigationManager NavigationManager
+
+
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <FluentMessageBar Title="Error" Intent="MessageIntent.Error">
+        @errorMessage
+    </FluentMessageBar>
+}
+
+<FluentLayout>
+    <FluentStack Wrap="true" Orientation="Orientation.Vertical" VerticalGap="20">
+        <FluentStack>
+            <Title ValueTitle="Indicadores" Icono="@(new Icons.Regular.Size24.ChartMultiple())"/>
+        </FluentStack>
+      
+        <FluentStack Orientation="Orientation.Horizontal"
+                     HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+            <FluentStack Orientation="Orientation.Horizontal"
+                         Wrap="true"
+                         HorizontalGap="8"
+                         VerticalGap="8"
+                         HorizontalAlignment="HorizontalAlignment.End">
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/proyecto-estrategico/jefeArea"))"
+                              IconStart="@(new Icons.Regular.Size20.Table())">
+                    PE
+                </FluentButton>
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/ja-evaluacion"))"
+                              IconStart="@(new Icons.Regular.Size20.Elevator())">
+                    Evaluacion
+                </FluentButton>
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/ja-objetivos-siges"))"
+                              IconStart="@(new Icons.Regular.Size20.Flag())">
+                    Objetivos
+                </FluentButton>
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/ja-procesos-siges"))"
+                              IconStart="@(new Icons.Regular.Size20.Flowchart())">
+                    Procesos
+                </FluentButton>
+            </FluentStack>
+        </FluentStack>
+        
+       
+        <div style="width: 100%;" class="grid-scroll-container">
+            <IndicadorDeAreaDataGrid/>
+        </div>
+        
+      
+    </FluentStack>
+</FluentLayout>
+
+<style>
+    @@media (max-width: 959px) {
+        .grid-scroll-container {
+            overflow-x: auto;
+        }
+    }
+</style>

@@ -6,7 +6,6 @@
 @using WEB.Core.Mediator
 @using WEB.Interfaces
 @using WEB.Data
-@using Microsoft.FluentUI.AspNetCore.Components.Icons.Regular
 @using WEB.Components.Shared
 @inject IDialogService DialogService
 @inject IMediator Mediator
@@ -14,30 +13,49 @@
 @inject ICurrentUser CurrentUser
 @rendermode InteractiveServer
 
-<FluentLayout>
-    <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" Orientation="Orientation.Horizontal" Width="100%">
-        <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@procesoNombre"></Title>
-        
-        <FluentStack Width="fit-content" Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End">
-            <FluentButton Appearance="Appearance.Accent"
-                          OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso/tabla-proceso"))"
-                          IconStart="@(new Icons.Regular.Size20.Table())">
-                PE
-            </FluentButton>
-                
-            <FluentButton Appearance="Appearance.Accent"
-                          OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso/siges"))"
-                          IconStart="@(new Icons.Regular.Size20.Document())">
-                SIGES
-            </FluentButton>
-                
-            <FluentButton Appearance="Appearance.Accent"
-                          OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso/form"))">
-                Crear
-            </FluentButton>
-        </FluentStack>
-    </FluentStack>
 
+<FluentLayout>
+    <FluentGrid Spacing="2" Justify="JustifyContent.SpaceBetween" Style="width: 100%;">
+        <FluentGridItem xs="12" md="6" Style="padding-bottom: 8px;">
+    
+            <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@procesoNombre"></Title>
+        </FluentGridItem>
+        <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
+            <FluentStack Orientation="Orientation.Horizontal"
+                         Wrap="true"
+                         HorizontalGap="8"
+                         VerticalGap="8"
+                         HorizontalAlignment="HorizontalAlignment.End">
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso/tabla-proceso"))"
+                              IconStart="@(new Icons.Regular.Size20.Table())">
+                    PE
+                </FluentButton>
+            
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/jp-objetivos-siges"))"
+                              IconStart="@(new Icons.Regular.Size20.Flag())">
+                    Objetivos
+                </FluentButton>
+            
+                <FluentButton 
+                    Appearance="Appearance.Accent"
+                    OnClick="@(() => NavigationManager.NavigateTo("/jefe-proceso/evaluacion"))">Evaluacion</FluentButton>
+                
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso/siges"))"
+                              IconStart="@(new Icons.Regular.Size20.Document())">
+                    SIGES
+                </FluentButton>
+                
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso/form"))">
+                    Crear
+                </FluentButton>
+            </FluentStack>
+        </FluentGridItem>
+    </FluentGrid>
+    
     <FluentDivider Style="margin: 1rem 0;"/>
 
     <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
@@ -50,47 +68,50 @@
             }
             else
             {
-                <FluentSplitter Orientation="Orientation.Horizontal"
-                                Panel1Size="60%"
-                                Panel2Size="40%"
-                                Panel1MinSize="400px"
-                                Panel2MinSize="250px"
-                                Collapsed="@(selectedIndicador == null)"
-                                BarSize="4">
-                    <Panel1>
-                        <div style="height: 100%; display: flex; flex-direction: column; overflow: auto; min-height: 0;">
-                            <IndicadorDataGrid Items="gridItems"
-                                               AreasBaseUrl="/indicadores/jefeProceso"
-                                               EditBaseUrl="/indicadores/jefeProceso/form"
-                                               OnDelete="DeleteIndicador"
-                                               OnViewDetails="ViewIndicadorDetails"
-                                               OnRowSelected="HandleRowSelected"/>
-                        </div>
-                    </Panel1>
-                    <Panel2>
-                        <div style="height: 100%; display: flex; flex-direction: column; background: var(--neutral-layer-1);">
-                            @if (selectedIndicador != null)
-                            {
-                                <header style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--neutral-stroke); flex-shrink: 0;">
-                                    <FluentLabel Style="font-weight: 600;">Áreas del indicador</FluentLabel>
-                                    <FluentButton Appearance="Appearance.Stealth"
-                                                  IconStart="@(new Icons.Regular.Size16.Dismiss())"
-                                                  OnClick="() => selectedIndicador = null"
-                                                  Title="Cerrar panel"/>
-                                </header>
-                                <div style="flex: 1; overflow: auto; padding: 16px;">
-                                    <IndicadorDeAreaDetailGrid Areas="selectedIndicador.Areas"/>
-                                </div>
-                            }
-                            else
-                            {
-                                <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--neutral-foreground-hint);">
-                                    <FluentLabel>Seleccione un indicador para ver sus áreas</FluentLabel>
-                                </div>
-                            }
-                        </div>
-                    </Panel2>
-                </FluentSplitter>
+               
+                <div class="grid-scroll-container">
+                    <FluentSplitter Orientation="Orientation.Horizontal"
+                                    Panel1Size="60%"
+                                    Panel2Size="40%"
+                                    Panel1MinSize="400px"
+                                    Panel2MinSize="250px"
+                                    Collapsed="@(selectedIndicador == null)"
+                                    BarSize="4">
+                        <Panel1>
+                            <div style="height: 100%; display: flex; flex-direction: column; overflow: auto; min-height: 0;">
+                                <IndicadorDataGrid Items="gridItems"
+                                                   AreasBaseUrl="/indicadores/jefeProceso"
+                                                   EditBaseUrl="/indicadores/jefeProceso/form"
+                                                   OnDelete="DeleteIndicador"
+                                                   OnViewDetails="ViewIndicadorDetails"
+                                                   OnRowSelected="HandleRowSelected"/>
+                            </div>
+                        </Panel1>
+                        <Panel2>
+                            <div style="height: 100%; display: flex; flex-direction: column; background: var(--neutral-layer-1);">
+                                @if (selectedIndicador != null)
+                                {
+                                    <header style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-bottom: 1px solid var(--neutral-stroke); flex-shrink: 0;">
+                                        <FluentLabel Style="font-weight: 600;">Áreas del indicador</FluentLabel>
+                                        <FluentButton Appearance="Appearance.Stealth"
+                                                      IconStart="@(new Icons.Regular.Size16.Dismiss())"
+                                                      OnClick="() => selectedIndicador = null"
+                                                      Title="Cerrar panel"/>
+                                    </header>
+                                    <div style="flex: 1; overflow: auto; padding: 16px;">
+                                        <IndicadorDeAreaDetailGrid Areas="selectedIndicador.Areas"/>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--neutral-foreground-hint);">
+                                        <FluentLabel>Seleccione un indicador para ver sus áreas</FluentLabel>
+                                    </div>
+                                }
+                            </div>
+                        </Panel2>
+                    </FluentSplitter>
+                </div>
             }
         </FluentTab>
 
@@ -110,5 +131,12 @@
             }
         </FluentTab>
     </FluentTabs>
-
 </FluentLayout>
+
+<style>
+    @@media (max-width: 959px) {
+        .grid-scroll-container {
+            overflow-x: auto;
+        }
+    }
+</style>

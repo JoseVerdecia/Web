@@ -3,7 +3,6 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled;
 using Microsoft.JSInterop;
 using WEB.Components.Administrador.Objetivo;
-using WEB.Core.Mediator;
 using WEB.Features.Objetivo.Delete;
 using WEB.Features.Objetivo.Dto;
 using WEB.Features.Objetivo.GetAll;
@@ -25,9 +24,10 @@ public partial class Objetivo : ComponentBase
     
     private string ActiveTabId = "tab-activos";
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadActiveObjetivos();
+        if(firstRender) 
+            await LoadActiveObjetivos();
     }
 
     private async Task HandleTabChange(FluentTab tab)

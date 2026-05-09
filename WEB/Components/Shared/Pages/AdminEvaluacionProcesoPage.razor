@@ -1,0 +1,63 @@
+﻿@page "/admin/procesos/evaluaciones"
+@attribute [Authorize(Roles = AppRoles.Administrador)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Services
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime JSRuntime
+@inject ExcelExportService ExportService
+@inject NavigationManager NavigationManager
+
+
+
+<FluentLayout>
+    <FluentGrid Spacing="4">
+        
+        <FluentGridItem xs="12">
+            <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween">
+                <Title Icono="@(new Icons.Regular.Size24.Trophy())" ValueTitle="Evaluacion"></Title>
+                <FluentStack Width="fit-content" HorizontalAlignment="HorizontalAlignment.End">
+                    <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar">
+                        <FluentMenuItem OnClick="@(() => ExportExcel())">Excel</FluentMenuItem>
+                        <FluentMenuItem OnClick="@(() => ExportPdf())">PDF</FluentMenuItem>
+                    </FluentMenuButton>
+                    <FluentButton Appearance="Appearance.Accent"
+                                  OnClick="@(() => NavigationManager.NavigateTo( "/resumen-evaluacion-procesos"))"
+                                  IconStart="@(new Icons.Regular.Size20.AppsList())">
+                        Resumen
+                    </FluentButton>
+                   
+                    <FluentButton Appearance="Appearance.Accent"
+                                  OnClick="@(() => NavigationManager.NavigateTo("/proceso"))"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                        Volver
+                    </FluentButton>
+                </FluentStack>
+            </FluentStack>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            @if (isLoading)
+            {
+                <FluentProgressRing/>
+            }
+            else if (!procesos.Any())
+            {
+                <FluentLabel>No hay procesos registrados.</FluentLabel>
+            }
+            else
+            {
+                <FluentTabs @bind-ActiveTabId="activeTabId">
+                    @foreach (var proceso in procesos)
+                    {
+                        <FluentTab Id="@($"tab-{proceso.Id}")" Label="@proceso.Nombre">
+                            <ProcesoEvaluacionTable ProcesoId="proceso.Id"/>
+                        </FluentTab>
+                    }
+                </FluentTabs>
+            }
+        </FluentGridItem>
+    </FluentGrid>
+</FluentLayout>

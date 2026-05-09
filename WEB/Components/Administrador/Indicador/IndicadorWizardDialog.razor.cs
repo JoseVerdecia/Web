@@ -3,7 +3,6 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using WEB.Common;
 using WEB.Core.Extensions;
 using WEB.Core.Helpers;
-using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data;
 using WEB.Enums;
@@ -17,7 +16,6 @@ using WEB.Features.Objetivo.GetAll;
 using WEB.Features.Proceso.Dto;
 using WEB.Features.Proceso.Get;
 using WEB.Features.Proceso.GetAll;
-using WEB.Models;
 
 namespace WEB.Components.Administrador.Indicador;
 
@@ -49,7 +47,6 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
     private int? fixedProcesoId = null;
     private string fixedProcesoNombre = "";
     
-    // Listas de datos
     private List<MetaPorAreaItem> metasPorAreaList = new();
     private List<EnumCatalogItem> origenList = new();
     private List<EnumCatalogItem> tipoList = new();
@@ -323,10 +320,10 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
                 {
                     await Dialog.CloseAsync(result.Value);
                 }
-                /*else
+                else
                 {
                     ErrorNotification.ErrorToast(result, _notificacion);
-                }*/
+                }
             }
             else if (Content is UpdateIndicadorRequest updateReq)
             {

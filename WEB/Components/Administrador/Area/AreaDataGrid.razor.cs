@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using WEB.Common;
-using WEB.Core.Extensions;
 using WEB.Core.Helpers;
 using WEB.Enums;
 using WEB.Features.Area.Dto;
@@ -56,5 +55,4 @@ public partial class AreaDataGrid : ComponentBase
             (string.IsNullOrEmpty(nameFilter) || a.Nombre.Contains(nameFilter, StringComparison.OrdinalIgnoreCase)) &&
             (string.IsNullOrEmpty(tipoFilter) || a.Tipo.ToString() == tipoFilter)
         );
-
 }

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Microsoft.FluentUI.AspNetCore.Components;
+﻿using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
 
 namespace WEB.Core.Services;
@@ -19,8 +17,7 @@ public class ThemeService
     {
         _jsRuntime = jsRuntime;
     }
-
-    // Método para cargar el tema desde localStorage (solo cuando el cliente esté listo)
+    
     public async Task LoadInitialThemeAsync()
     {
         try

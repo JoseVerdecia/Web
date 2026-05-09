@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.OutputCaching;
-using WEB.Core.Mediator;
+﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Data.IRepository;
 using WEB.Features.Proceso.Dto;
 using WEB.Interfaces;
 using WEB.Models;

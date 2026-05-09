@@ -1,6 +1,6 @@
 ﻿@using WEB.Features.Indicador.Dto
-@using WEB.Components.Shared
 @using WEB.Core.Mediator
+@using WEB.Core.Services
 @using WEB.Features.Indicador.Get
 @inject IMediator Mediator
 
@@ -14,6 +14,7 @@ else if (indicador != null)
     <FluentBadge Appearance="Appearance.Accent">META: @indicador.MetaCumplir</FluentBadge>
     <FluentBadge Appearance="Appearance.Accent">@indicador.Proceso.Nombre</FluentBadge>
     <FluentDivider Orientation="Orientation.Horizontal" Role="DividerRole.Separator" Style="margin-top: 10px;margin-bottom: 10px;" />
+    
     <IndicadorDeAreaDetailGrid Areas="indicador.Areas" IndicadorEsPorcentual="@(indicador != null && indicador.IsMetaCumplirPorcentual)" />
 }
 else

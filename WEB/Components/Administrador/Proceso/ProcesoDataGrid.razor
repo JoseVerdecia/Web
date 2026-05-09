@@ -1,7 +1,8 @@
 ﻿@using WEB.Components.Shared
 @using WEB.Core.Extensions
+@using WEB.Core.Services
 @using WEB.Features.Proceso.Dto
-
+@inject EvaluationPeriodService EvaluationPeriod
 
     <FluentDataGrid Items="@FilteredProcesos.AsQueryable()"
                     Pagination="@paginationState"
@@ -27,14 +28,20 @@
                                   Immediate="true"/>
                 </ColumnOptions>
             </PropertyColumn>
-
-            <TemplateColumn Align="Align.Center" Title="Evaluacion">
-                <ChildContent>
-                    <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
-                        @context.Evaluacion.GetDisplayName()
-                    </span>
-                </ChildContent>
-            </TemplateColumn>
+            
+            
+            @if(EvaluationPeriod.IsActive)
+            {
+                <TemplateColumn Align="Align.Center" Title="Evaluacion">
+                    <ChildContent>
+                        <span style="color: @context.Evaluacion.GetBadgeColor(); font-weight: bold;">
+                            @context.Evaluacion.GetDisplayName()
+                        </span>
+                    </ChildContent>
+                </TemplateColumn>
+                
+            }
+           
 
             <TemplateColumn Align="Align.Center" Title="Responsable">
                 <span>

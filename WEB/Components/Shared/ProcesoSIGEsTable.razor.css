@@ -1,4 +1,4 @@
-﻿/* Cabecera de cada sección de tabla (aunque no se usan en este componente, se mantienen por si acaso) */
+﻿
 .tabla-seccion-header {
     display: flex;
     align-items: center;
@@ -11,7 +11,7 @@
     font-size: 0.95rem;
 }
 
-/* Tabla base */
+
 .siges-table {
     width: 100%;
     border-collapse: collapse;
@@ -53,7 +53,7 @@
     border-bottom: none;
 }
 
-/* Solo la tabla cuantitativa alterna por bloques */
+
 .siges-table-cuantitativos tbody tr.fila-par {
     background-color: #FFF2CA;
 }
@@ -61,12 +61,12 @@
     background-color: #ffffff;
 }
 
-/* Hover general */
+
 .siges-table tbody tr:hover {
     background-color: #e2e2e2 !important;
 }
 
-/* Alineación de columnas numéricas */
+
 .col-meta,
 .col-real,
 .col-porcentaje {
@@ -78,7 +78,7 @@
     text-align: center !important;
 }
 
-/* Anchos de columna – Tabla 1 */
+
 .col-id          { width: 50px;  text-align: center; }
 .col-oe          { width: 100px; }
 .col-indicador   { width: auto;  min-width: 200px; }
@@ -88,7 +88,7 @@
 .col-porcentaje  { width: 110px; text-align: center; }
 .col-evaluacion  { width: 130px; text-align: center; }
 
-/* Celdas especiales */
+
 .celda-id {
     font-weight: 700;
     font-size: 0.82rem;
@@ -106,7 +106,7 @@
     color: #9C9C9C;
 }
 
-/* OE a que tributa */
+
 .oe-text {
     font-weight: 600;
     font-size: 0.85rem;
@@ -114,7 +114,7 @@
     letter-spacing: 0.02em;
 }
 
-/* Nombre del indicador */
+
 .indicador-escencial {
     font-weight: 600;
 }
@@ -122,7 +122,6 @@
     font-weight: 400;
 }
 
-/* Tipo de indicador (E / N) */
 .tipo-tag {
     display: inline-block;
     padding: 1px 7px;
@@ -147,30 +146,28 @@
     color: var(--neutral-foreground-3);
 }
 
-/* Porcentaje – valor resaltado */
+
 .porcentaje-valor {
     font-weight: 700;
     font-size: 0.88rem;
 }
 
-/* Evaluación */
 .evaluacion-cell {
-    display: inline-block;
-    padding: 3px 12px;
-    border-radius: 4px;
     color: white;
     font-weight: 600;
     font-size: 0.82rem;
     white-space: nowrap;
     line-height: 1.5;
 }
-.ev-sobrecumplido { background-color: #2563eb; }
-.ev-cumplido      { background-color: #16a34a; }
-.ev-parcial       { background-color: #eab308; }
-.ev-incumplido    { background-color: #ea580c; }
-.ev-noevaluado    { background-color: #9ca3af; }
 
-/* Tabla 2: Valores Cuantitativos */
+td.ev-sobrecumplido { background-color: #1B74B6 !important; }
+td.ev-cumplido      { background-color: #34B66B !important; }
+td.ev-parcialmente-cumplido{ background-color: #F7BC20 !important; }
+td.ev-incumplido    { background-color: #ED7425 !important; }
+td.ev-noevaluado    { background-color: #9ca3af !important; }
+
+
+
 .siges-table-cuantitativos .fila-valor-base td {
     border-bottom: 1px dashed var(--neutral-stroke-divider-rest);
 }
@@ -190,11 +187,19 @@
 .col-datos           { text-align: center; font-variant-numeric: tabular-nums; }
 .col-porcentaje-cuant { text-align: center; }
 
-/* Responsive */
+
 @media (max-width: 768px) {
     .siges-table th,
     .siges-table td {
         padding: 6px 6px;
         font-size: 0.78rem;
     }
+}
+
+.siges-table tbody tr:hover td.ev-sobrecumplido,
+.siges-table tbody tr:hover td.ev-cumplido,
+.siges-table tbody tr:hover td.ev-parcial,
+.siges-table tbody tr:hover td.ev-incumplido,
+.siges-table tbody tr:hover td.ev-noevaluado {
+    filter: brightness(0.90); 
 }

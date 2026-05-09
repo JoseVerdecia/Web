@@ -1,6 +1,5 @@
 ﻿@using WEB.Components.Shared
 @using WEB.Core.Mediator
-@using WEB.Data.IRepository
 @using WEB.Enums
 @using WEB.Interfaces
 @inject INotificationService _notificacion
@@ -9,7 +8,6 @@
 @inject IUnitOfWorkAccessor UnitOfWorkAccessor
 
 
-@* Grid invisible para detectar breakpoint *@
 <FluentGrid OnBreakpointEnter="HandleBreakpoint" Style="height: 0; overflow: hidden;">
     <FluentGridItem xs="12"></FluentGridItem>
 </FluentGrid>
@@ -31,7 +29,6 @@ else
                   OnFinish="OnFinishAsync"
                   @bind-Value="currentStep">
         <Steps>
-            <!-- PASO 1 -->
             <FluentWizardStep Label="Información General"
                               Summary="Datos principales y clasificación"
                               OnChange="OnStepChange">
@@ -119,7 +116,7 @@ else
                 </ChildContent>
             </FluentWizardStep>
 
-            <!-- PASO 2: Objetivos -->
+          
             <FluentWizardStep Label="Objetivos"
                               Summary="Seleccione los objetivos relacionados"
                               OnChange="OnStepChange"
@@ -171,8 +168,7 @@ else
                     </FluentStack>
                 </ChildContent>
             </FluentWizardStep>
-
-            <!-- PASO 3: Metas por Área -->
+            
             <FluentWizardStep Label="Metas por Área"
                               Summary="Configure metas específicas por área (opcional)"
                               OnChange="OnStepChange"

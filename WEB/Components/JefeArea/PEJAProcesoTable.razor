@@ -1,0 +1,50 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using WEB.Core.Mediator
+@using WEB.Data
+@inject IMediator Mediator
+@attribute [Authorize(Roles = AppRoles.JefeArea)]
+
+@if (isLoading)
+{
+    <FluentProgressRing />
+}
+else if (!items.Any())
+{
+    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+        <FluentIcon Value="@(new Icons.Regular.Size24.DismissCircle())" Style="margin-bottom: 8px; opacity: 0.4;" />
+        <FluentLabel Typo="Typography.Subject">Este proceso no tiene indicadores para su área.</FluentLabel>
+    </FluentStack>
+}
+else
+{
+    <table class="pe-table">
+        <thead>
+        <tr>
+            <th>OE</th>
+            <th>INDICADOR</th>
+            <th>@DateTime.Now.Year</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in items)
+        {
+            <tr>
+                <td class="celda-oe">
+                    @if (item.Objetivos.Any())
+                    {
+                        @string.Join("/", item.Objetivos.OrderBy(o => o.NumeroObjetivo).Select(o => o.NumeroObjetivo))
+                    }
+                    else
+                    {
+                        <span class="sin-oe">—</span>
+                    }
+                </td>
+                <td class="@(item.EsEsencial ? "fila-escencial" : "")">
+                    @item.NombreIndicador
+                </td>
+                <td class="celda-meta">@item.MetaCumplirArea</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

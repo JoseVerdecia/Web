@@ -1,0 +1,64 @@
+﻿@using WEB.Core.Extensions
+@using WEB.Core.Mediator
+@inject IMediator Mediator
+
+@if (isLoading)
+{
+<FluentProgressRing />
+}
+else if (!filas.Any())
+{
+<FluentLabel>Este objetivo no tiene indicadores para su área.</FluentLabel>
+}
+else
+{
+<div style="overflow-x: auto;">
+    <table class="siges-table">
+        <thead>
+        <tr>
+            <th>No.</th>
+            <th>PROCESOS</th>
+            <th>Ind.</th>
+            <th>INDICADOR</th>
+            <th>TIPO DE INDICADOR</th>
+            <th>META</th>
+            <th>REAL</th>
+            <th>% CUMPLIMIENTO</th>
+            <th>EVALUACIÓN</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var fila in filas)
+        {
+        <tr>
+            <td class="celda-numero">@fila.Numero</td>
+            @if (fila.EsPrimeraDelGrupo)
+            {
+            <td class="celda-proceso" rowspan="@fila.RowspanProceso">
+                @fila.NombreProceso
+            </td>
+            }
+            <td class="celda-id">@fila.IndicadorId</td>
+            <td>@fila.NombreIndicador</td>
+            <td class="celda-tipo">
+                            <span class="tipo-tag @(fila.EsEsencial ? "tipo-e" : "tipo-n")">
+                                @(fila.EsEsencial ? "E" : "N")
+                            </span>
+            </td>
+            <td class="celda-numero">@fila.MetaCumplir</td>
+            <td class="celda-numero">@(fila.TieneReal ? fila.MetaReal : "—")</td>
+            <td class="celda-numero">
+                <span style="color: @fila.ColorPorcentaje">@fila.PorcentajeCumplimientoTexto</span>
+            </td>
+            <td class="celda-numero">
+                            <span class="evaluacion-cell @GetEvaluacionClass(fila.Evaluacion)">
+                                @fila.Evaluacion.GetDisplayName()
+                            </span>
+            </td>
+        </tr>
+        }
+        </tbody>
+    </table>
+</div>
+}
+

@@ -15,26 +15,19 @@
     {
         <div style="width: 8px; flex-shrink: 0;"></div>
     }
-    
-   
-    <FluentStack Vertical Gap="1" Style="flex: 1; min-width: 0;">
-        <FluentLabel Typo="Typography.Body" Style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            @Notificacion.Cabecera
-        </FluentLabel>
-        <FluentStack Horizontal Gap="8" VerticalAlignment="VerticalAlignment.Center">
-            @if (!string.IsNullOrEmpty(Notificacion.AreaNombre))
-            {
-                <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="margin: 0;">
-                    @Notificacion.AreaNombre
-                </FluentLabel>
-            }
-            <FluentLabel Typo="Typography.Subject" Color="Color.Neutral" Style="margin: 0;">
-                @Notificacion.TiempoTranscurrido
-            </FluentLabel>
-        </FluentStack>
-    </FluentStack>
 
-   
+    <FluentStack VerticalAlignment="VerticalAlignment.Center">
+        @if (!string.IsNullOrEmpty(Notificacion.AreaNombre))
+        {
+            <FluentLabel Typo="Typography.H6" Color="Color.Neutral" Style="margin: 0;">
+                @Notificacion.AreaNombre
+            </FluentLabel>
+        }
+        <FluentLabel Typo="Typography.H6" Color="Color.Neutral" Style="margin: 0;">
+            @Notificacion.TiempoTranscurrido
+        </FluentLabel>
+    </FluentStack>
+    
     @if (Notificacion.Tipo == TipoNotificacion.RespuestaAceptada)
     {
         <FluentIcon Value="@(new Icons.Filled.Size16.CheckmarkCircle())" Size="16" Color="Color.Success" />
@@ -48,7 +41,7 @@
                   IconStart="@(new Icons.Regular.Size16.Delete())"
                   StopPropagation="true"
                   aria-label="Eliminar notificación"
-                  OnClick="HandleDeleteAsync"df/>
+                  OnClick="HandleDeleteAsync"/>
 </div>
 
 @code {

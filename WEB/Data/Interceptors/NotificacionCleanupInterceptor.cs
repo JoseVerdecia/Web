@@ -7,7 +7,8 @@ namespace WEB.Data.Interceptors;
 
 public class NotificacionCleanupInterceptor : SaveChangesInterceptor
 {
-    private const int DiasParaEliminar = 15;
+    private const int DiasParaEliminarLeidas = 365;  
+    private const int DiasParaEliminarSoftDeleted = 365; 
 
     public override InterceptionResult<int> SavingChanges(
         DbContextEventData eventData,
@@ -22,7 +23,7 @@ public class NotificacionCleanupInterceptor : SaveChangesInterceptor
         InterceptionResult<int> result,
         CancellationToken cancellationToken = default)
     {
-        EliminarNotificacionesAntiguas(eventData.Context);
+        await EliminarNotificacionesAntiguasAsync(eventData.Context, cancellationToken);
         return await base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
@@ -30,23 +31,53 @@ public class NotificacionCleanupInterceptor : SaveChangesInterceptor
     {
         if (context is null) return;
 
-        var cutoffDate = DateTime.UtcNow.AddDays(-DiasParaEliminar);
-        
-        var notificacionesAntiguas = context.ChangeTracker
+       
+        var cutoffLeidas = DateTime.UtcNow.AddDays(-DiasParaEliminarLeidas);
+        var leidasParaBorrar = context.ChangeTracker
             .Entries<NotificacionModel>()
             .Where(e => e.Entity.Leida &&
                         e.Entity.Estado == EstadoNotificacion.Aceptada &&
                         e.Entity.LeidaAt.HasValue &&
-                        e.Entity.LeidaAt.Value <= cutoffDate)
+                        e.Entity.LeidaAt.Value <= cutoffLeidas)
             .ToList();
 
-        foreach (var entry in notificacionesAntiguas)
-        {
+        foreach (var entry in leidasParaBorrar)
             entry.State = EntityState.Deleted;
-        }
 
-        if (notificacionesAntiguas.Any())
-        {
-        }
+      
+        var cutoffSoft = DateTime.UtcNow.AddDays(-DiasParaEliminarSoftDeleted);
+        var softDeletedParaBorrar = context.Set<NotificacionModel>()
+            .IgnoreQueryFilters()
+            .Where(n => n.IsDeleted && n.DeletedAt <= cutoffSoft)
+            .ToList();
+
+        if (softDeletedParaBorrar.Any())
+            context.Set<NotificacionModel>().RemoveRange(softDeletedParaBorrar);
+    }
+
+    private async Task EliminarNotificacionesAntiguasAsync(DbContext? context, CancellationToken ct)
+    {
+        if (context is null) return;
+
+        var cutoffLeidas = DateTime.UtcNow.AddDays(-DiasParaEliminarLeidas);
+        var leidasParaBorrar = context.ChangeTracker
+            .Entries<NotificacionModel>()
+            .Where(e => e.Entity.Leida &&
+                        e.Entity.Estado == EstadoNotificacion.Aceptada &&
+                        e.Entity.LeidaAt.HasValue &&
+                        e.Entity.LeidaAt.Value <= cutoffLeidas)
+            .ToList();
+
+        foreach (var entry in leidasParaBorrar)
+            entry.State = EntityState.Deleted;
+
+        var cutoffSoft = DateTime.UtcNow.AddDays(-DiasParaEliminarSoftDeleted);
+        var softDeletedParaBorrar = await context.Set<NotificacionModel>()
+            .IgnoreQueryFilters()
+            .Where(n => n.IsDeleted && n.DeletedAt <= cutoffSoft)
+            .ToListAsync(ct);
+
+        if (softDeletedParaBorrar.Any())
+            context.Set<NotificacionModel>().RemoveRange(softDeletedParaBorrar);
     }
 }

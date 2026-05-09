@@ -72,4 +72,23 @@ public static class DecimalExtensions
 
                 return ($"{porcentaje:F2}%", color);
         }
+        
+        /// <summary>
+        /// decimal = 14.24 -> string = "14.24"
+        /// decimal = 14.00 -> string = "14"
+        /// </summary>
+        public static string FormatearDecimal(this decimal? valor)
+        { 
+                if (valor == null) return "—";
+                if (valor % 1 == 0) return valor.Value.ToString("N0");
+                return valor.Value.ToString("N2");
+        }
+        public static string FormatearDecimal(this decimal valor)
+        { 
+                if (valor == null) return "—";
+                if (valor % 1 == 0) return valor.ToString("N0");
+                return valor.ToString("N2");
+        }
+        
+       
 }

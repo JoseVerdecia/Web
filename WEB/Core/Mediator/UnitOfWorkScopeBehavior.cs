@@ -3,7 +3,6 @@ using WEB.Core.Result;
 using WEB.Data;
 using WEB.Data.IRepository;
 using WEB.Data.Repository;
-using WEB.Interfaces;
 
 namespace WEB.Core.Mediator;
 

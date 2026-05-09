@@ -16,7 +16,7 @@ public class AreaModel:ISoftDeletable,ICreatedInterfaces
     public string? JefeAreaId { get; set; } 
     
     public ApplicationUser? JefeArea { get; set; }
-    public AreaTipo Tipo { get; set; } = AreaTipo.Facultad;
+    public AreaTipo Tipo { get; set; }
     public List<IndicadorDeAreaModel> IndicadoresDeArea { get; set; } = new();
     public bool IsDeleted { get; set; }
     public DateTime? DeletedAt { get; set; }

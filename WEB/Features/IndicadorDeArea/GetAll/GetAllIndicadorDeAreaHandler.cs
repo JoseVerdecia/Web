@@ -4,7 +4,6 @@ using WEB.Common;
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data;
-using WEB.Data.IRepository;
 using WEB.Features.IndicadorDeArea.Dto;
 using WEB.Interfaces;
 using WEB.Models;

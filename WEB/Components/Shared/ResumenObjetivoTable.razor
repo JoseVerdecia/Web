@@ -1,0 +1,82 @@
+﻿@using WEB.Core.Extensions
+
+@if (!Datos.Any())
+{
+    <FluentLabel>No hay objetivos registrados.</FluentLabel>
+}
+else
+{
+    <div style="overflow-x: auto;">
+        <table class="resumen-table">
+            <thead>
+                <tr>
+                    <th rowspan="2">OBJETIVOS</th>
+                    <th rowspan="2">CATEGORÍA</th>
+                    <th rowspan="2">TOTAL</th>
+                    <th colspan="2">SOBRE-CUMPLIDOS</th>
+                    <th colspan="2">CUMPLIDOS</th>
+                    <th colspan="2">SC+C</th>
+                    <th colspan="2">PARCIALMENTE CUMPLIDOS</th>
+                    <th colspan="2">SC+C+PC</th>
+                    <th colspan="2">INCUMPLIDOS</th>
+                    <th rowspan="2">NO EVALUADOS</th>
+                    <th rowspan="2">EVALUACIÓN DEL OBJETIVO ESTRATÉGICO</th>
+                </tr>
+                <tr>
+                    <th>TOTAL</th><th>%</th>
+                    <th>TOTAL</th><th>%</th>
+                    <th>TOTAL</th><th>%</th>
+                    <th>TOTAL</th><th>%</th>
+                    <th>TOTAL</th><th>%</th>
+                    <th>TOTAL</th><th>%</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var objetivo in Datos)
+                {
+                    var filas = objetivo.Filas;
+                    bool primeraFila = true;
+                    foreach (var fila in filas)
+                    {
+                        <tr class="@(fila.Nombre == "Indicadores esenciales" ? "fila-esencial" : "")">
+                            @if (primeraFila)
+                            {
+                                <td class="celda-proceso" rowspan="@filas.Count">
+                                    @objetivo.EtiquetaObjetivo
+                                </td>
+                                primeraFila = false;
+                            }
+                            <td>@fila.Nombre</td>
+                            <td class="celda-numero">@fila.Total</td>
+                            <td class="celda-numero">@fila.Sobrecumplidos</td>
+                            <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajeS)</td>
+                            <td class="celda-numero">@fila.Cumplidos</td>
+                            <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajeC)</td>
+                            <td class="celda-numero">@fila.SCplusC</td>
+                            <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajeSCplusC)</td>
+                            <td class="celda-numero">@fila.ParcialmenteCumplidos</td>
+                            <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajePC)</td>
+                            <td class="celda-numero">@fila.SCplusCplusPC</td>
+                            <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajeSCplusCplusPC)</td>
+                            <td class="celda-numero">@fila.Incumplidos</td>
+                            <td class="celda-numero">@FormatearPorcentaje(fila.PorcentajeI)</td>
+                            <td class="celda-numero">@fila.NoEvaluados</td>
+                            @if (primeraFila == false && filas.Count > 1 && fila == filas[0])
+                            {
+                                <td class="celda-evaluacion" rowspan="@filas.Count">
+                                    @objetivo.EvaluacionObjetivo.GetDisplayName()
+                                </td>
+                            }
+                            else if (filas.Count == 1)
+                            {
+                                <td class="celda-evaluacion">
+                                    @objetivo.EvaluacionObjetivo.GetDisplayName()
+                                </td>
+                            }
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+}

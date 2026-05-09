@@ -1,0 +1,45 @@
+﻿.evaluacion-table-container {
+    overflow-x: auto;
+    margin-top: 16px;
+}
+
+.evaluacion-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    border: 1px solid var(--neutral-stroke-divider-rest);
+}
+
+.evaluacion-table th,
+.evaluacion-table td {
+    padding: 8px 10px;
+    border: 1px solid var(--neutral-stroke-divider-rest);
+    text-align: center;
+    vertical-align: middle;
+}
+
+.evaluacion-table th {
+    background-color: var(--neutral-fill-stealth-rest);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+.col-indicador {
+    text-align: left !important;
+    width: 140px;
+}
+
+.col-cantidad {
+    width: 80px;
+}
+
+.col-porcentaje {
+    width: 70px;
+}
+
+.evaluacion-resultado {
+    margin-top: 12px;
+    font-size: 1rem;
+    font-weight: bold;
+}

@@ -1,4 +1,4 @@
-﻿/* ── Tabla base ── */
+﻿
 .siges-table {
     width: 100%;
     border-collapse: collapse;
@@ -37,7 +37,7 @@
     border-bottom: none;
 }
 
-/* Solo tabla cuantitativa alterna bloques */
+
 .siges-table-cuantitativos tbody tr.fila-par {
     background-color: #FFF2CA;
 }
@@ -48,7 +48,7 @@
     background-color: #e2e2e2 !important;
 }
 
-/* Alineación de columnas numéricas */
+
 .col-meta, .col-real, .col-porcentaje {
     text-align: center !important;
 }
@@ -56,7 +56,7 @@
     text-align: center !important;
 }
 
-/* Anchos de columna – Tabla 1 */
+
 .col-id          { width: 50px;  text-align: center; }
 .col-oe          { width: 100px; }
 .col-indicador   { width: auto;  min-width: 200px; }
@@ -66,7 +66,7 @@
 .col-porcentaje  { width: 110px; text-align: center; }
 .col-evaluacion  { width: 130px; text-align: center; }
 
-/* Celdas especiales */
+
 .celda-id {
     font-weight: 700;
     font-size: 0.82rem;
@@ -89,11 +89,11 @@
     letter-spacing: 0.02em;
 }
 
-/* Nombre del indicador */
+
 .indicador-escencial { font-weight: 600; }
 .indicador-necesario { font-weight: 400; }
 
-/* Tipo E/N */
+
 .tipo-tag {
     display: inline-block;
     padding: 1px 7px;
@@ -106,10 +106,10 @@
 .tipo-e { background-color: #fff3cd; color: #856404; border: 1px solid #ffc107; }
 .tipo-n { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
 
-/* Porcentaje */
+
 .porcentaje-valor { font-weight: 700; font-size: 0.88rem; }
 
-/* Evaluación */
+
 .evaluacion-cell {
     display: inline-block;
     padding: 3px 12px;
@@ -126,7 +126,7 @@
 .ev-incumplido    { background-color: #ea580c; }
 .ev-noevaluado    { background-color: #9ca3af; }
 
-/* Tabla 2 */
+
 .siges-table-cuantitativos .fila-valor-base td {
     border-bottom: 1px dashed var(--neutral-stroke-divider-rest);
 }

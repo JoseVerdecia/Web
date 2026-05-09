@@ -1,0 +1,112 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Interfaces
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@inject INotificationService NotificationService
+@inject IndicadorUpdateStateService IndicadorUpdateState
+@inject IDialogService DialogService
+@implements IDisposable
+@attribute [Authorize(Roles = AppRoles.JefeArea)]
+@inject EvaluationPeriodService EvaluationPeriod
+
+@if (!string.IsNullOrEmpty(_errorMessage))
+{
+    <FluentMessageBar Title="Error" Intent="MessageIntent.Error">
+        @_errorMessage
+    </FluentMessageBar>
+}
+
+<FluentDataGrid @ref="_dataGrid"
+                MultiLine="true"
+                ItemsProvider="@_itemsProvider"
+                IsFixed="false"
+                ItemKey="@(item => item.Id)"
+                Loading="_isLoading"
+                GridTemplateColumns="@(EvaluationPeriod.IsActive ? "5fr 1fr 1fr 1fr 1fr 1fr" :"5fr 1fr 1fr 1fr")"
+                ShowHover="true"
+                Style="width: 100%;">
+    <ChildContent>
+        <PropertyColumn Property="@(i => i.NombreIndicadorPadre)" Title="Indicador"  />
+        <PropertyColumn Align="Align.Center" Property="@(i => i.MetaCumplir)" Title="Meta   " />
+        
+        @if (EvaluationPeriod.IsActive)
+        {
+            <TemplateColumn Align="Align.Center" Title="Real">
+                @(context.MetaReal ?? "—")
+            </TemplateColumn>
+            
+            <TemplateColumn Title="Evaluación" >
+                <EvaluationBadge Value="@context.Evaluacion"></EvaluationBadge>
+            </TemplateColumn>
+        }
+      
+        
+        <TemplateColumn Title="Proceso"
+                        Align="Align.Start"
+                        Filtered="@(!string.IsNullOrWhiteSpace(_procesoFilter))">
+            <ColumnOptions>
+                <FluentSelect Items="@_procesoOptions"
+                              Position="SelectPosition.Below"
+                              Value="@_procesoFilter"
+                              ValueChanged="@(async v => { _procesoFilter = v; await RefrescarGrid(); })"
+                              OptionValue="opt => opt.Value"
+                              OptionText="opt => opt.Text"
+                              Placeholder="Filtrar proceso"/>
+                <FluentButton Appearance="Appearance.Outline"
+                              IconStart="@(new Icons.Regular.Size20.ArrowReset())"
+                              OnClick="ClearProcesoFilter"
+                              Title="Limpiar filtro"/>
+            </ColumnOptions>
+            <ChildContent>
+                <FluentLabel>@context.ProcesoNombre</FluentLabel>
+            </ChildContent>
+        </TemplateColumn>
+      
+        <TemplateColumn Title="Acciones" Align="Align.Center">
+            <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Orientation="Orientation.Horizontal" HorizontalGap="5">
+                @if (EvaluationPeriod.IsActive)
+                {
+                    <FluentButton Appearance="Appearance.Accent"
+                                  IconStart="@(new Icons.Regular.Size16.Edit())"
+                                  OnClick="() => OpenEditMetaRealDialog(context)"
+                                  Title="Editar Meta Real"/>
+                }
+               
+                <FluentButton Appearance="Appearance.Outline"
+                              IconStart="@(new Icons.Regular.Size16.ArrowSwap())"
+                              OnClick="() => AbrirSolicitudDialog(context)"
+                              Title="Solicitar cambio"
+                              StopPropagation="true"/>
+            </FluentStack>
+        </TemplateColumn>
+    </ChildContent>
+    <EmptyContent>
+        <EmptyDataGridContent Mensaje="No hay Indicadores asignados a esta area"/>
+    </EmptyContent>
+</FluentDataGrid>
+
+@if (_showSolicitudDialog)
+{
+    <FluentDialog Open="@_showSolicitudDialog" Modal="true" Width="500px" OnClosed="() => _showSolicitudDialog = false">
+        <FluentDialogHeader>
+            <FluentLabel>Solicitar cambio de meta</FluentLabel>
+        </FluentDialogHeader>
+        <FluentDialogBody>
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
+                <FluentLabel>Indicador: <b>@(_indicadorSeleccionado?.NombreIndicadorPadre ?? "")</b></FluentLabel>
+                <FluentLabel>Meta actual: <b>@(_indicadorSeleccionado?.MetaCumplir ?? "")</b></FluentLabel>
+                <FluentTextField @bind-Value="_nuevaMetaPropuesta" Label="Nueva meta propuesta" Placeholder="Ej: 95%" Required="true" />
+                <FluentTextArea Style="width: 100%" @bind-Value="_mensajePersonalizado" Label="Mensaje" Placeholder="Añadir contexto..." />
+            </FluentStack>
+        </FluentDialogBody>
+        <FluentDialogFooter>
+            <FluentButton Appearance="Appearance.Neutral" OnClick="() => _showSolicitudDialog = false">Cancelar</FluentButton>
+            <FluentButton Appearance="Appearance.Accent" OnClick="EnviarSolicitudAsync" Disabled="@string.IsNullOrWhiteSpace(_nuevaMetaPropuesta)">Enviar Solicitud</FluentButton>
+        </FluentDialogFooter>
+    </FluentDialog>
+}
+

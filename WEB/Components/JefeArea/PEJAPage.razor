@@ -1,0 +1,186 @@
+﻿@layout AppLayout
+@page "/proyecto-estrategico/jefeArea"
+@attribute [Authorize(Roles = AppRoles.JefeArea)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Core.Services
+@using WEB.Data
+@using WEB.Features.Area.Get
+@using WEB.Features.Proceso.Dto
+@using WEB.Features.Proceso.GetAll
+@using WEB.Services
+@using WEB.Interfaces
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject ICurrentUser CurrentUser
+@inject ExcelExportService ExcelExport
+@inject JefeAreaExportServices JAExcelExport
+@inject ExportPdfService PDFExport
+
+
+
+<FluentLayout>
+    <FluentGrid Spacing="4">
+      
+        <FluentGridItem xs="12">
+            <FluentStack Orientation="Orientation.Horizontal"
+                         Justify="JustifyContent.SpaceBetween"
+                         Wrap="true"
+                         VerticalGap="8">
+                <Title Icono="@(new Icons.Regular.Size24.Map())" ValueTitle="Proyecto Estratégico" />
+
+                <FluentStack Orientation="Orientation.Horizontal"
+                             Wrap="true"
+                             HorizontalGap="8"
+                             VerticalGap="8"
+                             HorizontalAlignment="HorizontalAlignment.End">
+                    <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar">
+                        <FluentMenuItem OnClick="@(() => ExportExcel())">Excel</FluentMenuItem>
+                        <FluentMenuItem OnClick="@(() => ExportPdf())">PDF</FluentMenuItem>
+                    </FluentMenuButton>
+                    <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar Proyecto Estrategico">
+                        <FluentMenuItem OnClick="@(() => ExportProyectoEstrategicoExcel())">Excel</FluentMenuItem>
+                        <FluentMenuItem OnClick="@(() => ExportProyectoEstrategicoPDF())">PDF</FluentMenuItem>
+                    </FluentMenuButton>
+                    <FluentButton Appearance="Appearance.Accent"
+                                  OnClick="@(() => NavigationManager.NavigateTo("/indicador-de-area"))"
+                                  IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                        Volver
+                    </FluentButton>
+                </FluentStack>
+            </FluentStack>
+        </FluentGridItem>
+
+        <FluentGridItem xs="12">
+            @if (isLoadingInicial)
+            {
+                <FluentProgressRing />
+            }
+            else if (string.IsNullOrEmpty(areaIdStr))
+            {
+                <FluentLabel>No tiene un área asignada.</FluentLabel>
+            }
+            else if (!procesos.Any())
+            {
+                <FluentLabel>No hay procesos registrados.</FluentLabel>
+            }
+            else
+            {
+                
+                <div class="tabs-container">
+                    <FluentTabs @bind-ActiveTabId="activeTabId">
+                        @foreach (var proceso in procesos)
+                        {
+                            var procesoId = proceso.Id;
+                            var tabId = $"tab-{procesoId}";
+                            <FluentTab Id="@tabId" Label="@proceso.Nombre">
+                                <PEJAProcesoTable ProcesoId="procesoId" AreaId="areaId" />
+                            </FluentTab>
+                        }
+                    </FluentTabs>
+                </div>
+            }
+        </FluentGridItem>
+    </FluentGrid>
+</FluentLayout>
+
+<style>
+    @@media (max-width: 959px) {
+        .tabs-container {
+            overflow-x: auto;
+        }
+        .tabs-container ::deep fluent-tabs {
+            white-space: nowrap;
+        }
+    }
+</style>
+
+@code {
+    private List<ProcesoDto> procesos = new();
+    private int areaId;
+    private string? areaIdStr;
+    private bool isLoadingInicial = true;
+    private string activeTabId = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var user = await CurrentUser.GetUserAsync();
+                var areaResult = await Mediator.Send(new GetAreaByJefeIdRequest(user.Id));
+                if (areaResult.IsSuccess && areaResult.Value != null)
+                {
+                    areaId = areaResult.Value.Id;
+                    areaIdStr = areaId.ToString();
+                }
+
+                const int pageSize = 50;
+                int currentPage = 1;
+                int totalCount = 0;
+                var allProcesos = new List<ProcesoDto>();
+                do
+                {
+                    var result = await Mediator.Send(new GetAllProcesosRequest(currentPage, pageSize));
+                    if (result?.Value?.Items != null)
+                    {
+                        allProcesos.AddRange(result.Value.Items);
+                        totalCount = result.Value.TotalCount;
+                        currentPage++;
+                    }
+                    else break;
+                } while (allProcesos.Count < totalCount);
+
+                procesos = allProcesos;
+                if (procesos.Any())
+                    activeTabId = $"tab-{procesos.First().Id}";
+            }
+            finally
+            {
+                isLoadingInicial = false;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ExportExcel()
+    {
+        if (areaId == null) return;
+        int procId = GetCurrentProcesoId();
+        if (procId == null || procId == 0) return;
+        var data = await ExcelExport.ExportPEJATabToExcelAsync(procId, areaId);
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"Evaluacion_{procId}.xlsx", Convert.ToBase64String(data));
+    }
+    
+    private async Task ExportProyectoEstrategicoExcel()
+    {
+       
+        var data = await JAExcelExport.ExportIndicadoresAreaToExcelAsync(areaId);
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"Evaluacion_{areaId}.xlsx", Convert.ToBase64String(data));
+    }
+private async Task ExportProyectoEstrategicoPDF()
+{
+
+var data = await JAExcelExport.ExportIndicadoresAreaToPdfAsync(areaId);
+await JSRuntime.InvokeVoidAsync("downloadFile", $"Evaluacion_{areaId}.pdf", Convert.ToBase64String(data));
+}
+
+    private async Task ExportPdf()
+    {
+        if (areaId == null) return;
+        int procId = GetCurrentProcesoId();
+        if (procId == null || procId == 0) return;
+        var data = await PDFExport.ExportPEJATabToPdfAsync(procId, areaId);
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"Evaluacion_{procId}.pdf", Convert.ToBase64String(data));
+    }
+
+    private int GetCurrentProcesoId()
+    {
+        var idStr = activeTabId?.Replace("tab-", "");
+        return int.TryParse(idStr, out int id) ? id : 0;
+    }
+}

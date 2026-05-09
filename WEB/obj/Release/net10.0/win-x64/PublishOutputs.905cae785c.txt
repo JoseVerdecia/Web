@@ -100,8 +100,10 @@ C:\Games\BlazorServerPublish\Microsoft.IdentityModel.Logging.dll
 C:\Games\BlazorServerPublish\Microsoft.IdentityModel.Protocols.dll
 C:\Games\BlazorServerPublish\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
 C:\Games\BlazorServerPublish\Microsoft.IdentityModel.Tokens.dll
+C:\Games\BlazorServerPublish\Microsoft.IO.RecyclableMemoryStream.dll
 C:\Games\BlazorServerPublish\Microsoft.SqlServer.Server.dll
 C:\Games\BlazorServerPublish\Microsoft.VisualStudio.SolutionPersistence.dll
+C:\Games\BlazorServerPublish\Microsoft.Win32.SystemEvents.dll
 C:\Games\BlazorServerPublish\Mono.TextTemplating.dll
 C:\Games\BlazorServerPublish\MySql.Data.dll
 C:\Games\BlazorServerPublish\MySql.EntityFrameworkCore.dll
@@ -118,6 +120,7 @@ C:\Games\BlazorServerPublish\UglyToad.PdfPig.Tokenization.dll
 C:\Games\BlazorServerPublish\UglyToad.PdfPig.Tokens.dll
 C:\Games\BlazorServerPublish\UglyToad.PdfPig.dll
 C:\Games\BlazorServerPublish\Pomelo.EntityFrameworkCore.MySql.dll
+C:\Games\BlazorServerPublish\PuppeteerSharp.dll
 C:\Games\BlazorServerPublish\QuestPDF.dll
 C:\Games\BlazorServerPublish\RBush.dll
 C:\Games\BlazorServerPublish\SixLabors.Fonts.dll
@@ -129,6 +132,9 @@ C:\Games\BlazorServerPublish\System.Composition.Hosting.dll
 C:\Games\BlazorServerPublish\System.Composition.Runtime.dll
 C:\Games\BlazorServerPublish\System.Composition.TypedParts.dll
 C:\Games\BlazorServerPublish\System.Configuration.ConfigurationManager.dll
+C:\Games\BlazorServerPublish\System.Drawing.Common.dll
+C:\Games\BlazorServerPublish\System.Private.Windows.Core.dll
+C:\Games\BlazorServerPublish\System.Private.Windows.GdiPlus.dll
 C:\Games\BlazorServerPublish\System.IdentityModel.Tokens.Jwt.dll
 C:\Games\BlazorServerPublish\System.IO.Packaging.dll
 C:\Games\BlazorServerPublish\System.Memory.Data.dll
@@ -137,6 +143,7 @@ C:\Games\BlazorServerPublish\System.Security.Permissions.dll
 C:\Games\BlazorServerPublish\System.Windows.Extensions.dll
 C:\Games\BlazorServerPublish\Tabula.dll
 C:\Games\BlazorServerPublish\Tabula.Csv.dll
+C:\Games\BlazorServerPublish\WebDriverBiDi.dll
 C:\Games\BlazorServerPublish\ZstdSharp.dll
 C:\Games\BlazorServerPublish\ca\Hangfire.Core.resources.dll
 C:\Games\BlazorServerPublish\de\Hangfire.Core.resources.dll

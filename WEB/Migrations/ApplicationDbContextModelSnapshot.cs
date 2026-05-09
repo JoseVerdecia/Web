@@ -238,6 +238,9 @@ namespace WEB.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<string>("ProfilePictureUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
@@ -315,6 +318,9 @@ namespace WEB.Migrations
                     b.Property<int>("IndicadorId")
                         .HasColumnType("int");
 
+                    b.Property<int>("IndicadorPadreTipo")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
@@ -335,6 +341,9 @@ namespace WEB.Migrations
 
                     b.Property<decimal>("MetaRealDecimal")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<string>("ValorCualitativo")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal?>("ValorReal")
                         .HasColumnType("decimal(18,2)");

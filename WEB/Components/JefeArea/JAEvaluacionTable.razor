@@ -1,0 +1,87 @@
+﻿@using WEB.Core.Extensions
+@using WEB.Core.Mediator
+@inject IMediator Mediator
+
+@if (isLoading)
+{
+    <FluentProgressRing />
+}
+else if (string.IsNullOrEmpty(nombreArea))
+{
+    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" VerticalAlignment="VerticalAlignment.Center">
+        <FluentCard>
+            <FluentLabel>No hay indicadores de área registrados.</FluentLabel>
+        </FluentCard>
+    </FluentStack>
+   
+    
+}
+else
+{
+    <table class="resumen-table">
+        <thead>
+            <tr>
+                <th rowspan="2">ÁREA</th>
+                <th rowspan="2">CATEGORÍA</th>
+                <th rowspan="2">TOTAL</th>
+                <th colspan="2">SOBRE-CUMPLIDOS</th>
+                <th colspan="2">CUMPLIDOS</th>
+                <th colspan="2">SC+C</th>
+                <th colspan="2">PARCIALMENTE CUMPLIDO</th>
+                <th colspan="2">SC+C+PC</th>
+                <th colspan="2">INCUMPLIDOS</th>
+                <th rowspan="2">NO EVALUADOS</th>
+                <th rowspan="2">EVALUACIÓN DEL ÁREA</th>
+            </tr>
+            <tr>
+               
+                <th>TOTAL</th><th>%</th>
+                <th>TOTAL</th><th>%</th>
+                <th>TOTAL</th><th>%</th>
+                <th>TOTAL</th><th>%</th>
+                <th>TOTAL</th><th>%</th>
+                <th>TOTAL</th><th>%</th>
+               
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="fila-esencial">
+                <td rowspan="2" class="celda-proceso">@nombreArea</td>
+                <td>Indicadores esenciales</td>
+                <td class="celda-numero">@filaEsenciales.Total</td>
+                <td class="celda-numero">@filaEsenciales.Sobrecumplidos</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaEsenciales.PorcentajeS)</td>
+                <td class="celda-numero">@filaEsenciales.Cumplidos</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaEsenciales.PorcentajeC)</td>
+                <td class="celda-numero">@filaEsenciales.SCplusC</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaEsenciales.PorcentajeSCplusC)</td>
+                <td class="celda-numero">@filaEsenciales.ParcialmenteCumplidos</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaEsenciales.PorcentajePC)</td>
+                <td class="celda-numero">@filaEsenciales.SCplusCplusPC</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaEsenciales.PorcentajeSCplusCplusPC)</td>
+                <td class="celda-numero">@filaEsenciales.Incumplidos</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaEsenciales.PorcentajeI)</td>
+                <td class="celda-numero">@filaEsenciales.NoEvaluados</td>
+                <td rowspan="2" class="celda-evaluacion">@evaluacionArea.GetDisplayName()</td>
+            </tr>
+            <tr>
+                <td>Indicadores necesarios</td>
+                <td class="celda-numero">@filaNecesarios.Total</td>
+                <td class="celda-numero">@filaNecesarios.Sobrecumplidos</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaNecesarios.PorcentajeS)</td>
+                <td class="celda-numero">@filaNecesarios.Cumplidos</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaNecesarios.PorcentajeC)</td>
+                <td class="celda-numero">@filaNecesarios.SCplusC</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaNecesarios.PorcentajeSCplusC)</td>
+                <td class="celda-numero">@filaNecesarios.ParcialmenteCumplidos</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaNecesarios.PorcentajePC)</td>
+                <td class="celda-numero">@filaNecesarios.SCplusCplusPC</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaNecesarios.PorcentajeSCplusCplusPC)</td>
+                <td class="celda-numero">@filaNecesarios.Incumplidos</td>
+                <td class="celda-numero">@FormatearPorcentaje(filaNecesarios.PorcentajeI)</td>
+                <td class="celda-numero">@filaNecesarios.NoEvaluados</td>
+            </tr>
+        </tbody>
+    </table>
+}
+

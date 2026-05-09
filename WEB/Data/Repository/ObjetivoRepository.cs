@@ -17,19 +17,5 @@ public class ObjetivoRepository : Repository<ObjetivoModel>, IObjetivoRepository
         _context.Update(objetivo);
     }
     
-    /*public async Task<List<ObjetivoIndicadorCountDto>> GetIndicadorCountByObjetivoAsync()
-    {
-      
-        var query = from objetivo in _context.Objetivo
-            where !objetivo.IsDeleted
-            select new ObjetivoIndicadorCountDto
-            {
-                ObjetivoId = objetivo.Id,
-                ObjetivoNombre = objetivo.Nombre,
-                IndicadoresCount = objetivo.Indicadores.Count(i => !i.IsDeleted)
-            };
-
-        return await query.ToListAsync();
-    }*/
     
 }   

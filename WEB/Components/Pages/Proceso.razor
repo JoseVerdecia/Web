@@ -13,23 +13,15 @@
 @inject IJSRuntime JSRuntime
 @inject IDialogService DialogService
 
-<PageTitle>Procesos</PageTitle>
+
 <FluentLayout>
-    <!-- Grid principal: Spacing="5" equivale a 20px de separación -->
     <FluentGrid Spacing="5" Style="width: 100%;">
-        
-        <!-- CABECERA: Título y Botones -->
         <FluentGridItem xs="12">
             <FluentGrid Justify="JustifyContent.SpaceBetween" AlignItems="Alignment.Center" Spacing="3">
-                
-                <!-- Título: 100% ancho en móvil, tamaño automático en escritorio -->
                 <FluentGridItem xs="12" md="6">
                     <Title ValueTitle="Procesos" Icono="@(new Icons.Filled.Size24.Flowchart())"/>
                 </FluentGridItem>
-
-                <!-- Botones: 100% ancho en móvil, alineados a la derecha en escritorio -->
                 <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
-                    <!-- Stack con flex-wrap por si los botones no caben en tablets pequeñas -->
                     <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" Gap="8" Style="flex-wrap: wrap;">
                         @if (ActiveTabId == "tab-activos")
                         {
@@ -40,8 +32,12 @@
                             
                             <FluentButton 
                                 Appearance="Appearance.Accent"
-                                OnClick="@(() => NavigationManager.NavigateTo("/proceso/indicadores"))">Datos SIGES</FluentButton>
+                                OnClick="@(() => NavigationManager.NavigateTo("/proceso/indicadores"))">SIGES</FluentButton>
                             
+                            <FluentButton 
+                                Appearance="Appearance.Accent"
+                                OnClick="@(() => NavigationManager.NavigateTo("/admin/procesos/evaluaciones"))">Evaluacion</FluentButton>
+                           
                             <FluentButton 
                                 Appearance="Appearance.Accent"
                                 OnClick="@(() => NavigationManager.NavigateTo("/proyecto-estrategico/procesos"))">
@@ -84,8 +80,7 @@
                 </FluentGridItem>
             </FluentGrid>
         </FluentGridItem>
-
-        <!-- CONTENIDO: Tabs y Tablas -->
+        
         <FluentGridItem xs="12">
             <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
                 <FluentTab Id="tab-activos" Label="Activos">
@@ -97,7 +92,6 @@
                     }
                     else
                     {
-                        <!-- Patrón responsivo para tablas -->
                         <div style="overflow-x: auto; width: 100%;">
                             <div style="min-width: 700px;">
                                 <ProcesoDataGrid Procesos="activeProcesos"
@@ -120,7 +114,6 @@
                     }
                     else
                     {
-                        <!-- Patrón responsivo para tablas -->
                         <div style="overflow-x: auto; width: 100%;">
                             <div style="min-width: 700px;">
                                 <ProcesoDeletedDataGrid Procesos="deletedProcesos"

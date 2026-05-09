@@ -1,0 +1,45 @@
+@media (max-width: 959px) {
+   
+    .form-paso1-grid[b-qkkyyu0dzj] {
+        display: block;
+    }
+    .form-paso1-grid > *[b-qkkyyu0dzj] {
+        margin-bottom: 16px;
+    }
+
+    
+    .paso3-layout[b-qkkyyu0dzj] {
+        flex-direction: column !important;
+    }
+    .panel-areas-asignadas[b-qkkyyu0dzj] {
+        margin-top: 16px;
+        min-width: 100% !important;
+    }
+
+    
+    .wizard-buttons fluent-stack[b-qkkyyu0dzj] {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .wizard-buttons fluent-button[b-qkkyyu0dzj] {
+        flex: 1 1 auto;
+    }
+}
+
+
+.form-paso1-grid[b-qkkyyu0dzj] {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100%;
+    gap: 10px;
+}
+.paso3-layout[b-qkkyyu0dzj] {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+}
+.panel-areas-asignadas[b-qkkyyu0dzj] {
+    flex: 1;
+    min-width: 200px;
+}

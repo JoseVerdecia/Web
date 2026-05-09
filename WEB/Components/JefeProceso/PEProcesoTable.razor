@@ -1,5 +1,8 @@
-﻿@using WEB.Core.Mediator
+﻿@using Microsoft.AspNetCore.Authorization
+@using WEB.Core.Mediator
+@using WEB.Data
 @using WEB.Enums
+@attribute [Authorize(Roles = AppRoles.JefeProceso)]
 @inject IMediator Mediator
 
 @if (isLoading)
@@ -8,7 +11,10 @@
 }
 else if (!indicadores.Any())
 {
-    <FluentLabel>No hay indicadores para este proceso.</FluentLabel>
+    <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 40px;">
+        <FluentIcon Value="@(new Icons.Regular.Size24.DismissCircle())" Style="margin-bottom: 8px; opacity: 0.4;" />
+        <FluentLabel Typo="Typography.Subject">Este proceso no tiene indicadores registrados.</FluentLabel>
+    </FluentStack>
 }
 else
 {

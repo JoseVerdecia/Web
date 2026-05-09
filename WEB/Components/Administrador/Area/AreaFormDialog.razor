@@ -5,15 +5,15 @@
 @inject INotificationService _notificacion
 @inject IMediator Mediator
 
-
-
     <FluentDialogBody>
         <FluentStack Orientation="Orientation.Vertical" VerticalGap="15" Style="width: 100%;">
             <FluentLabel Typo="Typography.PaneHeader">@TitleText</FluentLabel>
-            <FluentTextField @bind-Value="nombre"
-                             Label="Nombre del área"
-                             Required="true"
-                             Placeholder="Ej: FACIM"/>
+            <FluentTextArea @bind-Value="nombre"
+                            Label="Nombre del área"
+                            Rows="6"
+                            Cols="60"
+                            Required="true"
+                            Placeholder="Ej: FACIM"/>
 
             <EnumSelect 
                 TEnum="@AreaTipo"

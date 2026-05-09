@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.JSInterop;
-using WEB.Features.Indicador.Dto;
-using WEB.Features.Indicador.GetAll;
 using WEB.Features.Proceso.Dto;
 using WEB.Features.Proceso.GetAll;
-using WEB.Interfaces;
-using WEB.Models;
 
 namespace WEB.Components.Shared.Pages;
 
@@ -48,7 +44,7 @@ public partial class ProyectoEstrategicoProcesos : ComponentBase
 
             procesos = allProcesos;
 
-            // Seleccionar el primer tab (para que activeTabId tenga valor)
+         
             if (procesos.Any())
                 activeTabId = $"tab-{procesos.First().Id}";
         }
@@ -61,7 +57,7 @@ public partial class ProyectoEstrategicoProcesos : ComponentBase
         }
     }
 
-    // Este método solo mantiene la sincronización de activeTabId para la exportación
+   
     private async Task HandleTabChange(FluentTab tab)
     {
         if (tab.Id != null)
@@ -84,7 +80,7 @@ public partial class ProyectoEstrategicoProcesos : ComponentBase
         var idStr = activeTabId?.Replace("tab-", "");
         if (int.TryParse(idStr, out int procesoId))
         {
-            var pdfData = await ExportService.ExportProcesoTabToPdfAsync(procesoId);
+            var pdfData = await ExportPdfService.ExportProcesoTabToPdfAsync(procesoId); 
             await JSRuntime.InvokeVoidAsync("downloadFile", "Proceso.pdf", Convert.ToBase64String(pdfData));
         }
     }

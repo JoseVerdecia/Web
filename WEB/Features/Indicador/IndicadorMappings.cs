@@ -1,5 +1,4 @@
-﻿using Microsoft.FluentUI.AspNetCore.Components.Extensions;
-using WEB.Features.Indicador.Dto;
+﻿using WEB.Features.Indicador.Dto;
 using WEB.Features.IndicadorDeArea.Dto;
 using WEB.Features.Objetivo.Dto;
 using WEB.Features.Proceso.Dto;
@@ -23,7 +22,6 @@ public static  class IndicadorMappings
             MetaRealDecimal = model.MetaRealDecimal,
             Origen = model.Origen,
             Tipo = model.Tipo,
-            IsTipoEscencial = EnumExtensions.ShouldBoldName(model.Tipo),
             Observacion = model.Observacion,
             Evaluacion = model.Evaluacion,
             ValorTotal = model.ValorTotal,
@@ -47,12 +45,23 @@ public static  class IndicadorMappings
             
             Areas = model.IndicadoresDeArea.Select(ia => new IndicadorDeAreaDto
             {
+                Id = ia.Id,
                 AreaId = ia.AreaId,
                 AreaNombre = ia.Area.Nombre,
+                Tipo = ia.Area.Tipo,
                 IndicadorPadreId = ia.Indicador.Id,
+                IndicadorPadreTipo = ia.Indicador.Tipo,
                 MetaCumplirIndicadorPadre = ia.Indicador.MetaCumplir,
                 NombreIndicadorPadre = ia.Indicador.Nombre,
                 MetaCumplir = ia.MetaCumplir,
+                ValorCualitativo = ia.ValorCualitativo,
+                ProcesoNombre = ia.Indicador.Proceso.Nombre,
+                ValorTotalLabel = ia.Indicador.ValorTotal,
+                ValorRealLabel = ia.Indicador.ValorReal,
+                ValorTotal = ia.ValorTotal,
+                ValorReal = ia.ValorReal,
+                IsMetaCumplirPorcentual = ia.IsMetaCumplirPorcentaje,
+                IsRealPorcentual = ia.IsMetaRealPorcentaje,
                 MetaReal = ia.MetaReal,
                 Evaluacion = ia.Evaluacion,
                 EvaluacionColor = EnumExtensions.GetBadgeColor(ia.Evaluacion)

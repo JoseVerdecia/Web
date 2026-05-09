@@ -9,6 +9,8 @@ public class IndicadorDeAreaModel:ISoftDeletable
     
     // Relacion con su Indicador
     public int IndicadorId { get; set; }
+    
+    public IndicadorTipo IndicadorPadreTipo { get; set; }
     public IndicadorModel Indicador { get; set; } = null!;
     
     // Relacion con su Area
@@ -29,6 +31,9 @@ public class IndicadorDeAreaModel:ISoftDeletable
     
     public decimal? ValorTotal { get; set; }
     public decimal? ValorReal { get; set; }
+    
+    // Valor Cualitativo del Indicador del Area
+    public string? ValorCualitativo {get;set;}
     
     // Relacion con Notificaciones
     public List<NotificacionModel> Notificaciones { get; set; } = new();

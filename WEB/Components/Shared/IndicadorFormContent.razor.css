@@ -1,0 +1,45 @@
+﻿@media (max-width: 959px) {
+   
+    .form-paso1-grid {
+        display: block;
+    }
+    .form-paso1-grid > * {
+        margin-bottom: 16px;
+    }
+
+    
+    .paso3-layout {
+        flex-direction: column !important;
+    }
+    .panel-areas-asignadas {
+        margin-top: 16px;
+        min-width: 100% !important;
+    }
+
+    
+    .wizard-buttons fluent-stack {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .wizard-buttons fluent-button {
+        flex: 1 1 auto;
+    }
+}
+
+
+.form-paso1-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100%;
+    gap: 10px;
+}
+.paso3-layout {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: flex-start;
+}
+.panel-areas-asignadas {
+    flex: 1;
+    min-width: 200px;
+}

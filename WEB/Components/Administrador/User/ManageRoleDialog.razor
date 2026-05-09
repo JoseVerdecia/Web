@@ -1,5 +1,4 @@
-﻿@using Microsoft.FluentUI.AspNetCore.Components.Icons.Light
-@using WEB.Core.Mediator
+﻿@using WEB.Core.Mediator
 @using WEB.Data
 @using WEB.Interfaces
 @inject INotificationService Notification
@@ -15,7 +14,7 @@
 
 <FluentDialogBody Style="min-width: 400px; max-width: 560px;">
     <FluentStack Orientation="Orientation.Vertical">
-        @* Encabezado con información del usuario *@
+      
         <FluentStack Orientation="Orientation.Horizontal" VerticalAlignment="VerticalAlignment.Center" HorizontalGap="12">
             <FluentIcon Value="@(new Icons.Regular.Size24.Person())" Color="Color.Accent" Style="width: 32px; height: 32px;" />
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="2">
@@ -34,7 +33,7 @@
 
             <FluentStack Orientation="Orientation.Vertical">
 
-                @* Denegar rol (si aplica) *@
+              
                 @if (Content.Role == AppRoles.JefeArea || Content.Role == AppRoles.JefeProceso)
                 {
                     <FluentButton Appearance="Appearance.Accent"
@@ -76,8 +75,7 @@
                     </FluentButton>
                    
                 }
-
-                @* Mensaje si no hay acciones disponibles *@
+                
                 @if (Content.Role != AppRoles.JefeArea && Content.Role != AppRoles.JefeProceso && Content.Role != AppRoles.UsuarioNormal)
                 {
                     <FluentStack HorizontalAlignment="HorizontalAlignment.Center" Style="padding: 16px;">
@@ -88,7 +86,7 @@
         }
         else if (_step == DialogStep.SelectArea || _step == DialogStep.SelectProceso)
         {
-            @* Paso de selección con búsqueda *@
+        
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="12">
                 <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="8" VerticalAlignment="VerticalAlignment.Center">
                     <FluentButton Appearance="Appearance.Stealth"
@@ -110,15 +108,12 @@
                 }
                 else
                 {
-                    @* Campo de búsqueda *@
+                  
                     <FluentSearch @bind-Value="_searchText"
                                   Placeholder="Buscar por nombre..."
                                   Immediate="true"
                                   Disabled="@(_availableItems == null || !_availableItems.Any())"
                                   Style="width: 100%;" />
-
-                    @* Lista filtrada *@
-                    
                     
                     @if (FilteredItems.Any())
                     {
@@ -158,8 +153,7 @@
                 }
             </FluentStack>
         }
-
-        @* Mensaje de error *@
+        
         @if (!string.IsNullOrEmpty(_errorMessage))
         {
             <FluentMessageBar Intent="MessageIntent.Error" AllowDismiss="true" Style="margin-top: 16px;">

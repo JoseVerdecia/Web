@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Caching.Memory;
-
-namespace WEB.Interfaces;
+﻿namespace WEB.Interfaces;
 
 
 /*public interface ICacheInvalidator

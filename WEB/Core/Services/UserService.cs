@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using WEB.Core.Result;
 using WEB.Data;
-using WEB.Data.IRepository;
 using WEB.Interfaces;
 
 namespace WEB.Core.Services;

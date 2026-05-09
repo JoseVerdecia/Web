@@ -2,10 +2,8 @@
 using WEB.Core.Helpers;
 using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Data.IRepository;
 using WEB.Features.IndicadorDeArea.Dto;
 using WEB.Interfaces;
-using WEB.Models;
 
 namespace WEB.Features.IndicadorDeArea.Update;
 
@@ -34,6 +32,7 @@ public class UpdateMetaRealHandler:IRequestHandler<UpdateMetaRealRequest, Indica
 
             area.ValorTotal = request.ValorTotal;
             area.ValorReal = request.ValorReal;
+            area.ValorCualitativo = request.ValoracionCualitativa;
         }
         else
         {

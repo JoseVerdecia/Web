@@ -2,7 +2,6 @@
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data.Hub;
-using WEB.Data.IRepository;
 using WEB.Interfaces;
 
 namespace WEB.Features.Notificacion.Delete;

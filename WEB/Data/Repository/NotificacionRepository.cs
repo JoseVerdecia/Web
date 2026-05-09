@@ -90,4 +90,17 @@ public class NotificacionRepository : Repository<NotificacionModel>, INotificati
 
         _context.UpdateRange(noLeidas);
     }
+    
+    public async Task<List<NotificacionModel>> GetByIndicadorIdAsync(int indicadorId, CancellationToken cancellationToken)
+    {
+        return await _context.Set<NotificacionModel>()
+            .IgnoreQueryFilters()
+            .Include(n => n.Remitente)
+            .Include(n => n.Destinatario)
+            .Include(n => n.IndicadorDeArea).ThenInclude(ia => ia.Area)
+            .Include(n => n.IndicadorDeArea).ThenInclude(ia => ia.Indicador)
+            .Where(n => n.IndicadorDeArea != null && n.IndicadorDeArea.IndicadorId == indicadorId)
+            .OrderByDescending(n => n.CreatedAt)
+            .ToListAsync(cancellationToken);
+    }
 }

@@ -15,7 +15,7 @@
 @inject IJSRuntime JSRuntime
 @rendermode  InteractiveServer
 
-<PageTitle>Indicador</PageTitle>
+
 
 @if (!string.IsNullOrEmpty(errorMessage))
 {
@@ -80,8 +80,7 @@
                 </FluentGridItem>
             </FluentGrid>
         </FluentGridItem>
-
-        <!-- Separador -->
+        
         <FluentGridItem xs="12">
             <FluentDivider Style="margin: 0.5rem 0;" />
         </FluentGridItem>
@@ -101,7 +100,7 @@
                                     <IndicadorDataGrid
                                         @ref="indicadorDataGrid"
                                         AreasBaseUrl="/indicadores"
-                                        EditBaseUrl="/indicadores/jefeProcesoform"
+                                        EditBaseUrl="/indicadores/form"
                                         Items="gridItems"
                                         OnDelete="DeleteIndicador"
                                         OnViewDetails="ViewIndicadorDetails"

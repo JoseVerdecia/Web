@@ -4,24 +4,38 @@
 @using Microsoft.AspNetCore.Authorization
 @using WEB.Components.Shared
 @using WEB.Core.Mediator
+@using WEB.Core.Services
 @using WEB.Data
 @using WEB.Features.Proceso.Get
+@using WEB.Services
 @using WEB.Interfaces
 @inject IMediator Mediator
 @inject ICurrentUser CurrentUser
+@inject ExcelExportService ExportService
+@inject ExportPdfService ExportPdfService
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-<PageTitle>Indicadores de mi proceso</PageTitle>
+
 
 <FluentLayout>
-    <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.SpaceBetween" Width="100%">
-        <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@procesoNombre"></Title>
-        <FluentButton Appearance="Appearance.Accent"
-                      OnClick="@(() => Navigation.NavigateTo("/indicadores/jefeProceso"))"
-                      IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
-            Volver
-        </FluentButton>
-    </FluentStack>
+   
+    <FluentGrid Spacing="2" Justify="JustifyContent.SpaceBetween" Style="width: 100%;">
+        <FluentGridItem xs="12" md="6" Style="padding-bottom: 8px;">
+            <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@procesoNombre" />
+        </FluentGridItem>
+        <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
+            <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Style="margin-right: 10px;margin-bottom: 10px;" Text="Exportar">
+                <FluentMenuItem OnClick="ExportExcel">Excel</FluentMenuItem>
+                <FluentMenuItem  OnClick="ExportPdf">PDF</FluentMenuItem>
+            </FluentMenuButton>
+            <FluentButton Appearance="Appearance.Accent"
+                          OnClick="@(() => Navigation.NavigateTo("/indicadores/jefeProceso"))"
+                          IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                Volver
+            </FluentButton>
+        </FluentGridItem>
+    </FluentGrid>
 
     <FluentDivider Style="margin: 1rem 0;" />
 
@@ -35,13 +49,24 @@
     }
     else
     {
-        <PEProcesoTable ProcesoId="procesoId.Value" />
+       
+        <div class="table-scroll-container">
+            <PEProcesoTable ProcesoId="procesoId" />
+        </div>
     }
 </FluentLayout>
 
+<style>
+    @@media (max-width: 959px) {
+        .table-scroll-container {
+            overflow-x: auto;
+        }
+    }
+</style>
+
 @code {
     [Inject] NavigationManager Navigation { get; set; } = default!;
-    private int? procesoId;
+    private int procesoId;
     private string procesoNombre = "Cargando...";
     private bool isLoadingProceso = true;
 
@@ -61,5 +86,20 @@
             procesoNombre = result.Value.Nombre;
         }
         isLoadingProceso = false;
+    }
+    
+    private async Task ExportExcel()
+    {
+        
+            var excelData = await ExportService.ExportProcesoTabToExcelAsync(procesoId);
+            await JSRuntime.InvokeVoidAsync("downloadFile", "Proceso.xlsx", Convert.ToBase64String(excelData));
+        
+    }
+
+    private async Task ExportPdf()
+    {
+            var pdfData = await ExportPdfService.ExportProcesoTabToPdfAsync(procesoId); 
+            await JSRuntime.InvokeVoidAsync("downloadFile", "Proceso.pdf", Convert.ToBase64String(pdfData));
+        
     }
 }

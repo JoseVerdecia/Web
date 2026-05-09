@@ -26,9 +26,4 @@ public static class EnumExtensions
         return attribute?.Color ?? string.Empty;
     }
     
-    public static bool ShouldBoldName(this IndicadorTipo tipo)
-    {
-        var field = tipo.GetType().GetField(tipo.ToString());
-        return field?.GetCustomAttribute<BoldNameAttribute>() != null;
-    }
 }

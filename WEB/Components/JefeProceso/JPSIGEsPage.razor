@@ -15,23 +15,31 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<PageTitle>Proyecto Estratégico</PageTitle>
+
 <FluentLayout>
-    <FluentStack HorizontalAlignment="HorizontalAlignment.SpaceBetween" Orientation="Orientation.Horizontal" Width="100%">
-        <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@procesoNombre" />
-        
-        <FluentStack Width="fit-content" Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End">
-            <FluentMenuButton Text="Exportar">
-                <FluentMenuItem OnClick="@ExportToExcel">Excel</FluentMenuItem>
-                <FluentMenuItem OnClick="@ExportToPdf">PDF</FluentMenuItem>
-            </FluentMenuButton>
-            <FluentButton Appearance="Appearance.Accent"
-                          OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso"))"
-                          IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
-                Volver
-            </FluentButton>
-        </FluentStack>
-    </FluentStack>
+   
+    <FluentGrid Spacing="2" Justify="JustifyContent.SpaceBetween" Style="width: 100%;">
+        <FluentGridItem xs="12" md="6" Style="padding-bottom: 8px;">
+            <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@procesoNombre" />
+        </FluentGridItem>
+        <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
+            <FluentStack Orientation="Orientation.Horizontal"
+                         Wrap="true"
+                         HorizontalGap="8"
+                         VerticalGap="8"
+                         HorizontalAlignment="HorizontalAlignment.End">
+                <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar">
+                    <FluentMenuItem OnClick="@ExportToExcel">Excel</FluentMenuItem>
+                    <FluentMenuItem OnClick="@ExportToPdf">PDF</FluentMenuItem>
+                </FluentMenuButton>
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso"))"
+                              IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                    Volver
+                </FluentButton>
+            </FluentStack>
+        </FluentGridItem>
+    </FluentGrid>
 
     <FluentDivider Style="margin: 1rem 0;" />
 
@@ -49,9 +57,19 @@
     }
     else
     {
-        <ProcesoSIGEsTable ProcesoId="procesoId.Value" />
+        <div class="table-scroll-container">
+            <ProcesoSIGEsTable ProcesoId="procesoId.Value" />
+        </div>
     }
 </FluentLayout>
+
+<style>
+    @@media (max-width: 959px) {
+        .table-scroll-container {
+            overflow-x: auto;
+        }
+    }
+</style>
 
 @code {
     private int? procesoId;

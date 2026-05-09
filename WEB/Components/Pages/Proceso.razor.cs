@@ -3,8 +3,6 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled;
 using Microsoft.JSInterop;
 using WEB.Components.Administrador.Proceso;
-using WEB.Core.Mediator;
-using WEB.Enums;
 using WEB.Features.Proceso.Delete;
 using WEB.Features.Proceso.Dto;
 using WEB.Features.Proceso.GetAll;
@@ -26,9 +24,10 @@ public partial class Proceso : ComponentBase
 
     private string ActiveTabId = "tab-activos";
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadActiveProcesos();
+        if(firstRender)
+            await LoadActiveProcesos();
     }
 
     private async Task HandleTabChange(FluentTab tab)

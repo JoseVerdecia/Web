@@ -29,7 +29,6 @@ public partial class AreaFormDialog : ComponentBase, IDialogContentComponent
                 tipoArea = updateRequest.Tipo;
             }
             
-    
             // Aqui si quiero asigno un valor al Tipo de Area , pero lo dejo vacio para que el usuario seleccione
         }
     

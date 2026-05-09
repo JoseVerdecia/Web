@@ -3,13 +3,11 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled;
 using WEB.Common;
 using WEB.Components.Administrador.Indicador;
-using WEB.Core.Mediator;
 using WEB.Features.Indicador.Delete;
 using WEB.Features.Indicador.Dto;
 using WEB.Features.Indicador.GetAll;
 using WEB.Features.Indicador.Restore;
 using WEB.Features.Proceso.Get;
-using WEB.Interfaces;
 
 namespace WEB.Components.JefeProceso;
 
@@ -32,13 +30,15 @@ public partial class JPPage : ComponentBase
     private string ActiveTabId = "tab-activos";
     private string? jefeProcesoId;
 
-    protected override async Task OnInitializedAsync()
-    {
-        var user = await CurrentUser.GetUserAsync();
-        jefeProcesoId = user?.Id;
-
-        await LoadProcesoNombreAsync(_cancellationToken.Token);
-        await LoadIndicadoresActivos();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {   
+        if (firstRender)
+        { 
+            var user = await CurrentUser.GetUserAsync(); 
+            jefeProcesoId = user?.Id;
+            await LoadProcesoNombreAsync(_cancellationToken.Token);
+            await LoadIndicadoresActivos(); 
+        }
     }
 
     private async Task HandleTabChange(FluentTab tab)
@@ -48,8 +48,7 @@ public partial class JPPage : ComponentBase
             await LoadIndicadoresEliminados();
         }
     }
-
-    // <-- NUEVO: Manejar selección de fila
+    
     private void HandleRowSelected(IndicadorDisplayItem item)
     {
         selectedIndicador = item;
@@ -219,8 +218,7 @@ public partial class JPPage : ComponentBase
             {
                 indicadores.RemoveAll(i => i.Id == indicador.Id);
                 gridItems = indicadores.Select(IndicadorDisplayItem.FromIndicadorDto).ToList();
-
-                // <-- NUEVO: Cerrar panel si se elimina el indicador seleccionado
+                
                 if (selectedIndicador?.Id == indicador.Id)
                     selectedIndicador = null;
 

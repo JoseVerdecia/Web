@@ -1,0 +1,35 @@
+﻿.pe-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    border: 1px solid #d0d0d0;
+}
+.pe-table th {
+    background-color: #D2D6D9;
+    color: #212E58;
+    font-weight: bold;
+    font-size: 0.8rem;
+    padding: 8px;
+    border: 1px solid #c0c0c0;
+    text-align: center;
+    text-transform: uppercase;
+}
+.pe-table td {
+    padding: 6px 8px;
+    border: 1px solid #d0d0d0;
+    vertical-align: middle;
+}
+.celda-oe {
+    font-weight: 600;
+    text-align: center;
+    color: #0078d4;
+}
+.celda-meta {
+    text-align: center;
+}
+.sin-oe {
+    color: #9ca3af;
+}
+.fila-escencial {
+    font-weight: 600;
+}

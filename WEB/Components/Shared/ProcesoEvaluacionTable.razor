@@ -1,0 +1,43 @@
+﻿ @using WEB.Core.Extensions
+@using WEB.Core.Mediator
+@inject IMediator Mediator 
+
+<div class="evaluacion-table-container">
+    <table class="evaluacion-table">
+        <thead>
+        <tr>
+            <th class="col-indicador">Indicadores</th>
+            <th class="col-cantidad">Cantidad</th>
+            <th class="col-cantidad">Cantidad S</th>
+            <th class="col-porcentaje">% S</th>
+            <th class="col-cantidad">Cantidad C</th>
+            <th class="col-porcentaje">% C</th>
+            <th class="col-cantidad">Cantidad PC</th>
+            <th class="col-porcentaje">% PC</th>
+            <th class="col-cantidad">Cantidad I</th>
+            <th class="col-porcentaje">% I</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var fila in Filas)
+        {
+            <tr>
+                <td class="col-indicador">@fila.Nombre</td>
+                <td class="col-cantidad">@fila.Total</td>
+                <td class="col-cantidad">@fila.Sobrecumplidos</td>
+                <td class="col-porcentaje">@fila.PorcentajeS.FormatDoublePorcentaje()</td>
+                <td class="col-cantidad">@fila.Cumplidos</td>
+                <td class="col-porcentaje">@fila.PorcentajeC.FormatDoublePorcentaje()</td>
+                <td class="col-cantidad">@fila.ParcialmenteCumplidos</td>
+                <td class="col-porcentaje">@fila.PorcentajePC.FormatDoublePorcentaje()</td>
+                <td class="col-cantidad">@fila.Incumplidos</td>
+                <td class="col-porcentaje">@fila.PorcentajeI.FormatDoublePorcentaje()</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+
+    <div class="evaluacion-resultado">
+        <strong>EVALUACIÓN: </strong> @evaluacionProceso.GetDisplayName()
+    </div>
+</div>

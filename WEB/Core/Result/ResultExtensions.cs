@@ -1,6 +1,4 @@
-﻿using WEB.Interfaces;
-
-namespace WEB.Core.Result;
+﻿namespace WEB.Core.Result;
 
 public static class ResultExtensions
 {
@@ -49,9 +47,7 @@ public static class ResultExtensions
         return result;
     }
 
-    // ==========================================
-    // MÉTODOS PARA TASK<RESULT> (Para encadenar después de async)
-    // ==========================================
+   
 
     public static async Task<Result<TOut>> BindAsync<TIn, TOut>(
         this Task<Result<TIn>> resultTask,
@@ -86,27 +82,4 @@ public static class ResultExtensions
     }
     
     
-    /*public static async Task<Result<T>> TapInvalidateCacheAsync<T>(
-        this Result<T> result,
-        ICacheInvalidator cacheInvalidator,
-        CancellationToken cancellationToken,
-        params string[] tags)
-    {
-        if (result.IsSuccess)
-        {
-            foreach (var tag in tags.Distinct())
-                await cacheInvalidator.EvictByTagAsync(tag, cancellationToken);
-        }
-        return result;
-    }
-
-    public static async Task<Result<T>> TapInvalidateCacheAsync<T>(
-        this Task<Result<T>> resultTask,
-        ICacheInvalidator cacheInvalidator,
-        CancellationToken cancellationToken,
-        params string[] tags)
-    {
-        var result = await resultTask;
-        return await result.TapInvalidateCacheAsync(cacheInvalidator, cancellationToken, tags);
-    }*/
 }

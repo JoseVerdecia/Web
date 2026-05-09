@@ -3,7 +3,6 @@ using Microsoft.FluentUI.AspNetCore.Components;
 using Microsoft.FluentUI.AspNetCore.Components.Icons.Filled;
 using Microsoft.JSInterop;
 using WEB.Components.Administrador.Area;
-using WEB.Core.Mediator;
 using WEB.Enums;
 using WEB.Features.Area.Delete;
 using WEB.Features.Area.Dto;
@@ -26,12 +25,10 @@ public partial class Area : ComponentBase
 
     private string ActiveTabId = "tab-activas";
 
-    private int Facultades => activeAreas.Count(a => a.Tipo == AreaTipo.Facultad);
-    private int Municipios => activeAreas.Count(a => a.Tipo == AreaTipo.Municipio);
-
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await LoadActiveAreas();
+        if(firstRender)
+            await LoadActiveAreas();
     }
 
     private async Task HandleTabChange(FluentTab tab)

@@ -10,8 +10,6 @@ namespace WEB.Components.Administrador.Indicador;
 public partial class IndicadorDeletedDataGrid : ComponentBase
 {
     [Parameter] public List<IndicadorDisplayItem> Items { get; set; } = new();
-    /*[Parameter] public HashSet<int> SelectedIds { get; set; } = new();*/
-    /*[Parameter] public EventCallback<HashSet<int>> SelectedIdsChanged { get; set; }*/
     [Parameter] public EventCallback<IndicadorDisplayItem> OnRestore { get; set; }
     [Parameter] public EventCallback<IndicadorDisplayItem> OnDeletePermanently { get; set; }
     [Parameter] public EventCallback SelectionChanged { get; set; }

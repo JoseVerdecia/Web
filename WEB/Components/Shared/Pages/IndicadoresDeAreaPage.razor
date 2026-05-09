@@ -6,12 +6,16 @@
 @rendermode InteractiveServer
 @inject NavigationManager Navigation
 
-<PageTitle>Áreas del Indicador @Id</PageTitle>
 
-<FluentBreadcrumb>
-    <FluentBreadcrumbItem Href="/indicadores">Indicadores</FluentBreadcrumbItem>
-    <FluentBreadcrumbItem>Áreas de @Id</FluentBreadcrumbItem>
-</FluentBreadcrumb>
+
+
+<FluentGridItem Justify="JustifyContent.FlexEnd" xs="12">
+    <FluentButton Appearance="Appearance.Accent"
+                  IconStart="@(new Icons.Regular.Size20.ArrowLeft())"
+                  OnClick="@(() => Navigation.NavigateTo("/indicadores"))">
+        Volver
+    </FluentButton>
+</FluentGridItem>
 
 <IndicadoresDeAreaContent Id="@Id" />
 

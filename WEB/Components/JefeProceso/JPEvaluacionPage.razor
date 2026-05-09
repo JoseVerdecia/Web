@@ -1,0 +1,101 @@
+﻿@layout AppLayout
+@page "/jefe-proceso/evaluacion"
+@attribute [Authorize(Roles = AppRoles.JefeProceso)]
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Components.Shared
+@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Features.Proceso.Get
+@using WEB.Interfaces
+@using WEB.Services
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@inject ExcelExportService ExportService
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavigationManager
+
+
+
+@if (isLoading)
+{
+    <FluentProgressRing />
+}
+else if (procesoId == null)
+{
+    <FluentLabel>No tiene un proceso asignado.</FluentLabel>
+}
+else
+{
+    <FluentGrid Spacing="2" Justify="JustifyContent.SpaceBetween" Style="width: 100%;">
+        <FluentGridItem xs="12" md="6" Style="padding-bottom: 8px;">
+            <Title Icono="@(new Icons.Regular.Size20.ChartMultiple())" ValueTitle="@procesoNombre" />
+        </FluentGridItem>
+        <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
+            <FluentStack Orientation="Orientation.Horizontal"
+                         Wrap="true"
+                         HorizontalGap="8"
+                         VerticalGap="8"
+                         HorizontalAlignment="HorizontalAlignment.End">
+                <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Text="Exportar">
+                    <FluentMenuItem OnClick="@(() => ExportExcel())">Excel</FluentMenuItem>
+                    <FluentMenuItem OnClick="@(() => ExportPdf())">PDF</FluentMenuItem>
+                </FluentMenuButton>
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/resumen-proceso-jefe"))"
+                              IconStart="@(new Icons.Regular.Size20.AppsList())">
+                    Resumen
+                </FluentButton>
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@(() => NavigationManager.NavigateTo("/indicadores/jefeProceso"))"
+                              IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                    Volver
+                </FluentButton>
+            </FluentStack>
+        </FluentGridItem>
+    </FluentGrid>
+    
+    <div class="table-scroll-container">
+        <ProcesoEvaluacionTable ProcesoId="procesoId.Value" />
+    </div>
+}
+
+<style>
+    @@media (max-width: 959px) {
+        .table-scroll-container {
+            overflow-x: auto;
+        }
+    }
+</style>
+
+@code {
+    private int? procesoId;
+    private string? procesoNombre;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await CurrentUser.GetUserAsync();
+        var result = await Mediator.Send(new GetProcesoByJefeIdRequest(user.Id));
+        if (result.IsSuccess && result.Value != null)
+        {
+            procesoId = result.Value.Id;
+            procesoNombre = result.Value.Nombre;
+        }
+        isLoading = false;
+    }
+    
+    private async Task ExportExcel()
+    {
+        if (procesoId == null) return;
+        var data = await ExportService.ExportEvaluacionProcesoToExcelAsync(procesoId.Value);
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"Evaluacion_{procesoId}.xlsx", Convert.ToBase64String(data));
+    }
+
+    private async Task ExportPdf()
+    {
+        if (procesoId == null) return;
+        var data = await ExportService.ExportEvaluacionProcesoToPdfAsync(procesoId.Value);
+        await JSRuntime.InvokeVoidAsync("downloadFile", $"Evaluacion_{procesoId}.pdf", Convert.ToBase64String(data));
+    }
+}

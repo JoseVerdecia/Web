@@ -1,5 +1,4 @@
-﻿using Microsoft.FluentUI.AspNetCore.Components.Extensions;
-using WEB.Features.Indicador.Dto;
+﻿using WEB.Features.Indicador.Dto;
 using WEB.Features.Objetivo.Dto;
 using WEB.Models;
 

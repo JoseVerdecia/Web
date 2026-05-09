@@ -15,22 +15,18 @@
 
 @rendermode InteractiveServer
 
-<PageTitle>Objetivos</PageTitle>
+
 
 <FluentLayout>
-    <!-- Grid principal: Spacing="5" equivale a tus 20px de separación -->
     <FluentGrid Spacing="5" Style="width: 100%;">
         
-        <!-- CABECERA: Título y Botones -->
         <FluentGridItem xs="12">
             <FluentGrid Justify="JustifyContent.SpaceBetween" AlignItems="Alignment.Center" Spacing="3">
                 
-                <!-- Título: 100% ancho en móvil, se ajusta al contenido en escritorio -->
                 <FluentGridItem xs="12" md="6">
                     <Title Icono="@(new Icons.Filled.Size20.Flag())" ValueTitle="Objetivos"></Title>
                 </FluentGridItem>
-
-                <!-- Botones: 100% ancho en móvil, alineados a la derecha en escritorio -->
+                
                 <FluentGridItem xs="12" md="6" Justify="JustifyContent.FlexEnd">
                     <!-- Stack con flex-wrap para que los botones bajen si no caben en una tablet pequeña -->
                     <FluentStack Orientation="Orientation.Horizontal" HorizontalAlignment="HorizontalAlignment.End" Gap="8" Style="flex-wrap: wrap;">
@@ -40,13 +36,24 @@
                                 <FluentMenuItem Disabled="@(!activeObjetivos.Any())" OnClick="ExportObjetivos">Excel</FluentMenuItem>
                                 <FluentMenuItem Disabled="@(!activeObjetivos.Any())" OnClick="ExportObjetivosPdf">PDF</FluentMenuItem>
                             </FluentMenuButton>
-                            
+                          
                             <FluentButton 
                                 Appearance="Appearance.Accent"
                                 OnClick="@(() => NavigationManager.NavigateTo("/proyecto-estrategico/objetivos"))">
                                 PE
                             </FluentButton>
-                            
+                                    
+                                <FluentButton 
+                                    Appearance="Appearance.Accent"
+                                    OnClick="@(() => NavigationManager.NavigateTo(  "/resumen-evaluacion-objetivos"))">
+                                 Resumen
+                                </FluentButton>
+                                
+                                <FluentButton 
+                                Appearance="Appearance.Accent"
+                            OnClick="@(() => NavigationManager.NavigateTo(  "/objetivos-siges"))">
+                                SIGES
+                                </FluentButton>
                             <FluentButton
                                 Appearance="Appearance.Outline"
                                 OnClick="EliminarSeleccionados"
@@ -83,8 +90,7 @@
                 </FluentGridItem>
             </FluentGrid>
         </FluentGridItem>
-
-        <!-- CONTENIDO: Tabs y Tablas -->
+        
         <FluentGridItem xs="12">
             <FluentTabs Width="100%" @bind-ActiveTabId="@ActiveTabId" OnTabChange="HandleTabChange">
 
@@ -97,7 +103,6 @@
                     }
                     else
                     {
-                        <!-- Patrón responsivo para tablas: scroll horizontal si la pantalla es menor a 700px -->
                         <div style="overflow-x: auto; width: 100%;">
                             <div style="min-width: 700px;">
                                 <ObjetivoDataGrid Objetivos="@activeObjetivos"

@@ -1,0 +1,73 @@
+﻿@page "/bienvenido"
+@attribute [Authorize]
+@layout AppLayout
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Core.Mediator
+@using WEB.Data
+@using WEB.Features.Proceso.Get
+@using WEB.Features.Area.Get
+@using WEB.Interfaces
+@inject IMediator Mediator
+@inject ICurrentUser CurrentUser
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<FluentCard Style="padding: 24px; max-width: 600px; margin: 40px auto;height: fit-content;">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="16" HorizontalAlignment="HorizontalAlignment.Center">
+        <FluentIcon Value="@(new Icons.Regular.Size48.Person())" Color="Color.Accent" />
+        <FluentLabel Typo="Typography.H4">¡Bienvenido!</FluentLabel>
+        <FluentBadge Appearance="Appearance.Accent">@rol</FluentBadge>
+        @if (!string.IsNullOrEmpty(entidad))
+        {
+            <FluentLabel Typo="Typography.Subject">@entidad</FluentLabel>
+        }
+        <FluentDivider />
+        @if (esJefeProceso)
+        {
+            <FluentButton Appearance="Appearance.Accent"
+                          OnClick="@(() => Navigation.NavigateTo("/indicadores/jefeProceso"))"
+                          IconStart="@(new Icons.Regular.Size20.DataBarVertical())" Style="width:100%;">
+                Ver mis Indicadores
+            </FluentButton>
+        }
+        else if (esJefeArea)
+        {
+            <FluentButton Appearance="Appearance.Accent"
+                          OnClick="@(() => Navigation.NavigateTo("/indicador-de-area"))"
+                          IconStart="@(new Icons.Regular.Size20.DataBarVertical())" Style="width:100%;">
+                Ver mis Indicadores de Área
+            </FluentButton>
+        }
+    </FluentStack>
+</FluentCard>
+
+@code {
+    private string rol = "";
+    private string entidad = "";
+    private bool esJefeProceso, esJefeArea;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = await CurrentUser.GetUserAsync();
+        if (CurrentUser.IsInRole(AppRoles.JefeProceso))
+        {
+            rol = "Jefe de Proceso";
+            esJefeProceso = true;
+            var r = await Mediator.Send(new GetProcesoByJefeIdRequest(user!.Id));
+            if (r.IsSuccess && r.Value != null)
+                entidad = $"Proceso: {r.Value.Nombre}";
+        }
+        else if (CurrentUser.IsInRole(AppRoles.JefeArea))
+        {
+            rol = "Jefe de Área";
+            esJefeArea = true;
+            var r = await Mediator.Send(new GetAreaByJefeIdRequest(user!.Id));
+            if (r.IsSuccess && r.Value != null)
+                entidad = $"Área: {r.Value.Nombre}";
+        }
+        else
+        {
+            rol = "Usuario";
+        }
+    }
+}

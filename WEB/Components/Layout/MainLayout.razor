@@ -1,6 +1,5 @@
 ﻿@inherits LayoutComponentBase
 @using Microsoft.AspNetCore.SignalR.Client
-@using Microsoft.JSInterop
 
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -14,6 +13,7 @@
             <NavMenu/>
             <FluentBodyContent Class="body-content">
                 <div class="content">
+                    <PageTitle>Sistema de Indicadores</PageTitle>
                     @Body
                 </div>
             </FluentBodyContent>

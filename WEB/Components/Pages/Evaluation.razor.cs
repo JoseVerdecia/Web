@@ -7,77 +7,85 @@ namespace WEB.Components.Pages;
 
 public partial class Evaluation : ComponentBase
 {
-    [Inject] private IBackgroundJobClient BackgroundJobClient { get; set; } = default!;
-    [Inject] private GlobalEvaluationService EvaluationService { get; set; } = default!;
-    [Inject] private IConfiguration Configuration { get; set; } = default!;
+     private DateTime? FechaInicio = DateTime.Today;
+    private DateTime? HoraInicio = DateTime.Today.AddHours(9);
+    private DateTime? FechaFin = DateTime.Today.AddDays(7);
+    private DateTime? HoraFin = DateTime.Today.AddDays(7).AddHours(18);
 
-    private DateTime? FechaSeleccionada = DateTime.Today;
-    private DateTime? HoraSeleccionada = new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 9, 0, 0);
-    private bool Programando = false;
+    private bool Programando;
     private string Mensaje = string.Empty;
-    private bool EsError = false;
-    private string? JobIdProgramado;
-    
-    private DateTime? FechaHoraCombinada
-    {
-        get
-        {
-            if (!FechaSeleccionada.HasValue || !HoraSeleccionada.HasValue)
-                return null;
+    private bool EsError;
+    private string? JobIdInicio;
+    private string? JobIdFin;
 
-            return new DateTime(
-                FechaSeleccionada.Value.Year,
-                FechaSeleccionada.Value.Month,
-                FechaSeleccionada.Value.Day,
-                HoraSeleccionada.Value.Hour,
-                HoraSeleccionada.Value.Minute,
-                0);
-        }
+    private DateTime? FechaInicioCombinada => Combinar(FechaInicio, HoraInicio);
+    private DateTime? FechaFinCombinada => Combinar(FechaFin, HoraFin);
+
+    private DateTime? Combinar(DateTime? fecha, DateTime? hora)
+    {
+        if (fecha == null || hora == null) return null;
+        return new DateTime(fecha.Value.Year, fecha.Value.Month, fecha.Value.Day,
+                            hora.Value.Hour, hora.Value.Minute, 0);
     }
-    
+
     private bool FechaPasada(DateTime date) => date.Date < DateTime.Today;
 
-    private async Task ProgramarJobAsync()
+    private bool EsPeriodoValido()
     {
-        var fechaProgramada = FechaHoraCombinada;
-        if (fechaProgramada == null)
-        {
-            MostrarMensaje("Debes seleccionar una fecha y hora válidas.", true);
-            return;
-        }
+        var inicio = FechaInicioCombinada;
+        var fin = FechaFinCombinada;
+        return inicio.HasValue && fin.HasValue && inicio.Value > DateTime.Now && fin.Value > inicio.Value;
+    }
 
-        if (fechaProgramada <= DateTime.Now)
-        {
-            MostrarMensaje("La fecha programada debe ser en el futuro.", true);
-            return;
-        }
+    private async Task ProgramarPeriodoAsync()
+    {
+        var inicio = FechaInicioCombinada!.Value;
+        var fin = FechaFinCombinada!.Value;
 
         Programando = true;
         Mensaje = string.Empty;
-
         try
         {
-            var delay = fechaProgramada.Value - DateTime.Now;
-            
-            JobIdProgramado = BackgroundJob.Schedule(
-                () => EvaluationService.EjecutarEvaluacionCompletaAsync(),
-                delay);
+          
+            if (!string.IsNullOrEmpty(JobIdInicio)) BackgroundJobClient.Delete(JobIdInicio);
+            if (!string.IsNullOrEmpty(JobIdFin)) BackgroundJobClient.Delete(JobIdFin);
 
-            MostrarMensaje($"Evaluación programada correctamente para el {fechaProgramada.Value:dd/MM/yyyy HH:mm}.", false);
+           
+            JobIdInicio = BackgroundJobClient.Schedule<EvaluationPeriodService>(
+                s => s.IniciarEvaluacion(),
+                inicio - DateTime.Now);
+
+           
+            JobIdFin = BackgroundJobClient.Schedule<EvaluationPeriodService>(
+                s => s.FinalizarEvaluacion(),
+                fin - DateTime.Now);
+
+            Mensaje = "Periodo de evaluación programado correctamente.";
+            EsError = false;
         }
         catch (Exception ex)
         {
-            MostrarMensaje($"Error al programar: {ex.Message}", true);
+            Mensaje = $"Error al programar: {ex.Message}";
+            EsError = true;
         }
         finally
         {
             Programando = false;
         }
     }
-
-    private void MostrarMensaje(string mensaje, bool esError)
+    
+    protected override void OnInitialized()
     {
-        Mensaje = mensaje;
-        EsError = esError;
+        EvaluationPeriod.OnChanged += Refresh;
+    }
+
+    private async void Refresh()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        EvaluationPeriod.OnChanged -= Refresh;
     }
 }

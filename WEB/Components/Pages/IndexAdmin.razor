@@ -1,0 +1,14 @@
+﻿@page "/admin"
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Data
+@attribute [Authorize(Roles = AppRoles.Administrador)]
+@layout MainLayout
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
+
+<FluentCard Style="padding: 24px; max-width: 600px; margin: 40px auto;height: fit-content;">
+    <FluentStack Orientation="Orientation.Vertical" VerticalGap="16" HorizontalAlignment="HorizontalAlignment.Center">
+        <FluentIcon Value="@(new Icons.Regular.Size48.Person())" Color="Color.Accent" />
+        <FluentLabel Typo="Typography.H4">¡Bienvenido, Administrador!</FluentLabel>
+    </FluentStack>
+</FluentCard>

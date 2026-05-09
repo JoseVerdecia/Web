@@ -1,10 +1,6 @@
-﻿using WEB.Core.Extensions;
-using WEB.Core.Mediator;
+﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Indicador.Dto;
-using WEB.Features.IndicadorDeArea.Dto;
-using WEB.Features.Objetivo.Dto;
-using WEB.Features.Proceso.Dto;
 using WEB.Interfaces;
 using WEB.Models;
 

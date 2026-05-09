@@ -1,0 +1,17 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@using WEB.Data
+@using WEB.Interfaces
+@attribute [Authorize]
+@inject NavigationManager Navigation
+@inject ICurrentUser CurrentUser
+
+@code {
+protected override void OnInitialized()
+{
+    if (CurrentUser.IsInRole(AppRoles.Administrador))
+        Navigation.NavigateTo("/admin", forceLoad: false);
+    else
+         Navigation.NavigateTo("/bienvenido", forceLoad: false);
+    }
+}

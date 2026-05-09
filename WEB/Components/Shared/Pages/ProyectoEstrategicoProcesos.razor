@@ -1,27 +1,36 @@
 ﻿@page "/proyecto-estrategico/procesos"
 @using WEB.Components.JefeProceso
 @using WEB.Core.Mediator
+@using WEB.Core.Services
 @using WEB.Interfaces
 @using WEB.Services
 @rendermode InteractiveServer
 @inject IUnitOfWorkAccessor UnitOfWorkAccessor
 @inject IMediator Mediator
 @inject ExcelExportService ExportService
+@inject ExportPdfService ExportPdfService
 @inject IJSRuntime JSRuntime
 @inject NavigationManager NavigationManager
 
-<PageTitle>Proyecto Estratégico - Procesos</PageTitle>
 
-<FluentGridItem Justify="JustifyContent.FlexEnd">
-    <FluentMenuButton Style="margin-right: 10px;margin-bottom: 10px;" Text="Exportar">
-        <FluentMenuItem Disabled="@(string.IsNullOrEmpty(activeTabId))" OnClick="ExportExcel">Excel</FluentMenuItem>
-        <FluentMenuItem Disabled="@(string.IsNullOrEmpty(activeTabId))" OnClick="ExportPdf">PDF</FluentMenuItem>
-    </FluentMenuButton>
-    <FluentButton Appearance="Appearance.Accent"
-                  OnClick="@(() => NavigationManager.NavigateTo("/proceso"))"
-                  IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
-        Volver
-    </FluentButton>
+
+<FluentGridItem xs="12">
+    <FluentStack Width="100%" HorizontalAlignment="HorizontalAlignment.SpaceBetween" VerticalAlignment="VerticalAlignment.Center">
+        <Title Icono="@(new Icons.Regular.Size24.Map())" ValueTitle="Proyecto Estrategico"></Title>
+        
+        <FluentStack Width="fit-content" HorizontalAlignment="HorizontalAlignment.End">
+            <FluentMenuButton IconStart="@(new Icons.Regular.Size20.ArrowDownload())" Style="margin-right: 10px;margin-bottom: 10px;" Text="Exportar">
+                <FluentMenuItem Disabled="@(string.IsNullOrEmpty(activeTabId))" OnClick="ExportExcel">Excel</FluentMenuItem>
+                <FluentMenuItem Disabled="@(string.IsNullOrEmpty(activeTabId))" OnClick="ExportPdf">PDF</FluentMenuItem>
+            </FluentMenuButton>
+            <FluentButton Appearance="Appearance.Accent"
+                          OnClick="@(() => NavigationManager.NavigateTo("/proceso"))"
+                          IconStart="@(new Icons.Regular.Size20.ArrowLeft())">
+                Volver
+            </FluentButton>
+        </FluentStack>
+    </FluentStack>
+  
 </FluentGridItem>
 
 <FluentLayout>

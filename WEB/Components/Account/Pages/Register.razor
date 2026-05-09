@@ -2,12 +2,9 @@
 @page "/Account/Register"
 @attribute [AllowAnonymous]
 @using System.ComponentModel.DataAnnotations
-@using System.Text
-@using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.SignalR
-@using Microsoft.AspNetCore.WebUtilities
 @using WEB.Data.Hub
 @using WEB.Data
 @inject IHubContext<NotificacionHub> HubContext
@@ -19,12 +16,12 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Registrarse</PageTitle>
+
 
 <FluentGrid Justify="JustifyContent.Center" Spacing="4" AdaptiveRendering="true" Style="width: 100%; max-width: 950px; height: 100%; max-height: 700px;">
     
     <FluentGridItem xs="12" Style="max-width: 480px;">
-        <FluentCard Style="height: 100%; display: flex; flex-direction: column; overflow: hidden;">
+        <FluentCard Style="height: 100%; display: flex; flex-direction: column; overflow: auto;">
             
             <div style=" display: flex; flex-direction: column; height: 100%; justify-content: center;">
                 
@@ -40,8 +37,6 @@
                 
                 <EditForm Model="Input" method="post" OnValidSubmit="RegisterUser" FormName="register" Style="flex: 1; width: 100%;">
                     <DataAnnotationsValidator />
-                    <FluentValidationSummary class="text-danger" role="alert" Style="margin-bottom: 12px;" />
-                    
                     @* FluentStack principal con ancho completo *@
                     <FluentStack Orientation="Orientation.Vertical" VerticalGap="16" Width="100%" HorizontalAlignment="HorizontalAlignment.Center">
                         
@@ -204,7 +199,7 @@
         public string Email { get; set; } = "";
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "El {0} debe tener al menos {2} y como máximo {1} caracteres de longitud.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; } = "";

@@ -1,6 +1,5 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Data.IRepository;
 using WEB.Features.Notificacion.Dto;
 using WEB.Interfaces;
 
