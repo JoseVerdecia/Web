@@ -111,7 +111,7 @@ public class ExportPdfService
                     int scPlusC = sobre + cumple;
                     int scPlusCPlusPC = sobre + cumple + parcial;
 
-                    // Calcular porcentajes
+                   
                     string Pct(int val) => total > 0 ? (val / (double)total * 100).ToString("F2") + "%" : "0.00%";
 
                     string colorClass = nombre.Contains("esenciales") ? "class='fila-esencial'" : "";
@@ -1392,7 +1392,7 @@ private async Task<string> GetJAProcesoSIGEHtmlAsync(int procesoId, int areaId)
                 
                 sb.AppendLine($"<tr class='{claseFila}'>");
                 sb.AppendLine($"<td class='col-id' rowspan='2' style='vertical-align: middle;'>{ind.Id:D2}</td>");
-                sb.AppendLine($"<td><span class='valor-label'>{areaInd.ValorTotalLabel ?? "Valor Total"}</span></td>");
+                sb.AppendLine($"<td><span class='valor-label'>{"Valor Total"}</span></td>");
                 sb.AppendLine($"<td>{areaInd.ValorTotal?.FormatearDecimal() ?? "—"}</td>");
                 sb.AppendLine($"<td>—</td>");
                 sb.AppendLine("</tr>");
@@ -1403,7 +1403,7 @@ private async Task<string> GetJAProcesoSIGEHtmlAsync(int procesoId, int areaId)
                 string pctCuantText = pctCuant > 0 ? $"{pctCuant:F2}%" : "—";
 
                 sb.AppendLine($"<tr class='{claseFila}'>");
-                sb.AppendLine($"<td><span class='valor-label'>{areaInd.ValorRealLabel ?? "Valor Real"}</span></td>");
+                sb.AppendLine($"<td><span class='valor-label'>{"Valor Real"}</span></td>");
                 sb.AppendLine($"<td>{areaInd.ValorReal?.FormatearDecimal() ?? "—"}</td>");
                 sb.AppendLine($"<td>{pctCuantText}</td>");
                 sb.AppendLine("</tr>");

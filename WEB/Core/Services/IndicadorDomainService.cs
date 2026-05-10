@@ -61,8 +61,6 @@ public static class IndicadorDomainService
         Origen = origen,
         Tipo = tipo,
         Observacion = observacion,
-        ValorTotal = valorTotal,
-        ValorReal = valorReal,
         ProcesoId = procesoId,
         Evaluacion = Evaluacion.NoEvaluado 
     };

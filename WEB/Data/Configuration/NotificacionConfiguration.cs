@@ -15,7 +15,10 @@ public class NotificacionConfiguration : IEntityTypeConfiguration<NotificacionMo
         builder.Property(n => n.Cabecera)
             .IsRequired()
             .HasMaxLength(200);
-
+        
+        builder.Property(e => e.MetaAnteriorDecimal).HasPrecision(18, 4);
+        builder.Property(e => e.NuevaMetaPropuestaDecimal).HasPrecision(18, 4);
+        
         builder.Property(n => n.Cuerpo)
             .IsRequired()
             .HasMaxLength(1000);
@@ -50,5 +53,7 @@ public class NotificacionConfiguration : IEntityTypeConfiguration<NotificacionMo
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasQueryFilter(n => !n.IsDeleted);
+        
+        
     }
 }

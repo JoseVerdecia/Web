@@ -22,10 +22,9 @@ public partial class MetaRealDialog : ComponentBase, IDialogContentComponent
     private int _id;
     private string _valoracionCualitativa = string.Empty;
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnParametersSetAsync ()
     {
-        if (firstRender)
-        {
+      
             if (Content is IndicadorDeAreaDto dto)
             {
                 _id = dto.Id;
@@ -37,8 +36,8 @@ public partial class MetaRealDialog : ComponentBase, IDialogContentComponent
 
                     if (_isPorcentual)
                     {
-                        _valorTotalLabel = areaCompleta.ValorTotalLabel ?? "Valor Total";
-                        _valorRealLabel = areaCompleta.ValorRealLabel ?? "Valor Real";
+                        _valorTotalLabel = /*areaCompleta.ValorTotalLabel ??*/ "Valor Total";
+                        _valorRealLabel = /*areaCompleta.ValorRealLabel ??*/ "Valor Real";
                         _valorTotal = areaCompleta.ValorTotal;
                         _valorReal = areaCompleta.ValorReal;
                     }
@@ -58,7 +57,7 @@ public partial class MetaRealDialog : ComponentBase, IDialogContentComponent
                     _error = "No se pudo cargar la información del indicador.";
                 }
             }
-        }
+        
     }
 
     private async Task Save()

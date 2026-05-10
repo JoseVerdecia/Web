@@ -28,8 +28,6 @@ public static class IndicadorDeAreaMapping
             MetaCumplir = model.MetaCumplir,
             MetaCumplirDecimal = model.MetaCumplirDecimal,
             MetaRealDecimal = model.MetaRealDecimal,
-            ValorTotalLabel = model.Indicador.ValorTotal,
-            ValorRealLabel = model.Indicador.ValorReal,
             ValorCualitativo =  model.ValorCualitativo,
             IsMetaCumplirPorcentual = model.IsMetaCumplirPorcentaje,
             IsRealPorcentual = model.IsMetaRealPorcentaje,

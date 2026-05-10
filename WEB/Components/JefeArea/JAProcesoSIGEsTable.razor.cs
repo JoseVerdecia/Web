@@ -51,8 +51,8 @@ public partial class JAProcesoSIGEsTable : ComponentBase
                     IsRealPorcentual = area.IsRealPorcentual,
                     ValorTotal = area.ValorTotal,
                     ValorReal = area.ValorReal,
-                    ValorTotalLabel = area.ValorTotalLabel ?? "Valor Total",
-                    ValorRealLabel = area.ValorRealLabel ?? "Valor Real",
+                    ValorTotalLabel = /*area.ValorTotalLabel ??*/ "Valor Total",
+                    ValorRealLabel = /*area.ValorRealLabel ??*/ "Valor Real",
                     Evaluacion = area.Evaluacion
                 };
             }).Where(x => x != null).ToList();

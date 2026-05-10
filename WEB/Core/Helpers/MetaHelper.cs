@@ -38,7 +38,6 @@ public static class MetaHelper
     
     public static string SincronizarMetaReal(string metaCumplir, string metaReal)
     {
-        // Asume que ambas cadenas ya son numéricamente válidas
         if (metaCumplir.Trim().EndsWith("%") && !metaReal.Trim().EndsWith("%"))
             return metaReal + "%";
         if (!metaCumplir.Trim().EndsWith("%") && metaReal.Trim().EndsWith("%"))

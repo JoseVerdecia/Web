@@ -24,11 +24,6 @@ public class IndicadorModel:ISoftDeletable,ICreatedInterfaces
    
     public bool IsMetaRealPorcentaje { get; set; } = false;
     
-    // Valores Cuantitativas del Indicador
-    
-    public string? ValorTotal { get; set; } 
-    public string? ValorReal { get; set; }   
-    
     public decimal? ValorTotalAcumulado { get; set; }
     public decimal? ValorRealAcumulado { get; set; }
     // Enums

@@ -21,45 +21,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
-        modelBuilder.ApplyConfiguration(new NotificacionConfiguration());
-        
-        
-        modelBuilder.Entity<IndicadorModel>()
-            .HasMany(i => i.Objetivos)
-            .WithMany(o => o.Indicadores)
-            .UsingEntity(j => j.ToTable("IndicadorObjetivos"));
-        
-        modelBuilder.Entity<ProcesoModel>()
-            .HasOne(p => p.JefeProceso)          
-            .WithMany()                         
-            .HasForeignKey(p => p.JefeProcesoId) 
-            .OnDelete(DeleteBehavior.SetNull);   
-
-        modelBuilder.Entity<ProcesoModel>()
-            .HasMany(p => p.Indicadores)
-            .WithOne(i => i.Proceso)
-            .HasForeignKey(i => i.ProcesoId)
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        modelBuilder.Entity<IndicadorDeAreaModel>()
-            .HasOne(i => i.Indicador)
-            .WithMany(i => i.IndicadoresDeArea)
-            .HasForeignKey(i => i.IndicadorId)
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        modelBuilder.Entity<IndicadorDeAreaModel>()
-            .HasOne(i => i.Area)
-            .WithMany(a => a.IndicadoresDeArea)
-            .HasForeignKey(i => i.AreaId)
-            .OnDelete(DeleteBehavior.Cascade);
-        
-        modelBuilder.Entity<AreaModel>()
-            .HasOne(a => a.JefeArea)
-            .WithMany()
-            .HasForeignKey(a => a.JefeAreaId)
-            .OnDelete(DeleteBehavior.SetNull);
-        
+            
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
         
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {

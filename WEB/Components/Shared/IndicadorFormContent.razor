@@ -85,29 +85,6 @@ else
                     </FluentStack>
                 </FluentCard>
                     </FluentGridItem>
-                        @if (IsMetaCumplirPorcentual)
-                        {
-                            <FluentGridItem xs="12" sm="12" md="6">
-                                <FluentCard>
-                                <FluentStack Orientation="Orientation.Vertical" VerticalGap="10">
-                                    <FluentStack Orientation="Orientation.Vertical">
-                                        <FluentTextArea @bind-Value="valorTotal"
-                                                        Cols="60"
-                                                        Required="true"
-                                                        Label="Valor Total"
-                                                        Placeholder="Ej: Visitas año anterior"/>
-                                    </FluentStack>
-                                    <FluentStack Orientation="Orientation.Vertical">
-                                        <FluentTextArea @bind-Value="valorReal"
-                                                        Required="true"
-                                                        Cols="60"
-                                                        Label="Valor Real"
-                                                        Placeholder="Ej: Nuevas visitas año actual"/>
-                                    </FluentStack>
-                                </FluentStack>
-                            </FluentCard>
-                            </FluentGridItem>
-                        }
                 </FluentGrid>
                 </ChildContent>
             </FluentWizardStep>

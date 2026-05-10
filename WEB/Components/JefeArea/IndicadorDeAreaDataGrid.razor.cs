@@ -15,6 +15,8 @@ public  partial class IndicadorDeAreaDataGrid : ComponentBase
     private bool _isLoading = true;
     private string? _errorMessage;
     private FluentDataGrid<IndicadorDeAreaDto>? _dataGrid;
+    private PaginationState paginationState = new() { ItemsPerPage = 10 };
+    private List<IndicadorDeAreaDto>? _allItemsCache;
     private bool _disposed;
     private GridItemsProvider<IndicadorDeAreaDto> _itemsProvider = default!;
     private bool _isInitializing = false;
@@ -31,6 +33,34 @@ public  partial class IndicadorDeAreaDataGrid : ComponentBase
         {
             _itemsProvider = async req =>
             {
+                _itemsProvider = async req =>
+                {
+                    if (_allItemsCache == null)
+                    {
+                        var result = await Mediator.Send(new GetAllIndicadorDeAreaRequest(Page: 1, PageSize: 1000));
+                        if (result.IsSuccess && result.Value?.Items != null)
+                            _allItemsCache = result.Value.Items.ToList();
+                        else
+                            _allItemsCache = new();
+                    }
+                    
+                    var filtered = _allItemsCache
+                        .Where(i => string.IsNullOrWhiteSpace(_procesoFilter) ||
+                                    string.Equals(i.ProcesoNombre, _procesoFilter, StringComparison.OrdinalIgnoreCase))
+                        .ToList();
+                    
+                    var pageItems = filtered
+                        .Skip(req.StartIndex)
+                        .Take(req.Count ?? paginationState.ItemsPerPage)
+                        .ToList();
+
+                    _errorMessage = null;
+                    return GridItemsProviderResult.From(
+                        items: pageItems,
+                        totalItemCount: filtered.Count
+                    );
+                };
+                
                 try
                 {
                     var result = await Mediator.Send(new GetAllIndicadorDeAreaRequest(Page: 1, PageSize: 100));

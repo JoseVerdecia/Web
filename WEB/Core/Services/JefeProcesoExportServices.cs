@@ -120,8 +120,7 @@ public class JefeProcesoExportServices
 
                 row++;
             }
-
-            // Columna "PROCESOS" (col 2) con rowspan
+            
             if (total > 0)
             {
                 worksheet.Cell(startDataRow, 2).Value = nombreProceso;

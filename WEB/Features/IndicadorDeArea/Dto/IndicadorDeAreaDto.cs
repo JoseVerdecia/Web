@@ -23,8 +23,6 @@ public class IndicadorDeAreaDto
     public decimal? ValorTotal {get; set; }
     public decimal? ValorReal { get; set; }
     public string? ValorCualitativo {get;set;}
-    public string? ValorTotalLabel { get; set; }
-    public string? ValorRealLabel { get; set; }
     public AreaTipo Tipo { get; set; }
     public Enums.Evaluacion Evaluacion { get; set; }
     public string EvaluacionColor { get; set; } = string.Empty;

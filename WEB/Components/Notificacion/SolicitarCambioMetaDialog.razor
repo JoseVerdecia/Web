@@ -61,7 +61,6 @@
 
     [Inject] private IMediator Mediator { get; set; } = null!;
     [Inject] private AuthenticationStateProvider AuthStateProvider { get; set; } = null!;
-    // [Inject] private INotificationService NotificationService { get; set; } = null!;  (si se prefiere en code-behind)
 
     private string _nuevaMeta = "";
     private string _mensaje = "";
@@ -102,7 +101,7 @@
         if (!MetaHelper.TryParsearMeta(_nuevaMeta, out _, out bool isPorcentaje))
         {
             _metaError = "El formato de la meta no es válido";
-            NotificationService.ShowError(_metaError);   // 👈 Toast añadido
+            NotificationService.ShowError(_metaError); 
             _isSubmitting = false;
             return;
         }

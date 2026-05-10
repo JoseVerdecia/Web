@@ -227,8 +227,6 @@ public partial class IndicadorFormContent : ComponentBase
                     origen = dto.Origen;
                     tipo = dto.Tipo;
                     observacion = dto.Observacion;
-                    valorTotal = dto.ValorTotal ?? "";
-                    valorReal = dto.ValorReal ?? "";
                     
                     foreach (var objDto in objetivos)
                         objDto.IsSelected = dto.Objetivos.Any(o => o.Id == objDto.Id);

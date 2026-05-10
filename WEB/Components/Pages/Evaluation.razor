@@ -1,94 +1,144 @@
 ﻿@page "/evaluacion/programar-periodo"
 @using System.Globalization
 @using Hangfire
+@using Hangfire.Storage
 @using Microsoft.AspNetCore.Authorization
 @using WEB.Components.Shared
 @using WEB.Core.Services
-@rendermode InteractiveServer
 @using WEB.Data
+@rendermode InteractiveServer
 @attribute [Authorize(Roles = AppRoles.Administrador)]
 @inject IBackgroundJobClient BackgroundJobClient
 @inject EvaluationPeriodService EvaluationPeriod
 @implements IDisposable
 
-
 <FluentStack HorizontalAlignment="HorizontalAlignment.Start">
     <Title ValueTitle="Periodo de Evaluación" Icono="@(new Icons.Regular.Size24.CalendarClock())" />
 </FluentStack>
 
-<div style="max-width: 800px; margin: 0 auto; padding: 16px;">
-    <FluentDivider style="margin-top:10px;"/>
-
-    <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
-       
-        <FluentCard Style="margin-top:10px;padding: 16px;">
-            <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
-                Estado actual:
-                <span style="color: @(EvaluationPeriod.IsActive ? "green" : "red")">
-                    @(EvaluationPeriod.IsActive ? "EVALUACIÓN EN CURSO" : "Evaluación inactiva")
-                </span>
+<div class="evaluacion-layout">
+    @* Bloque de programación (siempre arriba) *@
+    <div class="col-programar">
+        <FluentCard Style="padding: 16px;">
+            <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
+                Programar nuevo periodo
             </FluentLabel>
+            <FluentDivider />
+            <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
+
+                @* Contenedor de los dos calendarios *@
+                <div class="calendarios-container">
+                    <FluentCard Style="padding: 12px;" Class="calendario-card">
+                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                            <FluentIcon Value="@(new Icons.Regular.Size16.Play())" /> Inicio
+                        </FluentLabel>
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12">
+                            <FluentCalendar @bind-Value="@FechaInicio" DisabledDateFunc="@FechaPasada" />
+                            <FluentTimePicker @bind-Value="@HoraInicio" />
+                        </FluentStack>
+                    </FluentCard>
+
+                    <FluentCard Style="padding: 12px;" Class="calendario-card">
+                        <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
+                            <FluentIcon Value="@(new Icons.Regular.Size16.Stop())" /> Fin
+                        </FluentLabel>
+                        <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12">
+                            <FluentCalendar @bind-Value="@FechaFin" DisabledDateFunc="@FechaPasada" />
+                            <FluentTimePicker @bind-Value="@HoraFin" />
+                        </FluentStack>
+                    </FluentCard>
+                </div>
+
+                <FluentButton Appearance="Appearance.Accent"
+                              OnClick="@ProgramarPeriodoAsync"
+                              Disabled="@(Programando || !EsPeriodoValido())">
+                    Programar periodo
+                </FluentButton>
+
+                @if (!string.IsNullOrEmpty(Mensaje))
+                {
+                    <FluentMessageBar Intent="@(EsError ? MessageIntent.Error : MessageIntent.Success)">
+                        @Mensaje
+                    </FluentMessageBar>
+                }
+            </FluentStack>
         </FluentCard>
+    </div>
 
-        <div class="calendarios-container">
-            <FluentCard Style="padding: 16px;" Class="calendario-card">
-                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
-                    <FluentIcon Value="@(new Icons.Regular.Size16.Play())" /> Inicio de la evaluación
-                </FluentLabel>
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12">
-                    <FluentCalendar @bind-Value="@FechaInicio" DisabledDateFunc="@FechaPasada" />
-                    <FluentTimePicker @bind-Value="@HoraInicio" />
-                </FluentStack>
-            </FluentCard>
+    <div class="col-periodos">
+        <FluentCard Style="padding: 16px;">
+            <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
+                Periodos programados actualmente
+            </FluentLabel>
+            <FluentDivider />
 
-            <FluentCard Style="padding: 16px;" Class="calendario-card">
-                <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
-                    <FluentIcon Value="@(new Icons.Regular.Size16.Stop())" /> Fin de la evaluación
-                </FluentLabel>
-                <FluentStack Orientation="Orientation.Horizontal" HorizontalGap="12">
-                    <FluentCalendar @bind-Value="@FechaFin" DisabledDateFunc="@FechaPasada" />
-                    <FluentTimePicker @bind-Value="@HoraFin" />
-                </FluentStack>
-            </FluentCard>
-        </div>
-
-        <FluentButton Appearance="Appearance.Accent" 
-                       OnClick="@ProgramarPeriodoAsync" 
-                       Disabled="@(Programando || !EsPeriodoValido())">
-            Programar periodo
-        </FluentButton>
-
-        @if (!string.IsNullOrEmpty(Mensaje))
-        {
-            <FluentMessageBar Intent="@(EsError ? MessageIntent.Error : MessageIntent.Success)">
-                @Mensaje
-            </FluentMessageBar>
-        }
-
-        @if (JobIdInicio != null && JobIdFin != null)
-        {
-            <FluentCard Style="padding: 12px; border-left: 4px solid var(--success);">
-                <FluentStack Orientation="Orientation.Vertical" VerticalGap="8">
-                    <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">Trabajos programados</FluentLabel>
-                    <FluentLabel>Inicio: @FechaInicioCombinada?.ToString("g") (ID: @JobIdInicio)</FluentLabel>
-                    <FluentLabel>Fin: @FechaFinCombinada?.ToString("g") (ID: @JobIdFin)</FluentLabel>
-                </FluentStack>
-            </FluentCard>
-        }
-    </FluentStack>
+            @if (!trabajosProgramados.Any())
+            {
+                <FluentLabel>No hay trabajos programados.</FluentLabel>
+            }
+            else
+            {
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead>
+                        <tr>
+                            <th style="text-align:left; padding: 4px;">Tipo</th>
+                            <th style="text-align:left; padding: 4px;">Fecha programada</th>
+                            <th style="text-align:center; padding: 4px;">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var job in trabajosProgramados)
+                        {
+                            <tr>
+                                <td style="padding: 4px;">@job.Tipo</td>
+                                <td style="padding: 4px;">@job.FechaProgramada.ToString("g")</td>
+                                <td style="padding: 4px; text-align:center;">
+                                    <FluentButton Appearance="Appearance.Outline"
+                                                  Intent="@MessageIntent.Error"
+                                                  Size="Size.Small"
+                                                  OnClick="@(() => CancelarTrabajoAsync(job.JobId))">
+                                        Cancelar
+                                    </FluentButton>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </FluentCard>
+    </div>
 </div>
 
+
 <style>
+    .evaluacion-layout {
+        display: flex;
+        flex-direction: column;  
+        gap: 24px;
+        margin-top: 16px;
+    }
+
+    .col-programar {
+        max-width: 100%;         
+    }
+
+    .col-periodos {
+        max-width: 100%;
+    }
+
+    
     .calendarios-container {
         display: flex;
-        gap: 16px;
+        gap: 12px;
+        flex-direction: row;     
     }
 
     .calendario-card {
-        flex: 1;
+        flex: 1;                 
     }
 
-    @@media (max-width: 959px) {
+    
+    @@media (max-width: 800px) {
         .calendarios-container {
             flex-direction: column;
         }

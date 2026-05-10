@@ -1241,7 +1241,7 @@ namespace WEB.Services
                 worksheet.Cell(row, 2).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
                 worksheet.Cell(row, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
             
-                worksheet.Range(row, 3, row, 5).Merge().Value = ind.ValorTotal ?? "Valor Total";
+                worksheet.Range(row, 3, row, 5).Merge().Value = /*ind.ValorTotal ??*/ "Valor Total";
                 worksheet.Cell(row, 3).Style.Alignment.WrapText = true; 
                 worksheet.Cell(row, 3).Style.Alignment.Vertical = XLAlignmentVerticalValues.Top; 
                 
@@ -1276,7 +1276,7 @@ namespace WEB.Services
                 string pctCuantText = pctCuant > 0 ? $"{pctCuant:F2}%" : "—";
 
                
-                worksheet.Range(row, 3, row, 5).Merge().Value = ind.ValorReal ?? "Valor Real";
+                worksheet.Range(row, 3, row, 5).Merge().Value = /*ind.ValorReal ??*/ "Valor Real";
                 worksheet.Cell(row, 3).Style.Alignment.WrapText = true;
                 worksheet.Cell(row, 3).Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
                 
@@ -1439,13 +1439,13 @@ namespace WEB.Services
                                 var bgColor = esPar ? Colors.Yellow.Lighten5 : Colors.White;
                                 
                                 table2.Cell().Border(1).Background(bgColor).AlignCenter().Padding(2).Text(ind.Id.ToString("D2"));
-                                table2.Cell().Border(1).Background(bgColor).Padding(2).Text(ind.ValorTotal ?? "Valor Total");
+                                table2.Cell().Border(1).Background(bgColor).Padding(2).Text(/*ind.ValorTotal ??*/ "Valor Total");
                                 table2.Cell().Border(1).Background(bgColor).AlignCenter().Padding(2)
                                     .Text(ind.ValorTotalAcumulado.HasValue ? ind.ValorTotalAcumulado.Value.FormatearMiles() : "—");
                                 table2.Cell().Border(1).Background(bgColor).AlignCenter().Padding(2).Text("—");
                                 
                                 table2.Cell().Border(1).Background(bgColor).AlignCenter().Padding(2).Text("");
-                                table2.Cell().Border(1).Background(bgColor).Padding(2).Text(ind.ValorReal ?? "Valor Real");
+                                table2.Cell().Border(1).Background(bgColor).Padding(2).Text(/*ind.ValorReal ??*/ "Valor Real");
                                 table2.Cell().Border(1).Background(bgColor).AlignCenter().Padding(2)
                                     .Text(ind.ValorRealAcumulado.HasValue ? ind.ValorRealAcumulado.Value.FormatearMiles() : "—");
 
@@ -3183,7 +3183,7 @@ namespace WEB.Services
                 worksheet.Cell(row, 2).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 var rangoTotal = worksheet.Range(row, 3, row, 5);
                 rangoTotal.Merge();
-                rangoTotal.Value = areaInd.ValorTotalLabel ?? "Valor Total";
+                rangoTotal.Value = /*areaInd.ValorTotalLabel ??*/ "Valor Total";
                 rangoTotal.Style.Alignment.WrapText = true;
                 rangoTotal.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 
@@ -3204,7 +3204,7 @@ namespace WEB.Services
 
                 var rangoReal = worksheet.Range(row, 3, row, 5);
                 rangoReal.Merge();
-                rangoReal.Value = areaInd.ValorRealLabel ?? "Valor Real";
+                rangoReal.Value = /*areaInd.ValorRealLabel ??*/ "Valor Real";
                 rangoReal.Style.Alignment.WrapText = true;
                 rangoReal.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
                 

@@ -20,8 +20,6 @@ public class IndicadorDto
     public string? Observacion { get; set; } = string.Empty;
     public Enums.Evaluacion Evaluacion { get; set; } = Enums.Evaluacion.NoEvaluado;
     public string EvaluacionColor { get; set; } = string.Empty;
-    public string? ValorTotal { get; set; }
-    public string? ValorReal  { get; set; }
     
     public decimal? ValorTotalAcumulado { get; set; }
     public decimal? ValorRealAcumulado { get; set; }

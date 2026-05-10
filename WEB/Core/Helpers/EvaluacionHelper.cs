@@ -199,13 +199,11 @@ public static class EvaluacionHelper
         decimal metaRealDecimal = ObtenerMetaRealArea(area, padre);
         metaRealDecimal = Math.Round(metaRealDecimal, 2);
         area.MetaRealDecimal = metaRealDecimal;
-
-        // construir cadena cruda
+        
         string rawReal = padre.IsMetaCumplirPorcentaje
             ? $"{metaRealDecimal}%"
             : metaRealDecimal.ToString(CultureInfo.InvariantCulture);
-
-        // sincronizar formato con la MetaCumplir del área
+        
         area.MetaReal = MetaHelper.SincronizarMetaReal(area.MetaCumplir, rawReal);
 
         area.Evaluacion = (metaRealDecimal == 0 && area.MetaCumplirDecimal == 0)

@@ -122,7 +122,7 @@ else
                                     <td rowspan="2" class="col-id-cuant celda-id" style="vertical-align: middle; border-bottom: 2px solid var(--neutral-stroke-divider-rest);">
                                         @ind.Id.ToString("D2")
                                     </td>
-                                    <td class="col-valores"><span class="valor-label">@ind.ValorTotal</span></td>
+                                    <td class="col-valores"><span class="valor-label">@*@ind.ValorTotal*@ Valor Total</span></td>
                                     <td class="col-datos celda-numero">
                                         @(tieneValorTotal ? datosTotal.Value.FormatearDecimal() : "—")
                                     </td>
@@ -130,7 +130,7 @@ else
                                 </tr>
                                 
                                 <tr class="@claseFila fila-valor-real">
-                                    <td class="col-valores"><span class="valor-label">@ind.ValorReal</span></td>
+                                    <td class="col-valores"><span class="valor-label">@*@ind.ValorReal*@ Valor Real</span></td>
                                     <td class="col-datos celda-numero">
                                         @(tieneValorReal ? datosReal.Value.FormatearDecimal() : "—")
                                     </td>

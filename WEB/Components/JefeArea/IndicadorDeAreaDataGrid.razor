@@ -89,6 +89,10 @@
     </EmptyContent>
 </FluentDataGrid>
 
+<div style="flex-shrink: 0; padding-top: 10px;">
+    <FluentPaginator State="@paginationState" />
+</div>
+
 @if (_showSolicitudDialog)
 {
     <FluentDialog Open="@_showSolicitudDialog" Modal="true" Width="500px" OnClosed="() => _showSolicitudDialog = false">

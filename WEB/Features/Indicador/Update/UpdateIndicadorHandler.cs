@@ -126,8 +126,6 @@ public class UpdateIndicadorHandler : IRequestHandler<UpdateIndicadorCommand, In
         indicador.Tipo = command.Tipo;
         indicador.Observacion = command.Observacion;
         indicador.ProcesoId = command.ProcesoId;
-        indicador.ValorTotal = command.ValorTotal;
-        indicador.ValorReal = command.ValorReal;
         
         return IndicadorDomainService.ActualizarMetaCumplir(
             indicador, 
