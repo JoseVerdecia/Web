@@ -7,7 +7,7 @@ namespace WEB.Components.Pages;
 
 public partial class Evaluation : ComponentBase
 {
-    private DateTime? FechaInicio = DateTime.Today;
+       private DateTime? FechaInicio = DateTime.Today;
     private DateTime? HoraInicio = DateTime.Today.AddHours(9);
     private DateTime? FechaFin = DateTime.Today.AddDays(7);
     private DateTime? HoraFin = DateTime.Today.AddDays(7).AddHours(18);
@@ -15,10 +15,13 @@ public partial class Evaluation : ComponentBase
     private bool Programando;
     private string Mensaje = string.Empty;
     private bool EsError;
+
     private string? JobIdInicio;
     private string? JobIdFin;
+    private DateTime? _fechaInicioProgramada;
+    private DateTime? _fechaFinProgramada;
 
-    private List<TrabajoProgramado> trabajosProgramados = new();
+    private Periodo? PeriodoActual;
 
     private DateTime? FechaInicioCombinada => Combinar(FechaInicio, HoraInicio);
     private DateTime? FechaFinCombinada => Combinar(FechaFin, HoraFin);
@@ -26,7 +29,7 @@ public partial class Evaluation : ComponentBase
     protected override void OnInitialized()
     {
         EvaluationPeriod.OnChanged += Refresh;
-        CargarTrabajosProgramados();
+        CargarPeriodoActual();
     }
 
     private DateTime? Combinar(DateTime? fecha, DateTime? hora)
@@ -72,6 +75,9 @@ public partial class Evaluation : ComponentBase
                 s => s.FinalizarEvaluacion(),
                 finUtc - DateTime.UtcNow);
 
+            _fechaInicioProgramada = inicio;
+            _fechaFinProgramada = fin;
+
             Mensaje = "Periodo de evaluación programado correctamente.";
             EsError = false;
         }
@@ -83,48 +89,95 @@ public partial class Evaluation : ComponentBase
         finally
         {
             Programando = false;
-            CargarTrabajosProgramados();
+            CargarPeriodoActual();
         }
     }
 
-    private void CargarTrabajosProgramados()
+    private void CargarPeriodoActual()
     {
-        trabajosProgramados.Clear();
-        
+        bool estaActivo = EvaluationPeriod.IsActive;
+
         var monitoringApi = JobStorage.Current.GetMonitoringApi();
-        var scheduledJobs = monitoringApi.ScheduledJobs(0, int.MaxValue); 
+        var scheduledJobs = monitoringApi.ScheduledJobs(0, int.MaxValue);
 
-        foreach (var job in scheduledJobs)
+        var jobInicio = scheduledJobs.FirstOrDefault(j =>
+            j.Value.Job?.Method.Name == nameof(EvaluationPeriodService.IniciarEvaluacion));
+        var jobFin = scheduledJobs.FirstOrDefault(j =>
+            j.Value.Job?.Method.Name == nameof(EvaluationPeriodService.FinalizarEvaluacion));
+
+        if (!estaActivo && jobInicio.Value == null && jobFin.Value == null)
         {
-           
-            if (job.Value.Job?.Method == null) continue;
-
-            var methodName = job.Value.Job.Method.Name;
-            if (methodName == nameof(EvaluationPeriodService.IniciarEvaluacion) ||
-                methodName == nameof(EvaluationPeriodService.FinalizarEvaluacion))
-            {
-                trabajosProgramados.Add(new TrabajoProgramado
-                {
-                    JobId = job.Key,
-                    Tipo = methodName == nameof(EvaluationPeriodService.IniciarEvaluacion) ? "Inicio" : "Fin",
-                    FechaProgramada = job.Value.EnqueueAt.ToLocalTime()
-                });
-            }
+            PeriodoActual = null;
+            return;
         }
+
+        DateTime? inicioMostrar = null;
+        DateTime? finMostrar = null;
+
+        if (jobInicio.Value != null)
+        {
+            inicioMostrar = jobInicio.Value.EnqueueAt.ToLocalTime();
+            finMostrar = jobFin.Value?.EnqueueAt.ToLocalTime() ?? _fechaFinProgramada;
+        }
+        else if (jobFin.Value != null)
+        {
+            inicioMostrar = _fechaInicioProgramada ?? DateTime.MinValue;
+            finMostrar = jobFin.Value.EnqueueAt.ToLocalTime();
+        }
+        else
+        {
+            inicioMostrar = _fechaInicioProgramada ?? DateTime.Now;
+            finMostrar = _fechaFinProgramada ?? DateTime.Now;
+        }
+
+        PeriodoActual = new Periodo
+        {
+            Inicio = inicioMostrar,
+            Fin = finMostrar,
+            EstaActivo = estaActivo
+        };
     }
 
-    private async Task CancelarTrabajoAsync(string jobId)
+    private async Task CancelarPeriodoAsync()
     {
         try
         {
-            BackgroundJobClient.Delete(jobId);
-            CargarTrabajosProgramados();
-            await InvokeAsync(StateHasChanged);
+            var monitoringApi = JobStorage.Current.GetMonitoringApi();
+            var jobs = monitoringApi.ScheduledJobs(0, int.MaxValue);
+
+            foreach (var job in jobs)
+            {
+                var method = job.Value.Job?.Method.Name;
+                if (method == nameof(EvaluationPeriodService.IniciarEvaluacion) ||
+                    method == nameof(EvaluationPeriodService.FinalizarEvaluacion))
+                {
+                    BackgroundJobClient.Delete(job.Key);
+                }
+            }
+
+            if (EvaluationPeriod.IsActive)
+            {
+                EvaluationPeriod.FinalizarEvaluacion();
+            }
+
+            JobIdInicio = null;
+            JobIdFin = null;
+            _fechaInicioProgramada = null;
+            _fechaFinProgramada = null;
+            PeriodoActual = null;
+
+            Mensaje = "Periodo cancelado correctamente.";
+            EsError = false;
         }
         catch (Exception ex)
         {
             Mensaje = $"Error al cancelar: {ex.Message}";
             EsError = true;
+        }
+        finally
+        {
+            CargarPeriodoActual();
+            await InvokeAsync(StateHasChanged);
         }
     }
 
@@ -138,10 +191,10 @@ public partial class Evaluation : ComponentBase
         EvaluationPeriod.OnChanged -= Refresh;
     }
 
-    private class TrabajoProgramado
+    private class Periodo
     {
-        public string JobId { get; set; } = string.Empty;
-        public string Tipo { get; set; } = string.Empty; // "Inicio" o "Fin"
-        public DateTime FechaProgramada { get; set; }
+        public DateTime? Inicio { get; set; }
+        public DateTime? Fin { get; set; }
+        public bool EstaActivo { get; set; }
     }
 }

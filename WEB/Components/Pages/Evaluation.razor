@@ -17,7 +17,6 @@
 </FluentStack>
 
 <div class="evaluacion-layout">
-    @* Bloque de programación (siempre arriba) *@
     <div class="col-programar">
         <FluentCard Style="padding: 16px;">
             <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
@@ -25,8 +24,7 @@
             </FluentLabel>
             <FluentDivider />
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="16">
-
-                @* Contenedor de los dos calendarios *@
+                
                 <div class="calendarios-container">
                     <FluentCard Style="padding: 12px;" Class="calendario-card">
                         <FluentLabel Typo="Typography.Body" Weight="FontWeight.Bold">
@@ -68,47 +66,47 @@
     <div class="col-periodos">
         <FluentCard Style="padding: 16px;">
             <FluentLabel Typo="Typography.Subject" Weight="FontWeight.Bold">
-                Periodos programados actualmente
+                Periodo programado actualmente
             </FluentLabel>
             <FluentDivider />
 
-            @if (!trabajosProgramados.Any())
+            @if (PeriodoActual == null)
             {
-                <FluentLabel>No hay trabajos programados.</FluentLabel>
+                <FluentLabel>No hay ningún periodo programado ni activo.</FluentLabel>
             }
             else
             {
                 <table style="width:100%; border-collapse: collapse;">
                     <thead>
                         <tr>
-                            <th style="text-align:left; padding: 4px;">Tipo</th>
-                            <th style="text-align:left; padding: 4px;">Fecha programada</th>
+                            <th style="text-align:left; padding: 4px;">Inicio</th>
+                            <th style="text-align:left; padding: 4px;">Fin</th>
+                            <th style="text-align:left; padding: 4px;">Estado</th>
                             <th style="text-align:center; padding: 4px;">Acción</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var job in trabajosProgramados)
-                        {
-                            <tr>
-                                <td style="padding: 4px;">@job.Tipo</td>
-                                <td style="padding: 4px;">@job.FechaProgramada.ToString("g")</td>
-                                <td style="padding: 4px; text-align:center;">
-                                    <FluentButton Appearance="Appearance.Outline"
-                                                  Intent="@MessageIntent.Error"
-                                                  Size="Size.Small"
-                                                  OnClick="@(() => CancelarTrabajoAsync(job.JobId))">
-                                        Cancelar
-                                    </FluentButton>
-                                </td>
-                            </tr>
-                        }
+                        <tr>
+                            <td style="padding: 4px;">@(PeriodoActual.Inicio?.ToString("g") ?? "—")</td>
+                            <td style="padding: 4px;">@(PeriodoActual.Fin?.ToString("g") ?? "—")</td>
+                            <td style="padding: 4px; font-weight: bold; color: @(PeriodoActual.EstaActivo ? "green" : "orange");">
+                                @(PeriodoActual.EstaActivo ? "Activo" : "Pendiente")
+                            </td>
+                            <td style="padding: 4px; text-align:center;">
+                                <FluentButton Appearance="Appearance.Outline"
+                                              Intent="@MessageIntent.Error"
+                                              Size="Size.Small"
+                                              OnClick="@CancelarPeriodoAsync">
+                                    Cancelar periodo
+                                </FluentButton>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             }
         </FluentCard>
     </div>
 </div>
-
 
 <style>
     .evaluacion-layout {
@@ -126,7 +124,6 @@
         max-width: 100%;
     }
 
-    
     .calendarios-container {
         display: flex;
         gap: 12px;
@@ -137,7 +134,6 @@
         flex: 1;                 
     }
 
-    
     @@media (max-width: 800px) {
         .calendarios-container {
             flex-direction: column;
