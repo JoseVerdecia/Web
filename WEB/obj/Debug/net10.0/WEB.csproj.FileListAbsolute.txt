@@ -10,12 +10,10 @@ C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\WEB.pdb
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Azure.Core.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Azure.Identity.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Blazor-ApexCharts.dll
-C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Dapper.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\FluentValidation.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\FluentValidation.DependencyInjectionExtensions.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Hangfire.AspNetCore.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Hangfire.Core.dll
-C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Hangfire.Dashboard.Authorization.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Hangfire.NetCore.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Hangfire.SqlServer.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Humanizer.dll
@@ -77,7 +75,6 @@ C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Mono.TextTem
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Newtonsoft.Json.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Npgsql.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Npgsql.EntityFrameworkCore.PostgreSQL.dll
-C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Owin.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\System.ClientModel.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\System.CodeDom.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\System.Composition.AttributedModel.dll
@@ -314,13 +311,11 @@ C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\WEB.genrunti
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\ref\WEB.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\BouncyCastle.Cryptography.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\Google.Protobuf.dll
-C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\Hangfire.MySql.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\K4os.Compression.LZ4.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\K4os.Compression.LZ4.Streams.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\K4os.Hash.xxHash.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\MySql.Data.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\MySql.EntityFrameworkCore.dll
-C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\MySqlConnector.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\System.Security.Permissions.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\System.Windows.Extensions.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\ZstdSharp.dll
@@ -330,9 +325,6 @@ C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\runtimes\win
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\runtimes\win-x64\native\krb5_64.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\runtimes\win-x64\native\krbcc64.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\runtimes\win\lib\net8.0\System.Windows.Extensions.dll
-C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\Pomelo.EntityFrameworkCore.MySql.dll
-C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\Dapper.AOT.dll
-C:\Users\Osvaldo el Heraldo\RiderProjects\WEB\WEB\bin\Debug\net10.0\Hangfire.PostgreSql.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\ClosedXML.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\ClosedXML.Parser.dll
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\CsvHelper.dll
@@ -400,7 +392,6 @@ C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Co
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Components\Shared\Pages\ProcesosSIGES.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Components\Shared\ProcesoSIGEsTable.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Components\JefeProceso\PEProcesoTable.razor.rz.scp.css
-C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Components\Shared\Pages\AdminEvaluacionProcesoPage.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Components\Shared\ProcesoEvaluacionTable.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Components\Shared\Pages\ResumenEvaluacionProcesos.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\bin\Debug\net10.0\Microsoft.IO.RecyclableMemoryStream.dll
@@ -422,5 +413,5 @@ C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Co
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Components\JefeArea\JAObjetivosSIGEsTable.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Components\JefeArea\JAProcesoSIGEsTable.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\scopedcss\Components\Shared\IndicadorFormContent.razor.rz.scp.css
-C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\compressed\tsv9u31vxc-{0}-8fnsoez5na-8fnsoez5na.gz
-C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\compressed\h0xrc00xq5-{0}-wf79yct0vd-wf79yct0vd.gz
+C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\compressed\tsv9u31vxc-{0}-sd5t156vms-sd5t156vms.gz
+C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Debug\net10.0\compressed\h0xrc00xq5-{0}-hg2xzw5wqi-hg2xzw5wqi.gz

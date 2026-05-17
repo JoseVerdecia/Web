@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Users.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Proceso.Available;
@@ -16,14 +16,14 @@ public class GetAvailableProcesosHandler
         _uow = uow;
     }
 
-    public async Task<Result<List<AvailableUserDto>>> Handle(
+    public async Task<AppResult<List<AvailableUserDto>>> Handle(
         GetAvailableProcesosRequest request,
         CancellationToken cancellationToken)
     {
         IEnumerable<ProcesoModel> procesos = await _uow.Current.Proceso.GetAllBy( p => p.JefeProcesoId == null,cancellationToken);
 
-        List<AvailableUserDto> result = procesos.Select(p => new AvailableUserDto(p.Id, p.Nombre)).ToList();
+        List<AvailableUserDto> AppResult = procesos.Select(p => new AvailableUserDto(p.Id, p.Nombre)).ToList();
 
-        return Result<List<AvailableUserDto>>.Success(result);
+        return AppResult<List<AvailableUserDto>>.Success(AppResult);
     }
 }

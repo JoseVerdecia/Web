@@ -2,7 +2,7 @@
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Objetivo.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Objetivo.GetAll;
 
@@ -15,7 +15,7 @@ public class GetAllObjetivosHandler : IRequestHandler<GetAllObjetivosRequest, Pa
         _uow = uow;
     }
 
-    public async Task<Result<PagedResult<ObjetivoDto>>> Handle(GetAllObjetivosRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<PagedResult<ObjetivoDto>>> Handle(GetAllObjetivosRequest request, CancellationToken cancellationToken)
     {
         var (items, totalCount) = await _uow.Current.Objetivo.GetPagedAsync(request.Page, request.PageSize,cancellationToken,includeProperties:"Indicadores,Indicadores.Proceso");
         var pagedResult = new PagedResult<ObjetivoDto>
@@ -26,6 +26,6 @@ public class GetAllObjetivosHandler : IRequestHandler<GetAllObjetivosRequest, Pa
             TotalCount = totalCount
         };
 
-        return Result<PagedResult<ObjetivoDto>>.Success(pagedResult);
+        return AppResult<PagedResult<ObjetivoDto>>.Success(pagedResult);
     }
 }

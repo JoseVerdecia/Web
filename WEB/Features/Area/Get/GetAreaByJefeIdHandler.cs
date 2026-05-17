@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Area.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Area.Get;
@@ -15,7 +15,7 @@ public class GetAreaByJefeIdHandler : IRequestHandler<GetAreaByJefeIdRequest, Ar
         _uow = uow;
     }
 
-    public async Task<Result<AreaDto>> Handle(
+    public async Task<AppResult<AreaDto>> Handle(
         GetAreaByJefeIdRequest request, 
         CancellationToken cancellationToken)
     {
@@ -24,8 +24,8 @@ public class GetAreaByJefeIdHandler : IRequestHandler<GetAreaByJefeIdRequest, Ar
             cancellationToken);
 
         if (area == null)
-            return Result<AreaDto>.NotFound("Area no encontrada");
+            return AppResult<AreaDto>.NotFound("Area no encontrada");
 
-        return Result<AreaDto>.Success(area.MapToDto());
+        return AppResult<AreaDto>.Success(area.MapToDto());
     }
 }

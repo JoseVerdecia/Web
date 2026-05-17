@@ -16,7 +16,7 @@ public class UnitOfWorkScopeBehavior<TRequest, TResponse> : IPipelineBehavior<TR
         _dbContextFactory = dbContextFactory;
     }
 
-    public async Task<Result<TResponse>> Handle(
+    public async Task<AppResult<TResponse>> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)

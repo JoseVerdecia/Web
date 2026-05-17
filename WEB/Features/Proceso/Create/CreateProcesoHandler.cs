@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Proceso.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Proceso.Create;
@@ -18,9 +18,9 @@ public class CreateProcesoHandler : IRequestHandler<CreateProcesoCommand, Proces
       //  _hubContext = hubContext;
     }
 
-    public async Task<Result<ProcesoDto>> Handle(CreateProcesoCommand command, CancellationToken cancellationToken)
+    public async Task<AppResult<ProcesoDto>> Handle(CreateProcesoCommand command, CancellationToken cancellationToken)
     {
-        return await Result<ProcesoModel>.Success(new ProcesoModel 
+        return await AppResult<ProcesoModel>.Success(new ProcesoModel 
             { 
                 Nombre = command.Nombre,
                 Evaluacion = Enums.Evaluacion.NoEvaluado

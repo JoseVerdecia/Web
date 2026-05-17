@@ -119,32 +119,6 @@
           }
         }
       },
-      "Dapper/2.0.123": {
-        "type": "package",
-        "compile": {
-          "lib/net5.0/Dapper.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net5.0/Dapper.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "Dapper.AOT/1.0.48": {
-        "type": "package",
-        "compile": {
-          "lib/net8.0/Dapper.AOT.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/Dapper.AOT.dll": {
-            "related": ".xml"
-          }
-        }
-      },
       "DocumentFormat.OpenXml/3.1.1": {
         "type": "package",
         "dependencies": {
@@ -319,52 +293,6 @@
           }
         }
       },
-      "Hangfire.Dashboard.Authorization/3.1.0": {
-        "type": "package",
-        "dependencies": {
-          "Hangfire.Core": "1.6.0",
-          "Owin": "1.0.0"
-        },
-        "compile": {
-          "lib/net45/Hangfire.Dashboard.Authorization.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net45/Hangfire.Dashboard.Authorization.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "Hangfire.MySqlStorage/2.0.3": {
-        "type": "package",
-        "dependencies": {
-          "Dapper": "1.50.5",
-          "Hangfire.Core": "1.6.21",
-          "MySqlConnector": "1.0.0",
-          "Newtonsoft.Json": "11.0.2"
-        },
-        "compile": {
-          "lib/netstandard2.0/Hangfire.MySql.dll": {}
-        },
-        "runtime": {
-          "lib/netstandard2.0/Hangfire.MySql.dll": {}
-        }
-      },
-      "Hangfire.MySqlStorage.MysqlConnector/1.0.5.1": {
-        "type": "package",
-        "dependencies": {
-          "Dapper": "1.50.2",
-          "Hangfire.Core": "1.5.3",
-          "MySqlConnector": "0.24.2"
-        },
-        "compile": {
-          "lib/net45/Hangfire.MySql.dll": {}
-        },
-        "runtime": {
-          "lib/net45/Hangfire.MySql.dll": {}
-        }
-      },
       "Hangfire.NetCore/1.8.23": {
         "type": "package",
         "dependencies": {
@@ -377,25 +305,6 @@
         },
         "runtime": {
           "lib/netstandard2.1/Hangfire.NetCore.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "Hangfire.PostgreSql/1.21.1": {
-        "type": "package",
-        "dependencies": {
-          "Dapper": "2.0.123",
-          "Dapper.AOT": "1.0.48",
-          "Hangfire.Core": "1.8.0",
-          "Npgsql": "6.0.11"
-        },
-        "compile": {
-          "lib/netstandard2.0/Hangfire.PostgreSql.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/netstandard2.0/Hangfire.PostgreSql.dll": {
             "related": ".xml"
           }
         }
@@ -564,35 +473,6 @@
         },
         "runtime": {
           "lib/net10.0/Microsoft.AspNetCore.SignalR.Client.Core.dll": {
-            "related": ".xml"
-          }
-        }
-      },
-      "Microsoft.AspNetCore.SignalR.Common/10.0.5": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.Extensions.Options": "10.0.5"
-        },
-        "compile": {
-          "lib/net10.0/_._": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net10.0/_._": {
-            "related": ".xml"
-          }
-        }
-      },
-      "Microsoft.AspNetCore.SignalR.Protocols.Json/10.0.5": {
-        "type": "package",
-        "compile": {
-          "lib/net10.0/_._": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net10.0/_._": {
             "related": ".xml"
           }
         }
@@ -1826,19 +1706,6 @@
           }
         }
       },
-      "MySqlConnector/2.4.0": {
-        "type": "package",
-        "compile": {
-          "lib/net9.0/MySqlConnector.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net9.0/MySqlConnector.dll": {
-            "related": ".xml"
-          }
-        }
-      },
       "Newtonsoft.Json/13.0.3": {
         "type": "package",
         "compile": {
@@ -1884,15 +1751,6 @@
           "lib/net10.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll": {
             "related": ".xml"
           }
-        }
-      },
-      "Owin/1.0.0": {
-        "type": "package",
-        "compile": {
-          "lib/net40/Owin.dll": {}
-        },
-        "runtime": {
-          "lib/net40/Owin.dll": {}
         }
       },
       "PdfPig/0.1.14": {
@@ -1941,23 +1799,6 @@
           },
           "lib/net8.0/UglyToad.PdfPig.dll": {
             "related": ".Core.pdb;.Core.xml;.DocumentLayoutAnalysis.pdb;.DocumentLayoutAnalysis.xml;.Fonts.pdb;.Fonts.xml;.Package.pdb;.Package.xml;.pdb;.Tokenization.pdb;.Tokenization.xml;.Tokens.pdb;.Tokens.xml;.xml"
-          }
-        }
-      },
-      "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
-        "type": "package",
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "[9.0.0, 9.0.999]",
-          "MySqlConnector": "2.4.0"
-        },
-        "compile": {
-          "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.dll": {
-            "related": ".xml"
-          }
-        },
-        "runtime": {
-          "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.dll": {
-            "related": ".xml"
           }
         }
       },
@@ -2680,49 +2521,6 @@
         "lib/netstandard2.1/CsvHelper.xml"
       ]
     },
-    "Dapper/2.0.123": {
-      "sha512": "RDFF4rBLLmbpi6pwkY7q/M6UXHRJEOerplDGE5jwEkP/JGJnBauAClYavNKJPW1yOTWRPIyfj4is3EaJxQXILQ==",
-      "type": "package",
-      "path": "dapper/2.0.123",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Dapper.png",
-        "dapper.2.0.123.nupkg.sha512",
-        "dapper.nuspec",
-        "lib/net461/Dapper.dll",
-        "lib/net461/Dapper.xml",
-        "lib/net5.0/Dapper.dll",
-        "lib/net5.0/Dapper.xml",
-        "lib/netstandard2.0/Dapper.dll",
-        "lib/netstandard2.0/Dapper.xml"
-      ]
-    },
-    "Dapper.AOT/1.0.48": {
-      "sha512": "rsLM3yKr4g+YKKox9lhc8D+kz67P7Q9+xdyn1LmCsoYr1kYpJSm+Nt6slo5UrfUrcTiGJ57zUlyO8XUdV7G7iA==",
-      "type": "package",
-      "path": "dapper.aot/1.0.48",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Dapper.png",
-        "analyzers/dotnet/Dapper.AOT.Analyzers.dll",
-        "analyzers/dotnet/Microsoft.SqlServer.TransactSql.ScriptDom.dll",
-        "dapper.aot.1.0.48.nupkg.sha512",
-        "dapper.aot.nuspec",
-        "lib/net48/Dapper.AOT.dll",
-        "lib/net48/Dapper.AOT.xml",
-        "lib/net6.0/Dapper.AOT.dll",
-        "lib/net6.0/Dapper.AOT.xml",
-        "lib/net8.0/Dapper.AOT.dll",
-        "lib/net8.0/Dapper.AOT.xml",
-        "lib/netcoreapp3.1/Dapper.AOT.dll",
-        "lib/netcoreapp3.1/Dapper.AOT.xml",
-        "lib/netstandard2.0/Dapper.AOT.dll",
-        "lib/netstandard2.0/Dapper.AOT.xml",
-        "readme.md"
-      ]
-    },
     "DocumentFormat.OpenXml/3.1.1": {
       "sha512": "2z9QBzeTLNNKWM9SaOSDMegfQk/7hDuElOsmF77pKZMkFRP/GHA/W/4yOAQD9kn15N/FsFxHn3QVYkatuZghiA==",
       "type": "package",
@@ -2972,47 +2770,6 @@
         "lib/netstandard2.0/zh/Hangfire.Core.resources.dll"
       ]
     },
-    "Hangfire.Dashboard.Authorization/3.1.0": {
-      "sha512": "WSCTw2szdv01arMPRcrzoL56MvooA5+miXlH4xNDJayDNO1fQ1LntHIwl1rMXvrYKfrZhQD46NsxkUggyCxfWw==",
-      "type": "package",
-      "path": "hangfire.dashboard.authorization/3.1.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE",
-        "README.md",
-        "hangfire.dashboard.authorization.3.1.0.nupkg.sha512",
-        "hangfire.dashboard.authorization.nuspec",
-        "icon.png",
-        "lib/net45/Hangfire.Dashboard.Authorization.dll",
-        "lib/net45/Hangfire.Dashboard.Authorization.xml"
-      ]
-    },
-    "Hangfire.MySqlStorage/2.0.3": {
-      "sha512": "02hKjRxeEl3UQkfu3tHXZd2qe5FwOErX2j8ezhJooFEzCyrrDhFTuB8sXtJW0Hr+sbAuR6oF4nvAwOp+USU6nw==",
-      "type": "package",
-      "path": "hangfire.mysqlstorage/2.0.3",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "hangfire.mysqlstorage.2.0.3.nupkg.sha512",
-        "hangfire.mysqlstorage.nuspec",
-        "lib/net452/Hangfire.MySql.dll",
-        "lib/netstandard2.0/Hangfire.MySql.dll"
-      ]
-    },
-    "Hangfire.MySqlStorage.MysqlConnector/1.0.5.1": {
-      "sha512": "eR2n+vEr6cZC1Uvw8ftqyepLyjzYfxdGU2tysbawc8fIHWCa/qOkIzboh1hUzad/3kvmwsrrouQp+saWk8t2Gg==",
-      "type": "package",
-      "path": "hangfire.mysqlstorage.mysqlconnector/1.0.5.1",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "hangfire.mysqlstorage.mysqlconnector.1.0.5.1.nupkg.sha512",
-        "hangfire.mysqlstorage.mysqlconnector.nuspec",
-        "lib/net45/Hangfire.MySql.dll"
-      ]
-    },
     "Hangfire.NetCore/1.8.23": {
       "sha512": "SmvUJF/u5MCP666R5Y1V+GntqBc4RCWJqn5ztMMN67d53Cx5cuaWR0YNLMrabjylwLarFYJ7EdR9RnGEZzp/dg==",
       "type": "package",
@@ -3039,20 +2796,6 @@
         "lib/netstandard2.0/Hangfire.NetCore.xml",
         "lib/netstandard2.1/Hangfire.NetCore.dll",
         "lib/netstandard2.1/Hangfire.NetCore.xml"
-      ]
-    },
-    "Hangfire.PostgreSql/1.21.1": {
-      "sha512": "hFNZAxv+1p72/XCZdImnH6ovCzZ2DKAMTOI8CReT0P3yw/k0b0YJP2teA18agNH1ZYInPzhtxGk8hx5n2cxbbQ==",
-      "type": "package",
-      "path": "hangfire.postgresql/1.21.1",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE.md",
-        "hangfire.postgresql.1.21.1.nupkg.sha512",
-        "hangfire.postgresql.nuspec",
-        "lib/netstandard2.0/Hangfire.PostgreSql.dll",
-        "lib/netstandard2.0/Hangfire.PostgreSql.xml"
       ]
     },
     "Hangfire.SqlServer/1.8.23": {
@@ -3278,44 +3021,6 @@
         "lib/netstandard2.1/Microsoft.AspNetCore.SignalR.Client.Core.xml",
         "microsoft.aspnetcore.signalr.client.core.10.0.5.nupkg.sha512",
         "microsoft.aspnetcore.signalr.client.core.nuspec"
-      ]
-    },
-    "Microsoft.AspNetCore.SignalR.Common/10.0.5": {
-      "sha512": "+aUsWJhnJlGzaSs8lipFVH6XuKYJwnJWdK200KO2NvbJFRQSauYynSLQhzhf3mpGGFoQ1U5Z7MVxJiC1ANCOYA==",
-      "type": "package",
-      "path": "microsoft.aspnetcore.signalr.common/10.0.5",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "THIRD-PARTY-NOTICES.TXT",
-        "lib/net10.0/Microsoft.AspNetCore.SignalR.Common.dll",
-        "lib/net10.0/Microsoft.AspNetCore.SignalR.Common.xml",
-        "lib/net462/Microsoft.AspNetCore.SignalR.Common.dll",
-        "lib/net462/Microsoft.AspNetCore.SignalR.Common.xml",
-        "lib/netstandard2.0/Microsoft.AspNetCore.SignalR.Common.dll",
-        "lib/netstandard2.0/Microsoft.AspNetCore.SignalR.Common.xml",
-        "microsoft.aspnetcore.signalr.common.10.0.5.nupkg.sha512",
-        "microsoft.aspnetcore.signalr.common.nuspec"
-      ]
-    },
-    "Microsoft.AspNetCore.SignalR.Protocols.Json/10.0.5": {
-      "sha512": "bFLLtvuZ0ATBhuK5ZqbJW+pG9XWu+u+yh+sR90ra57uMgR2WEQtMAnQPK94/pQOzbQAzm1vNr4bP/JqMs+OftQ==",
-      "type": "package",
-      "path": "microsoft.aspnetcore.signalr.protocols.json/10.0.5",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "Icon.png",
-        "THIRD-PARTY-NOTICES.TXT",
-        "lib/net10.0/Microsoft.AspNetCore.SignalR.Protocols.Json.dll",
-        "lib/net10.0/Microsoft.AspNetCore.SignalR.Protocols.Json.xml",
-        "lib/net462/Microsoft.AspNetCore.SignalR.Protocols.Json.dll",
-        "lib/net462/Microsoft.AspNetCore.SignalR.Protocols.Json.xml",
-        "lib/netstandard2.0/Microsoft.AspNetCore.SignalR.Protocols.Json.dll",
-        "lib/netstandard2.0/Microsoft.AspNetCore.SignalR.Protocols.Json.xml",
-        "microsoft.aspnetcore.signalr.protocols.json.10.0.5.nupkg.sha512",
-        "microsoft.aspnetcore.signalr.protocols.json.nuspec"
       ]
     },
     "Microsoft.Bcl.AsyncInterfaces/8.0.0": {
@@ -5676,35 +5381,6 @@
         "mysql.entityframeworkcore.nuspec"
       ]
     },
-    "MySqlConnector/2.4.0": {
-      "sha512": "78M+gVOjbdZEDIyXQqcA7EYlCGS3tpbUELHvn6638A2w0pkPI625ixnzsa5staAd3N9/xFmPJtkKDYwsXpFi/w==",
-      "type": "package",
-      "path": "mysqlconnector/2.4.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "README.md",
-        "lib/net462/MySqlConnector.dll",
-        "lib/net462/MySqlConnector.xml",
-        "lib/net471/MySqlConnector.dll",
-        "lib/net471/MySqlConnector.xml",
-        "lib/net48/MySqlConnector.dll",
-        "lib/net48/MySqlConnector.xml",
-        "lib/net6.0/MySqlConnector.dll",
-        "lib/net6.0/MySqlConnector.xml",
-        "lib/net8.0/MySqlConnector.dll",
-        "lib/net8.0/MySqlConnector.xml",
-        "lib/net9.0/MySqlConnector.dll",
-        "lib/net9.0/MySqlConnector.xml",
-        "lib/netstandard2.0/MySqlConnector.dll",
-        "lib/netstandard2.0/MySqlConnector.xml",
-        "lib/netstandard2.1/MySqlConnector.dll",
-        "lib/netstandard2.1/MySqlConnector.xml",
-        "logo.png",
-        "mysqlconnector.2.4.0.nupkg.sha512",
-        "mysqlconnector.nuspec"
-      ]
-    },
     "Newtonsoft.Json/13.0.3": {
       "sha512": "HrC5BXdl00IP9zeV+0Z848QWPAoCr9P3bDEZguI+gkLcBKAOxix/tLEAAHC+UvDNPv4a2d18lOReHMOagPa+zQ==",
       "type": "package",
@@ -5767,18 +5443,6 @@
         "npgsql.entityframeworkcore.postgresql.10.0.1.nupkg.sha512",
         "npgsql.entityframeworkcore.postgresql.nuspec",
         "postgresql.png"
-      ]
-    },
-    "Owin/1.0.0": {
-      "sha512": "OseTFniKmyp76mEzOBwIKGBRS5eMoYNkMKaMXOpxx9jv88+b6mh1rSaw43vjBOItNhaLFG3d0a20PfHyibH5sw==",
-      "type": "package",
-      "path": "owin/1.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "lib/net40/Owin.dll",
-        "owin.1.0.0.nupkg.sha512",
-        "owin.nuspec"
       ]
     },
     "PdfPig/0.1.14": {
@@ -5897,21 +5561,6 @@
         "pdfpig.0.1.14.nupkg.sha512",
         "pdfpig.nuspec",
         "pdfpig.png"
-      ]
-    },
-    "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
-      "sha512": "cl7S4s6CbJno0LjNxrBHNc2xxmCliR5i40ATPZk/eTywVaAbHCbdc9vbGc3QThvwGjHqrDHT8vY9m1VF/47o0g==",
-      "type": "package",
-      "path": "pomelo.entityframeworkcore.mysql/9.0.0",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "README.md",
-        "icon.png",
-        "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.dll",
-        "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.xml",
-        "pomelo.entityframeworkcore.mysql.9.0.0.nupkg.sha512",
-        "pomelo.entityframeworkcore.mysql.nuspec"
       ]
     },
     "PuppeteerSharp/24.40.0": {
@@ -6636,18 +6285,12 @@
       "FluentValidation.DependencyInjectionExtensions >= 12.1.1",
       "Hangfire >= 1.8.23",
       "Hangfire.AspNetCore >= 1.8.23",
-      "Hangfire.Dashboard.Authorization >= 3.1.0",
-      "Hangfire.MySqlStorage >= 2.0.3",
-      "Hangfire.MySqlStorage.MysqlConnector >= 1.0.5.1",
-      "Hangfire.PostgreSql >= 1.21.1",
       "Hangfire.SqlServer >= 1.8.23",
       "Microsoft.AspNetCore.App.Internal.Assets >= 10.0.0-rc.2.25502.107",
       "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore >= 10.0.0",
       "Microsoft.AspNetCore.Identity.EntityFrameworkCore >= 10.0.0",
       "Microsoft.AspNetCore.SignalR.Client >= 10.0.5",
       "Microsoft.AspNetCore.SignalR.Client.Core >= 10.0.5",
-      "Microsoft.AspNetCore.SignalR.Common >= 10.0.5",
-      "Microsoft.AspNetCore.SignalR.Protocols.Json >= 10.0.5",
       "Microsoft.EntityFrameworkCore.Abstractions >= 10.0.5",
       "Microsoft.EntityFrameworkCore.Design >= 10.0.5",
       "Microsoft.EntityFrameworkCore.SqlServer >= 10.0.0",
@@ -6657,7 +6300,6 @@
       "MySql.EntityFrameworkCore >= 10.0.1",
       "Npgsql.EntityFrameworkCore.PostgreSQL >= 10.0.1",
       "PdfPig >= 0.1.14",
-      "Pomelo.EntityFrameworkCore.MySql >= 9.0.0",
       "PuppeteerSharp >= 24.40.0",
       "QuestPDF >= 2026.2.4",
       "System.Drawing.Common >= 10.0.7",
@@ -6733,22 +6375,6 @@
             "target": "Package",
             "version": "[1.8.23, )"
           },
-          "Hangfire.Dashboard.Authorization": {
-            "target": "Package",
-            "version": "[3.1.0, )"
-          },
-          "Hangfire.MySqlStorage": {
-            "target": "Package",
-            "version": "[2.0.3, )"
-          },
-          "Hangfire.MySqlStorage.MysqlConnector": {
-            "target": "Package",
-            "version": "[1.0.5.1, )"
-          },
-          "Hangfire.PostgreSql": {
-            "target": "Package",
-            "version": "[1.21.1, )"
-          },
           "Hangfire.SqlServer": {
             "target": "Package",
             "version": "[1.8.23, )"
@@ -6772,14 +6398,6 @@
             "version": "[10.0.5, )"
           },
           "Microsoft.AspNetCore.SignalR.Client.Core": {
-            "target": "Package",
-            "version": "[10.0.5, )"
-          },
-          "Microsoft.AspNetCore.SignalR.Common": {
-            "target": "Package",
-            "version": "[10.0.5, )"
-          },
-          "Microsoft.AspNetCore.SignalR.Protocols.Json": {
             "target": "Package",
             "version": "[10.0.5, )"
           },
@@ -6820,10 +6438,6 @@
           "PdfPig": {
             "target": "Package",
             "version": "[0.1.14, )"
-          },
-          "Pomelo.EntityFrameworkCore.MySql": {
-            "target": "Package",
-            "version": "[9.0.0, )"
           },
           "PuppeteerSharp": {
             "target": "Package",
@@ -7283,67 +6897,5 @@
         }
       }
     }
-  },
-  "logs": [
-    {
-      "code": "NU1510",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "PackageReference Microsoft.AspNetCore.SignalR.Common no se eliminará. Considere la posibilidad de quitar este paquete de las dependencias, ya que es probable que no sea necesario.",
-      "libraryId": "Microsoft.AspNetCore.SignalR.Common",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1510",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "PackageReference Microsoft.AspNetCore.SignalR.Protocols.Json no se eliminará. Considere la posibilidad de quitar este paquete de las dependencias, ya que es probable que no sea necesario.",
-      "libraryId": "Microsoft.AspNetCore.SignalR.Protocols.Json",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1608",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Se detectó una versión del paquete fuera de la restricción de dependencia: Pomelo.EntityFrameworkCore.MySql 9.0.0 requiere Microsoft.EntityFrameworkCore.Relational (>= 9.0.0 && <= 9.0.999), pero la versión Microsoft.EntityFrameworkCore.Relational 10.0.5 ya se resolvió.",
-      "libraryId": "Microsoft.EntityFrameworkCore.Relational",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "El paquete \"Hangfire.Dashboard.Authorization 3.1.0\" se restauró con \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\" en lugar de la plataforma de destino del proyecto \"net10.0\". Puede que el paquete no sea totalmente compatible con el proyecto.",
-      "libraryId": "Hangfire.Dashboard.Authorization",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "El paquete \"Hangfire.MySqlStorage.MysqlConnector 1.0.5.1\" se restauró con \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\" en lugar de la plataforma de destino del proyecto \"net10.0\". Puede que el paquete no sea totalmente compatible con el proyecto.",
-      "libraryId": "Hangfire.MySqlStorage.MysqlConnector",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "El paquete \"Owin 1.0.0\" se restauró con \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\" en lugar de la plataforma de destino del proyecto \"net10.0\". Puede que el paquete no sea totalmente compatible con el proyecto.",
-      "libraryId": "Owin",
-      "targetGraphs": [
-        "net10.0"
-      ]
-    }
-  ]
+  }
 }

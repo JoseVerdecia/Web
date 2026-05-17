@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Proceso.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Proceso.Get;
@@ -15,7 +15,7 @@ public class GetProcesoByJefeIdHandler : IRequestHandler<GetProcesoByJefeIdReque
         _uow = uow;
     }
 
-    public async Task<Result<ProcesoDto?>> Handle(
+    public async Task<AppResult<ProcesoDto?>> Handle(
         GetProcesoByJefeIdRequest request, 
         CancellationToken cancellationToken)
     {
@@ -24,8 +24,8 @@ public class GetProcesoByJefeIdHandler : IRequestHandler<GetProcesoByJefeIdReque
             cancellationToken);
 
         if (proceso == null)
-            return Result<ProcesoDto?>.Success(null);
+            return AppResult<ProcesoDto?>.Success(null);
 
-        return Result<ProcesoDto?>.Success(proceso.MapToDto());
+        return AppResult<ProcesoDto?>.Success(proceso.MapToDto());
     }
 }

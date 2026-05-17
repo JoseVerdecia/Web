@@ -2,7 +2,7 @@
 using WEB.Core.Result;
 using WEB.Enums;
 using WEB.Features.Notificacion.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Notificacion.GetByIndicador;
@@ -13,7 +13,7 @@ public class GetNotificacionesByIndicadorHandler : IRequestHandler<GetNotificaci
 
     public GetNotificacionesByIndicadorHandler(IUnitOfWorkAccessor uow) => _uow = uow;
 
-    public async Task<Result<List<NotificacionDto>>> Handle(GetNotificacionesByIndicadorRequest request, CancellationToken ct)
+    public async Task<AppResult<List<NotificacionDto>>> Handle(GetNotificacionesByIndicadorRequest request, CancellationToken ct)
     {
         List<NotificacionModel> notificaciones = await _uow.Current.Notificacion
             .GetByIndicadorIdAsync(request.IndicadorId, ct);
@@ -23,6 +23,6 @@ public class GetNotificacionesByIndicadorHandler : IRequestHandler<GetNotificaci
             .Select(n => n.MapToDto())
             .ToList();
 
-        return Result<List<NotificacionDto>>.Success(solicitudes);
+        return AppResult<List<NotificacionDto>>.Success(solicitudes);
     }
 }

@@ -1,6 +1,6 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Area.Restore;
@@ -14,17 +14,17 @@ public class RestoreAreaHandler : IRequestHandler<RestoreAreaRequest,Unit>
         _uow = uow;
     }
 
-    public async Task<Result<Unit>> Handle(RestoreAreaRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<Unit>> Handle(RestoreAreaRequest request, CancellationToken cancellationToken)
     {
         if (request.AreaIds == null || !request.AreaIds.Any())
-            return Result<Unit>.Fail("No se proporcionaron áreas para restaurar.");
+            return AppResult<Unit>.Fail("No se proporcionaron áreas para restaurar.");
 
         var areas = new List<AreaModel>();
         foreach (var id in request.AreaIds)
         {
             var area = await _uow.Current.Area.GetIncludingDeleted(a => a.Id == id, cancellationToken);
             if (area == null)
-                return Result<Unit>.Fail($"Área con ID {id} no encontrada.");
+                return AppResult<Unit>.Fail($"Área con ID {id} no encontrada.");
             areas.Add(area);
         }
         
@@ -36,6 +36,6 @@ public class RestoreAreaHandler : IRequestHandler<RestoreAreaRequest,Unit>
         }
 
         await _uow.Current.SaveAsync();
-        return Result<Unit>.Success(Unit.Value);
+        return AppResult<Unit>.Success(Unit.Value);
     }
 }

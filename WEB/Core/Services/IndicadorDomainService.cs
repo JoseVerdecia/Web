@@ -20,7 +20,7 @@ public static class IndicadorDomainService
     /// <param name="objetivoIds">Lista de Objetivos a asignar al Indicador</param>
     /// <param name="metasPorArea">Diccionario<AreaId,MetaCumplirArea> para las metas de los IndicadorDeArea a asignar al Indicador</param>
     /// <returns></returns>
-  public static Result<IndicadorModel> CrearIndicador(
+  public static AppResult<IndicadorModel> CrearIndicador(
     string nombre,
     string metaCumplir,
     IndicadorOrigen origen,
@@ -34,7 +34,7 @@ public static class IndicadorDomainService
 {
 
     if (!MetaHelper.TryParsearMeta(metaCumplir, out decimal metaCumplirDecimal, out bool isCumplirPorcentaje))
-        return Result<IndicadorModel>.Fail($"La meta a cumplir '{metaCumplir}' no tiene un formato válido.");
+        return AppResult<IndicadorModel>.Fail($"La meta a cumplir '{metaCumplir}' no tiene un formato válido.");
 
     string? metaRealSincronizada = null;
     decimal metaRealDecimal = 0;
@@ -45,7 +45,7 @@ public static class IndicadorDomainService
     foreach (var kvp in metasPorArea)
     {
         if (!MetaHelper.TryParsearMeta(kvp.Value, out _, out _))
-            return Result<IndicadorModel>.Fail($"La meta para el área {kvp.Key} '{kvp.Value}' no tiene un formato válido.");
+            return AppResult<IndicadorModel>.Fail($"La meta para el área {kvp.Key} '{kvp.Value}' no tiene un formato válido.");
     }
 
  
@@ -81,15 +81,15 @@ public static class IndicadorDomainService
         });
     }
 
-    return Result<IndicadorModel>.Success(indicador);
+    return AppResult<IndicadorModel>.Success(indicador);
 }
     
-    public static Result<IndicadorModel> ActualizarMetaCumplir(
+    public static AppResult<IndicadorModel> ActualizarMetaCumplir(
         IndicadorModel indicador, 
         string metaCumplir)
     {
         if (!MetaHelper.TryParsearMeta(metaCumplir, out decimal metaCumplirDecimal, out bool isCumplirPorcentaje))
-            return Result<IndicadorModel>.Fail($"La meta a cumplir '{metaCumplir}' no tiene un formato válido.");
+            return AppResult<IndicadorModel>.Fail($"La meta a cumplir '{metaCumplir}' no tiene un formato válido.");
 
         string? metaRealSincronizada = null;
         decimal metaRealDecimal = 0;
@@ -106,6 +106,6 @@ public static class IndicadorDomainService
 
         indicador.Evaluacion = Evaluacion.NoEvaluado;
 
-        return Result<IndicadorModel>.Success(indicador);
+        return AppResult<IndicadorModel>.Success(indicador);
     }
 }

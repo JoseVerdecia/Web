@@ -1,6 +1,6 @@
 ﻿using WEB.Data.IRepository;
 
-namespace WEB.Interfaces;
+namespace WEB.Core.Interfaces;
 
 public interface IUnitOfWorkAccessor
 {

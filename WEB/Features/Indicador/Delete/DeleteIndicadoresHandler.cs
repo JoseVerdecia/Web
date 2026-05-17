@@ -1,6 +1,6 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Indicador.Delete;
 
@@ -15,19 +15,19 @@ public class DeleteIndicadoresHandler : IRequestHandler<DeleteIndicadoresRequest
         _deleteCascadeService = deleteCascadeService;
     }
 
-    public async Task<Result<Unit>> Handle(DeleteIndicadoresRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<Unit>> Handle(DeleteIndicadoresRequest request, CancellationToken cancellationToken)
     {
         var ids = request.Ids.ToList();
         
         if (!ids.Any())
-            return Result<Unit>.Fail("No se proporcionaron indicadores para eliminar.");
+            return AppResult<Unit>.Fail("No se proporcionaron indicadores para eliminar.");
 
         var indicadores = await _uow.Current.Indicador.GetAllByIncludingDeleted(
             i => ids.Contains(i.Id), 
             cancellationToken);
 
         if (!indicadores.Any())
-            return Result<Unit>.NotFound("No se encontraron los indicadores especificados.");
+            return AppResult<Unit>.NotFound("No se encontraron los indicadores especificados.");
 
         if (request.Permanent)
         {
@@ -45,6 +45,6 @@ public class DeleteIndicadoresHandler : IRequestHandler<DeleteIndicadoresRequest
         }
 
         await _uow.Current.SaveAsync();
-        return Result<Unit>.Success(Unit.Value);
+        return AppResult<Unit>.Success(Unit.Value);
     }
 }

@@ -2,79 +2,79 @@
 
 public static class ResultExtensions
 {
-    public static Result<TOut> Bind<TIn, TOut>(
-        this Result<TIn> result,
-        Func<TIn, Result<TOut>> func)
+    public static AppResult<TOut> Bind<TIn, TOut>(
+        this AppResult<TIn> appResult,
+        Func<TIn, AppResult<TOut>> func)
     {
-        if (result.IsFailure)
-            return Result<TOut>.Fail(result.Errors);
-        return func(result.Value!);
+        if (appResult.IsFailure)
+            return AppResult<TOut>.Fail(appResult.Errors);
+        return func(appResult.Value!);
     }
 
-    public static async Task<Result<TOut>> BindAsync<TIn, TOut>(
-        this Result<TIn> result,
-        Func<TIn, Task<Result<TOut>>> func)
+    public static async Task<AppResult<TOut>> BindAsync<TIn, TOut>(
+        this AppResult<TIn> appResult,
+        Func<TIn, Task<AppResult<TOut>>> func)
     {
-        if (result.IsFailure)
-            return Result<TOut>.Fail(result.Errors);
-        return await func(result.Value!);
+        if (appResult.IsFailure)
+            return AppResult<TOut>.Fail(appResult.Errors);
+        return await func(appResult.Value!);
     }
 
-    public static Result<TOut> Map<TIn, TOut>(
-        this Result<TIn> result,
+    public static AppResult<TOut> Map<TIn, TOut>(
+        this AppResult<TIn> appResult,
         Func<TIn, TOut> mapper)
     {
-        if (result.IsFailure)
-            return Result<TOut>.Fail(result.Errors);
-        return Result<TOut>.Success(mapper(result.Value!));
+        if (appResult.IsFailure)
+            return AppResult<TOut>.Fail(appResult.Errors);
+        return AppResult<TOut>.Success(mapper(appResult.Value!));
     }
 
-    public static Result<T> Tap<T>(
-        this Result<T> result,
+    public static AppResult<T> Tap<T>(
+        this AppResult<T> appResult,
         Action<T> action)
     {
-        if (result.IsSuccess)
-            action(result.Value);
-        return result;
+        if (appResult.IsSuccess)
+            action(appResult.Value);
+        return appResult;
     }
 
-    public static async Task<Result<T>> TapAsync<T>(
-        this Result<T> result,
+    public static async Task<AppResult<T>> TapAsync<T>(
+        this AppResult<T> appResult,
         Func<T, Task> action)
     {
-        if (result.IsSuccess)
-            await action(result.Value!);
-        return result;
+        if (appResult.IsSuccess)
+            await action(appResult.Value!);
+        return appResult;
     }
 
    
 
-    public static async Task<Result<TOut>> BindAsync<TIn, TOut>(
-        this Task<Result<TIn>> resultTask,
-        Func<TIn, Task<Result<TOut>>> func)
+    public static async Task<AppResult<TOut>> BindAsync<TIn, TOut>(
+        this Task<AppResult<TIn>> resultTask,
+        Func<TIn, Task<AppResult<TOut>>> func)
     {
         var result = await resultTask;
         return await result.BindAsync(func);
     }
 
-    public static async Task<Result<TOut>> Map<TIn, TOut>(
-        this Task<Result<TIn>> resultTask,
+    public static async Task<AppResult<TOut>> Map<TIn, TOut>(
+        this Task<AppResult<TIn>> resultTask,
         Func<TIn, TOut> mapper)
     {
         var result = await resultTask;
         return result.Map(mapper);
     }
 
-    public static async Task<Result<T>> Tap<T>(
-        this Task<Result<T>> resultTask,
+    public static async Task<AppResult<T>> Tap<T>(
+        this Task<AppResult<T>> resultTask,
         Action<T> action)
     {
         var result = await resultTask;
         return result.Tap(action);
     }
 
-    public static async Task<Result<T>> TapAsync<T>(
-        this Task<Result<T>> resultTask,
+    public static async Task<AppResult<T>> TapAsync<T>(
+        this Task<AppResult<T>> resultTask,
         Func<T, Task> action)
     {
         var result = await resultTask;

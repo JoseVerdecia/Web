@@ -2,7 +2,7 @@
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data.Hub;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Notificacion.Delete;
 
@@ -17,12 +17,12 @@ public class DeleteNotificacionHandler : IRequestHandler<DeleteNotificacionReque
         _hubContext = hubContext;
     }
 
-    public async Task<Result<bool>> Handle(DeleteNotificacionRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<bool>> Handle(DeleteNotificacionRequest request, CancellationToken cancellationToken)
     {
         var notificacion = await _uow.Current.Notificacion.Get(n => n.Id == request.NotificacionId, cancellationToken);
 
         if (notificacion == null)
-            return Result<bool>.NotFound("Notificación no encontrada");
+            return AppResult<bool>.NotFound("Notificación no encontrada");
 
        
         _uow.Current.Notificacion.SoftDelete(notificacion);
@@ -31,6 +31,6 @@ public class DeleteNotificacionHandler : IRequestHandler<DeleteNotificacionReque
         await _hubContext.Clients.Group($"User_{notificacion.DestinatarioId}")
             .SendAsync("NotificacionEliminada", notificacion.Id, cancellationToken);
 
-        return Result<bool>.Success(true);
+        return AppResult<bool>.Success(true);
     }
 }

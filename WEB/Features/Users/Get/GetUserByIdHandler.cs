@@ -15,7 +15,7 @@ public class GetUserByIdHandler : IRequestHandler<GetUserByIdRequest, UserDto>
         _context = context;
     }
 
-    public async Task<Result<UserDto>> Handle(GetUserByIdRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<UserDto>> Handle(GetUserByIdRequest request, CancellationToken cancellationToken)
     {
         var query = from user in _context.Users
             join userRole in _context.UserRoles on user.Id equals userRole.UserId
@@ -47,8 +47,8 @@ public class GetUserByIdHandler : IRequestHandler<GetUserByIdRequest, UserDto>
         var userDto = await query.FirstOrDefaultAsync(cancellationToken);
 
         if (userDto == null)
-            return Result<UserDto>.NotFound("Usuario no encontrado.");
+            return AppResult<UserDto>.NotFound("Usuario no encontrado.");
 
-        return Result<UserDto>.Success(userDto);
+        return AppResult<UserDto>.Success(userDto);
     }
 }

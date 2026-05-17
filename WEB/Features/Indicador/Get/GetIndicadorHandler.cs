@@ -3,7 +3,7 @@ using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data;
 using WEB.Features.Indicador.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Indicador.Get;
@@ -17,12 +17,12 @@ public class GetIndicadorHandler : IRequestHandler<GetIndicadorByIdRequest, Indi
         _currentUser = currentUser;
     }
 
-    public async Task<Result<IndicadorDto>> Handle(GetIndicadorByIdRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<IndicadorDto>> Handle(GetIndicadorByIdRequest request, CancellationToken cancellationToken)
     {
 
         var user = _currentUser.User;
         if (user == null)
-            return Result<IndicadorDto>.Fail("Usuario no autenticado");
+            return AppResult<IndicadorDto>.Fail("Usuario no autenticado");
 
         var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
         var roles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
@@ -34,7 +34,7 @@ public class GetIndicadorHandler : IRequestHandler<GetIndicadorByIdRequest, Indi
         );
         
         if (indicador == null)
-            return Result<IndicadorDto>.NotFound("Indicador no encontrado");
+            return AppResult<IndicadorDto>.NotFound("Indicador no encontrado");
 
 
         bool isAdmin = roles.Contains(AppRoles.Administrador);
@@ -42,7 +42,7 @@ public class GetIndicadorHandler : IRequestHandler<GetIndicadorByIdRequest, Indi
 
         if (isAdmin)
         {
-            return Result<IndicadorDto>.Success(indicador.MapToDto());
+            return AppResult<IndicadorDto>.Success(indicador.MapToDto());
         }
         
         if (isJefeProceso)
@@ -50,12 +50,12 @@ public class GetIndicadorHandler : IRequestHandler<GetIndicadorByIdRequest, Indi
             
             if (indicador.Proceso != null && indicador.Proceso.JefeProcesoId == userId)
             {
-                return Result<IndicadorDto>.Success(indicador.MapToDto());
+                return AppResult<IndicadorDto>.Success(indicador.MapToDto());
             }
             
-            return Result<IndicadorDto>.NotFound("Indicador no encontrado");
+            return AppResult<IndicadorDto>.NotFound("Indicador no encontrado");
         }
         
-        return Result<IndicadorDto>.Fail("Acceso denegado");
+        return AppResult<IndicadorDto>.Fail("Acceso denegado");
     }
 }

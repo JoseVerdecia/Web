@@ -15,7 +15,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         _validators = validators ?? throw new ArgumentNullException(nameof(validators));
     }
 
-    public async Task<Result<TResponse>> Handle(
+    public async Task<AppResult<TResponse>> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
@@ -38,7 +38,7 @@ public class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
             .ToList();
 
         if (failures.Any())
-            return Result<TResponse>.Fail(failures);
+            return AppResult<TResponse>.Fail(failures);
 
         return await next();
     }

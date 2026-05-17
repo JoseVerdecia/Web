@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Area.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Area.Get;
@@ -14,12 +14,12 @@ public class GetSoftDeleteAreaHandler:IRequestHandler<GetSoftDeleteAreaRequest,A
     {
         _unitOfWork = unitOfWork;
     }
-    public async Task<Result<AreaDto>> Handle(GetSoftDeleteAreaRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<AreaDto>> Handle(GetSoftDeleteAreaRequest request, CancellationToken cancellationToken)
     {
         AreaModel? areaSoftDeleted = await _unitOfWork.Current.Area.GetIncludingDeleted(a => a.IsDeleted == true && a.Id == request.Id,cancellationToken);
         
         return areaSoftDeleted == null 
-            ? Result<AreaDto>.NotFound("Área eliminada no encontrada") 
-            : Result<AreaDto>.Success(areaSoftDeleted.MapToDto());
+            ? AppResult<AreaDto>.NotFound("Área eliminada no encontrada") 
+            : AppResult<AreaDto>.Success(areaSoftDeleted.MapToDto());
     }
 }

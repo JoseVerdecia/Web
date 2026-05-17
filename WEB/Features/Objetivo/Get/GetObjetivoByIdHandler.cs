@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Objetivo.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Objetivo.Get;
 
@@ -14,12 +14,12 @@ public class GetObjetivoByIdHandler : IRequestHandler<GetObjetivoByIdRequest, Ob
         _uow = uow;
     }
 
-    public async Task<Result<ObjetivoDto>> Handle(GetObjetivoByIdRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<ObjetivoDto>> Handle(GetObjetivoByIdRequest request, CancellationToken cancellationToken)
     {
         var objetivo = await _uow.Current.Objetivo.Get(o => o.Id == request.Id,cancellationToken,includeProperties:"Indicadores,Indicadores.Proceso");
         
         return objetivo == null 
-            ? Result<ObjetivoDto>.NotFound("Objetivo no encontrado") 
-            : Result<ObjetivoDto>.Success(objetivo.MapToDto());
+            ? AppResult<ObjetivoDto>.NotFound("Objetivo no encontrado") 
+            : AppResult<ObjetivoDto>.Success(objetivo.MapToDto());
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace WEB.Interfaces;
+﻿namespace WEB.Core.Interfaces;
 
 public interface ICreatedInterfaces
 {

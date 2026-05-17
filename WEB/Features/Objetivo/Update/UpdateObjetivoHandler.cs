@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Objetivo.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Objetivo.Update;
 
@@ -14,12 +14,12 @@ public class UpdateObjetivoHandler : IRequestHandler<UpdateObjetivoCommand, Obje
         _uow = uow;
     }
 
-    public async Task<Result<ObjetivoDto>> Handle(UpdateObjetivoCommand command, CancellationToken cancellationToken)
+    public async Task<AppResult<ObjetivoDto>> Handle(UpdateObjetivoCommand command, CancellationToken cancellationToken)
     {
         var objetivo = await _uow.Current.Objetivo.Get(o => o.Id == command.Id,cancellationToken);
 
         if (objetivo == null)
-            return Result<ObjetivoDto>.NotFound("Objetivo no encontrado");
+            return AppResult<ObjetivoDto>.NotFound("Objetivo no encontrado");
 
         objetivo.Nombre = command.Nombre;
         objetivo.NumeroObjetivo = command.NumeroObjetivo;
@@ -27,6 +27,6 @@ public class UpdateObjetivoHandler : IRequestHandler<UpdateObjetivoCommand, Obje
         _uow.Current.Objetivo.Update(objetivo);
         await _uow.Current.SaveAsync();
         
-        return Result<ObjetivoDto>.Success(objetivo.MapToDto());
+        return AppResult<ObjetivoDto>.Success(objetivo.MapToDto());
     }
 }

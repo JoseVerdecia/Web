@@ -5,7 +5,7 @@ using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data;
 using WEB.Features.Indicador.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Indicador.GetAll;
@@ -22,11 +22,11 @@ public class GetAllIndicadoresHandler : IRequestHandler<GetAllIndicadoresRequest
     }
 
 
-    public async Task<Result<PagedResult<IndicadorDto>>> Handle(GetAllIndicadoresRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<PagedResult<IndicadorDto>>> Handle(GetAllIndicadoresRequest request, CancellationToken cancellationToken)
     {
         ClaimsPrincipal? user = _currentUser.User;
         if (user == null)
-            return Result<PagedResult<IndicadorDto>>.Fail("Usuario no autenticado");
+            return AppResult<PagedResult<IndicadorDto>>.Fail("Usuario no autenticado");
 
         var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
         var roles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
@@ -45,7 +45,7 @@ public class GetAllIndicadoresHandler : IRequestHandler<GetAllIndicadoresRequest
         }
         else
         {
-            return Result<PagedResult<IndicadorDto>>.Fail("Acceso denegado");
+            return AppResult<PagedResult<IndicadorDto>>.Fail("Acceso denegado");
         }
         
         var (items, totalCount) = await _uow.Current.Indicador.GetPagedAsync(
@@ -64,6 +64,6 @@ public class GetAllIndicadoresHandler : IRequestHandler<GetAllIndicadoresRequest
             TotalCount = totalCount
         };
         
-        return Result<PagedResult<IndicadorDto>>.Success(paged);
+        return AppResult<PagedResult<IndicadorDto>>.Success(paged);
     }
 }

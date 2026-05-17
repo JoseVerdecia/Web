@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using WEB.Common;
+using WEB.Core.Result;
 using WEB.Enums;
 using WEB.Models;
 
@@ -26,12 +27,12 @@ public static class EvaluacionHelper
         return Evaluacion.Incumplido;
     }
     
-    public static Result.Result EvaluarIndicadorArea(
+    public static AppResult EvaluarIndicadorArea(
         IndicadorDeAreaModel indicadorArea,
         string metaReal)
     {
         if (!MetaHelper.TryParsearMeta(metaReal, out decimal realDecimal, out bool isPorcentaje))
-            return Result.Result.Fail("Meta real inválida");
+            return AppResult.Fail("Meta real inválida");
 
         indicadorArea.MetaReal = metaReal;
         indicadorArea.MetaRealDecimal = realDecimal;
@@ -43,7 +44,7 @@ public static class EvaluacionHelper
                 indicadorArea.MetaCumplirDecimal
             );
 
-        return Result.Result.Success();
+        return AppResult.Success();
     }
     
     
@@ -108,7 +109,7 @@ public static class EvaluacionHelper
     /// <summary>
     /// Actualiza la Meta Real de un Indicador de Area, sincronizando formato, parseando valores y recalculando la evaluación.
     /// </summary>
-    public static Result.Result ActualizarMetaReal(IndicadorDeAreaModel indicador, string? nuevaMetaRealRaw)
+    public static AppResult ActualizarMetaReal(IndicadorDeAreaModel indicador, string? nuevaMetaRealRaw)
     {
         string? metaRealSincronizada = null;
         decimal metaRealDecimal = 0;
@@ -118,12 +119,12 @@ public static class EvaluacionHelper
         {
            
             if (!MetaHelper.TryParsearMeta(nuevaMetaRealRaw, out decimal realVal, out bool realPorc))
-                return Result.Result.Fail($"La meta real '{nuevaMetaRealRaw}' no tiene un formato válido.");
+                return AppResult.Fail($"La meta real '{nuevaMetaRealRaw}' no tiene un formato válido.");
             
             metaRealSincronizada = MetaHelper.SincronizarMetaReal(indicador.MetaCumplir, nuevaMetaRealRaw);
             
             if (!MetaHelper.TryParsearMeta(metaRealSincronizada, out metaRealDecimal, out isRealPorcentaje))
-                return Result.Result.Fail("Error interno al sincronizar la meta real.");
+                return AppResult.Fail("Error interno al sincronizar la meta real.");
         }
         
         indicador.MetaReal = metaRealSincronizada;
@@ -134,21 +135,21 @@ public static class EvaluacionHelper
             ? EvaluarIndicador(indicador.MetaRealDecimal, indicador.MetaCumplirDecimal)
             : Evaluacion.NoEvaluado;
 
-        return Result.Result.Success();
+        return AppResult.Success();
     }
     
     /// <summary>
     /// Actualiza la Meta a Cumplir  de un Indicador de Area, recalculando la evaluación.
     /// Opcionalmente resincroniza la Meta Real para mantener consistencia de formatos.
     /// </summary>
-    public static Result.Result ActualizarMetaCumplir(IndicadorDeAreaModel indicador, string nuevaMetaCumplirRaw)
+    public static AppResult ActualizarMetaCumplir(IndicadorDeAreaModel indicador, string nuevaMetaCumplirRaw)
     {
             if (string.IsNullOrWhiteSpace(nuevaMetaCumplirRaw))
-                return Result.Result.Fail("La meta a cumplir no puede estar vacía.");
+                return AppResult.Fail("La meta a cumplir no puede estar vacía.");
     
            
             if (!MetaHelper.TryParsearMeta(nuevaMetaCumplirRaw, out decimal metaCumplirDecimal, out bool isCumplirPorcentaje))
-                return Result.Result.Fail($"La meta a cumplir '{nuevaMetaCumplirRaw}' no tiene un formato válido.");
+                return AppResult.Fail($"La meta a cumplir '{nuevaMetaCumplirRaw}' no tiene un formato válido.");
     
        
             indicador.MetaCumplir = nuevaMetaCumplirRaw;
@@ -158,16 +159,16 @@ public static class EvaluacionHelper
             if (!string.IsNullOrEmpty(indicador.MetaReal))
             {
                 
-                var resultadoReal = ActualizarMetaReal(indicador, indicador.MetaReal);
-                if (resultadoReal.IsFailure) 
-                    return resultadoReal; 
+                var AppResultadoReal = ActualizarMetaReal(indicador, indicador.MetaReal);
+                if (AppResultadoReal.IsFailure) 
+                    return AppResultadoReal; 
             }
             else 
             {
                  indicador.Evaluacion = Evaluacion.NoEvaluado;
             }
     
-            return Result.Result.Success();
+            return AppResult.Success();
     }
     
     
@@ -194,7 +195,7 @@ public static class EvaluacionHelper
     /// a partir de los valores ya guardados (ValorTotal, ValorReal o MetaReal).
     /// Retorna siempre Success porque no hay validación de entrada en este paso.
     /// </summary>
-    public static Result.Result ActualizarEvaluacionArea(IndicadorDeAreaModel area, IndicadorModel padre)
+    public static AppResult ActualizarEvaluacionArea(IndicadorDeAreaModel area, IndicadorModel padre)
     {
         decimal metaRealDecimal = ObtenerMetaRealArea(area, padre);
         metaRealDecimal = Math.Round(metaRealDecimal, 2);
@@ -212,14 +213,14 @@ public static class EvaluacionHelper
         
         area.IsMetaRealPorcentaje = padre.IsMetaCumplirPorcentaje;
 
-        return Result.Result.Success();
+        return AppResult.Success();
     }
 
     /// <summary>
     /// Recalcula el indicador  a partir de la lista de sus áreas.
     /// Siempre retorna Success porque los datos ya están validados.
     /// </summary>
-    public static Result.Result RecalcularIndicadorPadre(IndicadorModel padre, List<IndicadorDeAreaModel> areas)
+    public static AppResult RecalcularIndicadorPadre(IndicadorModel padre, List<IndicadorDeAreaModel> areas)
     {
         if (areas == null || !areas.Any(a => !string.IsNullOrEmpty(a.MetaReal)))
         {
@@ -227,7 +228,7 @@ public static class EvaluacionHelper
             padre.MetaReal = null;
             padre.IsMetaRealPorcentaje = false;
             padre.Evaluacion = Evaluacion.NoEvaluado;
-            return Result.Result.Success();
+            return AppResult.Success();
         }
 
         decimal realCalculado;
@@ -258,7 +259,7 @@ public static class EvaluacionHelper
         padre.IsMetaRealPorcentaje = padre.IsMetaCumplirPorcentaje;
 
         padre.Evaluacion = EvaluarIndicador(realCalculado, padre.MetaCumplirDecimal);
-        return Result.Result.Success();
+        return AppResult.Success();
     }
     
     public static string GetEvaluacionClass(this Evaluacion evaluacion)

@@ -5,7 +5,7 @@ using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data;
 using WEB.Features.IndicadorDeArea.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.IndicadorDeArea.GetAll;
@@ -22,10 +22,10 @@ public class GetAllIndicadorDeAreaHandler : IRequestHandler<GetAllIndicadorDeAre
     }
 
 
-    public async Task<Result<PagedResult<IndicadorDeAreaDto>>> Handle(GetAllIndicadorDeAreaRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<PagedResult<IndicadorDeAreaDto>>> Handle(GetAllIndicadorDeAreaRequest request, CancellationToken cancellationToken)
     {
         var user = _currentUser.User;
-        if (user == null) return Result<PagedResult<IndicadorDeAreaDto>>.Fail("Usuario no autenticado");
+        if (user == null) return AppResult<PagedResult<IndicadorDeAreaDto>>.Fail("Usuario no autenticado");
 
         var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
         var roles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
@@ -60,6 +60,6 @@ public class GetAllIndicadorDeAreaHandler : IRequestHandler<GetAllIndicadorDeAre
             TotalCount = totalCount
         };
 
-        return Result<PagedResult<IndicadorDeAreaDto>>.Success(pagedResult);
+        return AppResult<PagedResult<IndicadorDeAreaDto>>.Success(pagedResult);
     }
 }

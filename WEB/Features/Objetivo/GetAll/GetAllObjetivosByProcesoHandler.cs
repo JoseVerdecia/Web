@@ -14,7 +14,7 @@ public class GetAllObjetivosByProcesoHandler : IRequestHandler<GetAllObjetivosBy
     public GetAllObjetivosByProcesoHandler(IDbContextFactory<ApplicationDbContext> dbFactory)
         => _dbFactory = dbFactory;
 
-    public async Task<Result<List<ObjetivoDto>>> Handle(
+    public async Task<AppResult<List<ObjetivoDto>>> Handle(
         GetAllObjetivosByProcesoRequest request, 
         CancellationToken ct)
     {
@@ -49,6 +49,6 @@ public class GetAllObjetivosByProcesoHandler : IRequestHandler<GetAllObjetivosBy
             ))
             .ToList();
 
-        return Result<List<ObjetivoDto>>.Success(dtos);
+        return AppResult<List<ObjetivoDto>>.Success(dtos);
     }
 }

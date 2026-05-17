@@ -1,6 +1,6 @@
 ﻿using WEB.Core.Helpers;
 using WEB.Core.Result;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Core.Mediator;
 
@@ -14,7 +14,7 @@ public class ErrorToastBehavior<TRequest, TResponse> : IPipelineBehavior<TReques
         _notificationService = notificationService;
     }
 
-    public async Task<Result<TResponse>> Handle(
+    public async Task<AppResult<TResponse>> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)

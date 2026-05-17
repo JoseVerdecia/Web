@@ -391,7 +391,6 @@ C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\sc
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\scopedcss\Components\Shared\IndicadoresDelProcesoSIGES.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\scopedcss\Components\Shared\IndicadorFormContent.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\scopedcss\Components\Shared\ObjetivoSIGEsTable.razor.rz.scp.css
-C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\scopedcss\Components\Shared\Pages\AdminEvaluacionProcesoPage.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\scopedcss\Components\Shared\Pages\ProcesosSIGES.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\scopedcss\Components\Shared\Pages\ProyectoEstrategicoObjetivos.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\scopedcss\Components\Shared\Pages\ProyectoEstrategicoProcesos.razor.rz.scp.css
@@ -400,5 +399,5 @@ C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\sc
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\scopedcss\Components\Shared\ProcesoSIGEsTable.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\scopedcss\Components\Shared\ResumenObjetivoTable.razor.rz.scp.css
 C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\compressed\1m32czbdtv-{0}-1n5tucwgom-1n5tucwgom.gz
-C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\compressed\tsv9u31vxc-{0}-8fnsoez5na-8fnsoez5na.gz
-C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\compressed\h0xrc00xq5-{0}-wf79yct0vd-wf79yct0vd.gz
+C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\compressed\tsv9u31vxc-{0}-sd5t156vms-sd5t156vms.gz
+C:\Users\Osvaldo el Heraldo\RiderProjects\Web\WEB\obj\Release\net10.0\win-x64\compressed\h0xrc00xq5-{0}-hg2xzw5wqi-hg2xzw5wqi.gz

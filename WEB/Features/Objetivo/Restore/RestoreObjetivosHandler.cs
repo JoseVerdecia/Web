@@ -1,6 +1,6 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Objetivo.Restore;
@@ -14,17 +14,17 @@ public class RestoreObjetivosHandler : IRequestHandler<RestoreObjetivosRequest, 
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<Result<Unit>> Handle(RestoreObjetivosRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<Unit>> Handle(RestoreObjetivosRequest request, CancellationToken cancellationToken)
     {
         if (request.Ids == null || !request.Ids.Any())
-            return Result<Unit>.Fail("Debe seleccionar al menos un objetivo.");
+            return AppResult<Unit>.Fail("Debe seleccionar al menos un objetivo.");
 
         var objetivos = new List<ObjetivoModel>();
         foreach (var id in request.Ids)
         {
             var objetivo = await _unitOfWork.Current.Objetivo.GetIncludingDeleted(a => a.Id == id, cancellationToken);
             if (objetivo == null)
-                return Result<Unit>.Fail($"Objetivo con ID {id} no encontrado.");
+                return AppResult<Unit>.Fail($"Objetivo con ID {id} no encontrado.");
             objetivos.Add(objetivo);
         }
         
@@ -36,6 +36,6 @@ public class RestoreObjetivosHandler : IRequestHandler<RestoreObjetivosRequest, 
         }
 
         await _unitOfWork.Current.SaveAsync();
-        return Result<Unit>.Success(Unit.Value);
+        return AppResult<Unit>.Success(Unit.Value);
     }
 }

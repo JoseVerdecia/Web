@@ -5,7 +5,7 @@ using WEB.Core.Result;
 using WEB.Data.Hub;
 using WEB.Enums;
 using WEB.Features.Notificacion.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Notificacion.Responder;
@@ -26,7 +26,7 @@ public class ResponderSolicitudHandler : IRequestHandler<ResponderSolicitudReque
         _logger = logger;
     }
 
-    public async Task<Result<NotificacionDto>> Handle(ResponderSolicitudRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<NotificacionDto>> Handle(ResponderSolicitudRequest request, CancellationToken cancellationToken)
     {
         
         NotificacionModel? solicitud = await _uow.Current.Notificacion.Get(
@@ -35,19 +35,19 @@ public class ResponderSolicitudHandler : IRequestHandler<ResponderSolicitudReque
             "Remitente,IndicadorDeArea,IndicadorDeArea.Indicador,IndicadorDeArea.Area");
 
         if (solicitud == null)
-            return Result<NotificacionDto>.NotFound("Solicitud no encontrada");
+            return AppResult<NotificacionDto>.NotFound("Solicitud no encontrada");
         
         if (solicitud.Tipo != TipoNotificacion.SolicitudCambioMeta)
-            return Result<NotificacionDto>.Fail("La notificación no es una solicitud de cambio de meta");
+            return AppResult<NotificacionDto>.Fail("La notificación no es una solicitud de cambio de meta");
 
         if (solicitud.Estado != EstadoNotificacion.Pendiente)
-            return Result<NotificacionDto>.Fail("La solicitud ya fue respondida");
+            return AppResult<NotificacionDto>.Fail("La solicitud ya fue respondida");
 
         if (solicitud.DestinatarioId != request.RespondeId)
-            return Result<NotificacionDto>.Fail("No tienes permiso para responder esta solicitud");
+            return AppResult<NotificacionDto>.Fail("No tienes permiso para responder esta solicitud");
 
         if (solicitud.IndicadorDeAreaId == null)
-            return Result<NotificacionDto>.Fail("La solicitud no tiene un indicador de área asociado");
+            return AppResult<NotificacionDto>.Fail("La solicitud no tiene un indicador de área asociado");
         
         solicitud.Estado = request.Aceptada ? EstadoNotificacion.Aceptada : EstadoNotificacion.Rechazada;
         _uow.Current.Notificacion.Update(solicitud);
@@ -146,6 +146,6 @@ public class ResponderSolicitudHandler : IRequestHandler<ResponderSolicitudReque
 
         _logger.LogInformation("Respuesta a solicitud {SolicitudId}: {Estado}", solicitud.Id, request.Aceptada ? "Aceptada" : "Rechazada");
 
-        return Result<NotificacionDto>.Success(notificacionRespuesta.MapToDto());
+        return AppResult<NotificacionDto>.Success(notificacionRespuesta.MapToDto());
     }
 }

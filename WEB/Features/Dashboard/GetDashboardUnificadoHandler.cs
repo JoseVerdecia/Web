@@ -1,4 +1,4 @@
-﻿﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data;
@@ -21,7 +21,7 @@ public class GetDashboardUnificadoHandler : IRequestHandler<GetDashboardUnificad
         _dbContextFactory = dbContextFactory;
     }
 
-    public async Task<Result<DashboardUnificadoDto>> Handle(GetDashboardUnificadoRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<DashboardUnificadoDto>> Handle(GetDashboardUnificadoRequest request, CancellationToken cancellationToken)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -373,11 +373,11 @@ public class GetDashboardUnificadoHandler : IRequestHandler<GetDashboardUnificad
 
             
 
-            return Result<DashboardUnificadoDto>.Success(dto);
+            return AppResult<DashboardUnificadoDto>.Success(dto);
         }
         catch (Exception ex)
         {
-            return Result<DashboardUnificadoDto>.Fail($"Error al generar el dashboard: {ex.Message}");
+            return AppResult<DashboardUnificadoDto>.Fail($"Error al generar el dashboard: {ex.Message}");
         }
         
     }

@@ -1,4 +1,4 @@
-﻿using WEB.Interfaces;
+﻿using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Core.Services;

@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Area.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Area.Denegar;
@@ -17,24 +17,24 @@ public class DenegarResponsableAreaHandler:IRequestHandler<DenegarResponsableAre
         _roleService = roleService;
     }
 
-    public async Task<Result<AreaDto>> Handle(DenegarResponsableAreaRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<AreaDto>> Handle(DenegarResponsableAreaRequest request, CancellationToken cancellationToken)
     {
         AreaModel? area = await _uow.Current.Area.Get(a=>a.Id==request.AreaId,cancellationToken);
         if (area is null)
-            return Result<AreaDto>.NotFound("Area no encontrado.");
+            return AppResult<AreaDto>.NotFound("Area no encontrado.");
         
         if(area.JefeAreaId != request.JefeAreaId)
-            return Result<AreaDto>.Fail("El usuario no es el responsable de esta área.");
+            return AppResult<AreaDto>.Fail("El usuario no es el responsable de esta área.");
         
-        var roleResult = await _roleService.ResetToDefaultRoleAsync(request.JefeAreaId);
-        if (roleResult.IsFailure)
-            return Result<AreaDto>.Fail(roleResult.Errors);
+        var roleAppResult = await _roleService.ResetToDefaultRoleAsync(request.JefeAreaId);
+        if (roleAppResult.IsFailure)
+            return AppResult<AreaDto>.Fail(roleAppResult.Errors);
        
         area.JefeAreaId = null; 
         _uow.Current.Area.Update(area);
         await _uow.Current.SaveAsync();
         
 
-        return Result<AreaDto>.Success(area.MapToDto());
+        return AppResult<AreaDto>.Success(area.MapToDto());
     }
 }

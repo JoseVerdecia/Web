@@ -2,7 +2,7 @@
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Indicador.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Indicador.GetAll;
 
@@ -16,7 +16,7 @@ public class GetAllIndicadoresSoftDeleteHandler:IRequestHandler<GetAllIndicadore
     }
 
 
-    public async Task<Result<PagedResult<IndicadorDto>>> Handle(GetAllIndicadoresSoftDeleteRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<PagedResult<IndicadorDto>>> Handle(GetAllIndicadoresSoftDeleteRequest request, CancellationToken cancellationToken)
     {
         
         var (items, totalCount) = await _uow.Current.Indicador.GetPagedIncludingDeletedAsync(
@@ -35,6 +35,6 @@ public class GetAllIndicadoresSoftDeleteHandler:IRequestHandler<GetAllIndicadore
             TotalCount = totalCount
         };
 
-        return Result<PagedResult<IndicadorDto>>.Success(pagedResult);
+        return AppResult<PagedResult<IndicadorDto>>.Success(pagedResult);
     }
 }

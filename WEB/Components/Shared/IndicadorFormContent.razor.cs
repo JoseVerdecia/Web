@@ -372,7 +372,7 @@ public partial class IndicadorFormContent : ComponentBase
             return false;
         }
     
-        private void LogError(Result result) =>
+        private void LogError(AppResult result) =>
             _notificacion.ShowError(string.Join(", ", result.Errors.Select(e => e.Message)));
     
         private void AddAreaMeta()
@@ -451,17 +451,17 @@ public partial class IndicadorFormContent : ComponentBase
             await wizard.GoToStepAsync(currentStep + 1);
         }
     
-        private Result<Unit> ValidateStep1()
+        private AppResult<Unit> ValidateStep1()
         {
             var errors = new List<ErrorDetail>();
             if (string.IsNullOrWhiteSpace(nombre)) errors.Add(new ErrorDetail { Message = "Nombre requerido." });
             if (procesoId <= 0) errors.Add(new ErrorDetail { Message = "Seleccione un proceso." });
             if (!MetaHelper.TryParsearMeta(metaCumplir, out _, out _))
                 errors.Add(new ErrorDetail { Message = "Meta a cumplir no válida." });
-            return errors.Any() ? Result<Unit>.Fail(errors) : Result<Unit>.Success(Unit.Value);
+            return errors.Any() ? AppResult<Unit>.Fail(errors) : AppResult<Unit>.Success(Unit.Value);
         }
     
-        private Result<Unit> ValidateStep3()
+        private AppResult<Unit> ValidateStep3()
         {
             var errors = new List<ErrorDetail>();
     
@@ -507,7 +507,7 @@ public partial class IndicadorFormContent : ComponentBase
                     errors.Add(new ErrorDetail { Message = $"Meta inválida para el área manual '{areaName}': {item.Meta}" });
             }
     
-            return errors.Any() ? Result<Unit>.Fail(errors) : Result<Unit>.Success(Unit.Value);
+            return errors.Any() ? AppResult<Unit>.Fail(errors) : AppResult<Unit>.Success(Unit.Value);
         }
     
         private async Task Cancel()

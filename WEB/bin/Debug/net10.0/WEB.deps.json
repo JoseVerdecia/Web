@@ -13,9 +13,6 @@
           "FluentValidation": "12.1.1",
           "FluentValidation.DependencyInjectionExtensions": "12.1.1",
           "Hangfire.AspNetCore": "1.8.23",
-          "Hangfire.Dashboard.Authorization": "3.1.0",
-          "Hangfire.MySqlStorage": "2.0.3",
-          "Hangfire.PostgreSql": "1.21.1",
           "Hangfire.SqlServer": "1.8.23",
           "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore": "10.0.0",
           "Microsoft.AspNetCore.Identity.EntityFrameworkCore": "10.0.0",
@@ -29,7 +26,6 @@
           "MySql.EntityFrameworkCore": "10.0.1",
           "Npgsql.EntityFrameworkCore.PostgreSQL": "10.0.1",
           "PdfPig": "0.1.14",
-          "Pomelo.EntityFrameworkCore.MySql": "9.0.0",
           "PuppeteerSharp": "24.40.0",
           "QuestPDF": "2026.2.4",
           "System.Drawing.Common": "10.0.7",
@@ -113,22 +109,6 @@
           "lib/net8.0/CsvHelper.dll": {
             "assemblyVersion": "33.0.0.0",
             "fileVersion": "33.0.1.24"
-          }
-        }
-      },
-      "Dapper/2.0.123": {
-        "runtime": {
-          "lib/net5.0/Dapper.dll": {
-            "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.0.123.33578"
-          }
-        }
-      },
-      "Dapper.AOT/1.0.48": {
-        "runtime": {
-          "lib/net8.0/Dapper.AOT.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.48.20364"
           }
         }
       },
@@ -255,32 +235,6 @@
           }
         }
       },
-      "Hangfire.Dashboard.Authorization/3.1.0": {
-        "dependencies": {
-          "Hangfire.Core": "1.8.23",
-          "Owin": "1.0.0"
-        },
-        "runtime": {
-          "lib/net45/Hangfire.Dashboard.Authorization.dll": {
-            "assemblyVersion": "3.1.0.0",
-            "fileVersion": "3.1.0.0"
-          }
-        }
-      },
-      "Hangfire.MySqlStorage/2.0.3": {
-        "dependencies": {
-          "Dapper": "2.0.123",
-          "Hangfire.Core": "1.8.23",
-          "MySqlConnector": "2.4.0",
-          "Newtonsoft.Json": "13.0.3"
-        },
-        "runtime": {
-          "lib/netstandard2.0/Hangfire.MySql.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
       "Hangfire.NetCore/1.8.23": {
         "dependencies": {
           "Hangfire.Core": "1.8.23"
@@ -289,20 +243,6 @@
           "lib/netstandard2.1/Hangfire.NetCore.dll": {
             "assemblyVersion": "1.8.23.0",
             "fileVersion": "1.8.23.0"
-          }
-        }
-      },
-      "Hangfire.PostgreSql/1.21.1": {
-        "dependencies": {
-          "Dapper": "2.0.123",
-          "Dapper.AOT": "1.0.48",
-          "Hangfire.Core": "1.8.23",
-          "Npgsql": "10.0.2"
-        },
-        "runtime": {
-          "lib/netstandard2.0/Hangfire.PostgreSql.dll": {
-            "assemblyVersion": "1.21.1.0",
-            "fileVersion": "1.21.1.0"
           }
         }
       },
@@ -1319,14 +1259,6 @@
           }
         }
       },
-      "MySqlConnector/2.4.0": {
-        "runtime": {
-          "lib/net9.0/MySqlConnector.dll": {
-            "assemblyVersion": "2.0.0.0",
-            "fileVersion": "2.4.0.0"
-          }
-        }
-      },
       "Newtonsoft.Json/13.0.3": {
         "runtime": {
           "lib/net6.0/Newtonsoft.Json.dll": {
@@ -1359,14 +1291,6 @@
           }
         }
       },
-      "Owin/1.0.0": {
-        "runtime": {
-          "lib/net40/Owin.dll": {
-            "assemblyVersion": "1.0.0.0",
-            "fileVersion": "1.0.0.0"
-          }
-        }
-      },
       "PdfPig/0.1.14": {
         "runtime": {
           "lib/net8.0/UglyToad.PdfPig.Core.dll": {
@@ -1396,18 +1320,6 @@
           "lib/net8.0/UglyToad.PdfPig.dll": {
             "assemblyVersion": "0.1.14.0",
             "fileVersion": "0.1.14.0"
-          }
-        }
-      },
-      "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
-        "dependencies": {
-          "Microsoft.EntityFrameworkCore.Relational": "10.0.5",
-          "MySqlConnector": "2.4.0"
-        },
-        "runtime": {
-          "lib/net8.0/Pomelo.EntityFrameworkCore.MySql.dll": {
-            "assemblyVersion": "9.0.0.0",
-            "fileVersion": "9.0.0.0"
           }
         }
       },
@@ -1828,20 +1740,6 @@
       "path": "csvhelper/33.0.1",
       "hashPath": "csvhelper.33.0.1.nupkg.sha512"
     },
-    "Dapper/2.0.123": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-RDFF4rBLLmbpi6pwkY7q/M6UXHRJEOerplDGE5jwEkP/JGJnBauAClYavNKJPW1yOTWRPIyfj4is3EaJxQXILQ==",
-      "path": "dapper/2.0.123",
-      "hashPath": "dapper.2.0.123.nupkg.sha512"
-    },
-    "Dapper.AOT/1.0.48": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-rsLM3yKr4g+YKKox9lhc8D+kz67P7Q9+xdyn1LmCsoYr1kYpJSm+Nt6slo5UrfUrcTiGJ57zUlyO8XUdV7G7iA==",
-      "path": "dapper.aot/1.0.48",
-      "hashPath": "dapper.aot.1.0.48.nupkg.sha512"
-    },
     "DocumentFormat.OpenXml/3.1.1": {
       "type": "package",
       "serviceable": true,
@@ -1898,33 +1796,12 @@
       "path": "hangfire.core/1.8.23",
       "hashPath": "hangfire.core.1.8.23.nupkg.sha512"
     },
-    "Hangfire.Dashboard.Authorization/3.1.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-WSCTw2szdv01arMPRcrzoL56MvooA5+miXlH4xNDJayDNO1fQ1LntHIwl1rMXvrYKfrZhQD46NsxkUggyCxfWw==",
-      "path": "hangfire.dashboard.authorization/3.1.0",
-      "hashPath": "hangfire.dashboard.authorization.3.1.0.nupkg.sha512"
-    },
-    "Hangfire.MySqlStorage/2.0.3": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-02hKjRxeEl3UQkfu3tHXZd2qe5FwOErX2j8ezhJooFEzCyrrDhFTuB8sXtJW0Hr+sbAuR6oF4nvAwOp+USU6nw==",
-      "path": "hangfire.mysqlstorage/2.0.3",
-      "hashPath": "hangfire.mysqlstorage.2.0.3.nupkg.sha512"
-    },
     "Hangfire.NetCore/1.8.23": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-SmvUJF/u5MCP666R5Y1V+GntqBc4RCWJqn5ztMMN67d53Cx5cuaWR0YNLMrabjylwLarFYJ7EdR9RnGEZzp/dg==",
       "path": "hangfire.netcore/1.8.23",
       "hashPath": "hangfire.netcore.1.8.23.nupkg.sha512"
-    },
-    "Hangfire.PostgreSql/1.21.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-hFNZAxv+1p72/XCZdImnH6ovCzZ2DKAMTOI8CReT0P3yw/k0b0YJP2teA18agNH1ZYInPzhtxGk8hx5n2cxbbQ==",
-      "path": "hangfire.postgresql/1.21.1",
-      "hashPath": "hangfire.postgresql.1.21.1.nupkg.sha512"
     },
     "Hangfire.SqlServer/1.8.23": {
       "type": "package",
@@ -2346,13 +2223,6 @@
       "path": "mysql.entityframeworkcore/10.0.1",
       "hashPath": "mysql.entityframeworkcore.10.0.1.nupkg.sha512"
     },
-    "MySqlConnector/2.4.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-78M+gVOjbdZEDIyXQqcA7EYlCGS3tpbUELHvn6638A2w0pkPI625ixnzsa5staAd3N9/xFmPJtkKDYwsXpFi/w==",
-      "path": "mysqlconnector/2.4.0",
-      "hashPath": "mysqlconnector.2.4.0.nupkg.sha512"
-    },
     "Newtonsoft.Json/13.0.3": {
       "type": "package",
       "serviceable": true,
@@ -2374,26 +2244,12 @@
       "path": "npgsql.entityframeworkcore.postgresql/10.0.1",
       "hashPath": "npgsql.entityframeworkcore.postgresql.10.0.1.nupkg.sha512"
     },
-    "Owin/1.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-OseTFniKmyp76mEzOBwIKGBRS5eMoYNkMKaMXOpxx9jv88+b6mh1rSaw43vjBOItNhaLFG3d0a20PfHyibH5sw==",
-      "path": "owin/1.0.0",
-      "hashPath": "owin.1.0.0.nupkg.sha512"
-    },
     "PdfPig/0.1.14": {
       "type": "package",
       "serviceable": true,
       "sha512": "sha512-V2Anq0Yvyn3bGGG8WCQxqEAshG0KHIehB0QOotCz14vTkEk1PR3ErPOSmbnEsyOewhdF3G5XpQHywK2L50Xu+A==",
       "path": "pdfpig/0.1.14",
       "hashPath": "pdfpig.0.1.14.nupkg.sha512"
-    },
-    "Pomelo.EntityFrameworkCore.MySql/9.0.0": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-cl7S4s6CbJno0LjNxrBHNc2xxmCliR5i40ATPZk/eTywVaAbHCbdc9vbGc3QThvwGjHqrDHT8vY9m1VF/47o0g==",
-      "path": "pomelo.entityframeworkcore.mysql/9.0.0",
-      "hashPath": "pomelo.entityframeworkcore.mysql.9.0.0.nupkg.sha512"
     },
     "PuppeteerSharp/24.40.0": {
       "type": "package",

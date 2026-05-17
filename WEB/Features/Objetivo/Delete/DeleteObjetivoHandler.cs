@@ -1,6 +1,6 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Objetivo.Delete;
@@ -17,12 +17,12 @@ public class DeleteObjetivoHandler : IRequestHandler<DeleteObjetivoRequest, Unit
        // _cacheStore = cacheStore;
     }
 
-    public async Task<Result<Unit>> Handle(DeleteObjetivoRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<Unit>> Handle(DeleteObjetivoRequest request, CancellationToken cancellationToken)
     {
         ObjetivoModel? objetivo = await _uow.Current.Objetivo.GetIncludingDeleted(a => a.Id == request.Id,cancellationToken,includeProperties:"Indicadores");
         
         if (objetivo == null) 
-            return Result<Unit>.NotFound("Objetivo no encontrado");
+            return AppResult<Unit>.NotFound("Objetivo no encontrado");
         
         
         if (request.Permanent)
@@ -32,13 +32,13 @@ public class DeleteObjetivoHandler : IRequestHandler<DeleteObjetivoRequest, Unit
         else
         {
             if (objetivo.IsDeleted) 
-                return Result<Unit>.Fail("El objetivo ya fue eliminado anteriormente.");
+                return AppResult<Unit>.Fail("El objetivo ya fue eliminado anteriormente.");
 
             await _deleteCascadeService.SoftDeleteObjetivo(objetivo);
         }
 
         await _uow.Current.SaveAsync();
         //await _cacheStore.InvalidateSoftDeleteCache(CacheTags.ObjetivoSoftDelete,CacheTags.AllObjetivosSoftDelete);
-        return Result<Unit>.Success(Unit.Value);
+        return AppResult<Unit>.Success(Unit.Value);
     }
 }

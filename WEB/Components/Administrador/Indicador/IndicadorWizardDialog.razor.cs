@@ -131,12 +131,12 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
 
         if (isJefeProceso)
         {
-            var procesoResult = await Mediator.Send(new GetProcesoByJefeIdRequest(user.Id));
+            var procesoAppResult = await Mediator.Send(new GetProcesoByJefeIdRequest(user.Id));
             
-            if (procesoResult.IsSuccess && procesoResult.Value is not null)
+            if (procesoAppResult.IsSuccess && procesoAppResult.Value is not null)
             {
-                fixedProcesoId = procesoResult.Value.Id;
-                fixedProcesoNombre = procesoResult.Value.Nombre;
+                fixedProcesoId = procesoAppResult.Value.Id;
+                fixedProcesoNombre = procesoAppResult.Value.Nombre;
                 procesoId = fixedProcesoId.Value;
             }
             else
@@ -146,8 +146,8 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
         }
         else
         {
-            var procesoResult = await Mediator.Send(new GetAllProcesosRequest(Page: 1, PageSize: 50));
-            procesos = procesoResult.Value.Items.ToList();
+            var procesoAppResult = await Mediator.Send(new GetAllProcesosRequest(Page: 1, PageSize: 50));
+            procesos = procesoAppResult.Value.Items.ToList();
             
             if (isJefeProceso && fixedProcesoId.HasValue)
             {
@@ -155,12 +155,12 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
             }
         }
         
-        var areasResult = await Mediator.Send(new GetAllAreasRequest(Page: 1, PageSize: 100));
-        areas = areasResult.Value.Items.ToList();
+        var areasAppResult = await Mediator.Send(new GetAllAreasRequest(Page: 1, PageSize: 100));
+        areas = areasAppResult.Value.Items.ToList();
 
-        Result<PagedResult<ObjetivoDto>> objetivoResult = await Mediator.Send(new GetAllObjetivosRequest(Page: 1, PageSize: 100));
+        AppResult<PagedResult<ObjetivoDto>> objetivoAppResult = await Mediator.Send(new GetAllObjetivosRequest(Page: 1, PageSize: 100));
         
-        objetivos = objetivoResult.Value.Items.Select(o => new ObjetivoSeleccionable
+        objetivos = objetivoAppResult.Value.Items.Select(o => new ObjetivoSeleccionable
         {
             Id = o.Id,
             Nombre = o.Nombre,
@@ -314,15 +314,15 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
                     MetaCumplirPorArea : metaCumplirPorArea
                 );
 
-                var result = await Mediator.Send(request);
+                var AppResult = await Mediator.Send(request);
 
-                if (result.IsSuccess  && result.Value != null)
+                if (AppResult.IsSuccess  && AppResult.Value != null)
                 {
-                    await Dialog.CloseAsync(result.Value);
+                    await Dialog.CloseAsync(AppResult.Value);
                 }
                 else
                 {
-                    ErrorNotification.ErrorToast(result, _notificacion);
+                    ErrorNotification.ErrorToast(AppResult, _notificacion);
                 }
             }
             else if (Content is UpdateIndicadorRequest updateReq)
@@ -342,11 +342,11 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
                     MetaCumplirPorArea : metaCumplirPorArea
                 );
 
-                var result = await Mediator.Send(request);
+                var AppResult = await Mediator.Send(request);
 
-                if (result.IsSuccess)
+                if (AppResult.IsSuccess)
                 {
-                    await Dialog.CloseAsync(result.Value);
+                    await Dialog.CloseAsync(AppResult.Value);
                 }
             }
         }
@@ -385,10 +385,10 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
     {
         if (currentStep == 0)
         {
-            var validationResult = ValidateStep1();
-            if (validationResult.IsFailure)
+            var validationAppResult = ValidateStep1();
+            if (validationAppResult.IsFailure)
             {
-                ErrorNotification.ErrorToast(validationResult, _notificacion);
+                ErrorNotification.ErrorToast(validationAppResult, _notificacion);
                 return;
             }
         }
@@ -402,10 +402,10 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
         }
         else if (currentStep == 2) 
         {
-            var validationResult = ValidateStep3();
-            if (validationResult.IsFailure)
+            var validationAppResult = ValidateStep3();
+            if (validationAppResult.IsFailure)
             {
-                ErrorNotification.ErrorToast(validationResult, _notificacion);
+                ErrorNotification.ErrorToast(validationAppResult, _notificacion);
                 return;
             }
         }
@@ -417,7 +417,7 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
         !string.IsNullOrWhiteSpace(metaCumplir) &&
         MetaHelper.TryParsearMeta(metaCumplir, out _, out _);
     
-    private Result<Unit> ValidateStep1()
+    private AppResult<Unit> ValidateStep1()
     {
         var errors = new List<ErrorDetail>();
 
@@ -430,15 +430,15 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
         if (!IsMetaCumplirValid)
             errors.Add(new ErrorDetail { Message = "La meta a cumplir no tiene un formato válido (ej: 90, 90.5%)." });
         
-        return errors.Any() ? Result<Unit>.Fail(errors) : Result<Unit>.Success(Unit.Value);
+        return errors.Any() ? AppResult<Unit>.Fail(errors) : AppResult<Unit>.Success(Unit.Value);
     }
     
-    private Result<Unit> ValidateStep3()
+    private AppResult<Unit> ValidateStep3()
     {
         var errors = new List<ErrorDetail>();
 
         if (!metasPorAreaList.Any())
-            return Result<Unit>.Success(Unit.Value);
+            return AppResult<Unit>.Success(Unit.Value);
 
         foreach (var item in metasPorAreaList)
         {
@@ -461,6 +461,6 @@ public partial class IndicadorWizardDialog : ComponentBase, IDialogContentCompon
             }
         }
 
-        return errors.Any() ? Result<Unit>.Fail(errors) : Result<Unit>.Success(Unit.Value);
+        return errors.Any() ? AppResult<Unit>.Fail(errors) : AppResult<Unit>.Success(Unit.Value);
     }
 }

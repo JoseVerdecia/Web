@@ -1,5 +1,5 @@
 ﻿using WEB.Enums;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Models;
 

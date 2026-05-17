@@ -1,7 +1,7 @@
 ﻿    using System.ComponentModel.DataAnnotations;
     using WEB.Data;
     using WEB.Enums;
-    using WEB.Interfaces;
+    using WEB.Core.Interfaces;
 
     namespace WEB.Models;
 

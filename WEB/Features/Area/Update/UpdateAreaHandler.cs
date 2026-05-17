@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Area.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Area.Update;
 
@@ -14,12 +14,12 @@ public class UpdateAreaHandler : IRequestHandler<UpdateAreaCommand, AreaDto>
         _uow = uow;
     }
 
-    public async Task<Result<AreaDto>> Handle(UpdateAreaCommand command, CancellationToken cancellationToken)
+    public async Task<AppResult<AreaDto>> Handle(UpdateAreaCommand command, CancellationToken cancellationToken)
     {
         var area = await _uow.Current.Area.Get(a => a.Id == command.Id,cancellationToken);
 
         if (area == null)
-            return Result<AreaDto>.NotFound("Área no encontrada");
+            return AppResult<AreaDto>.NotFound("Área no encontrada");
 
         area.Nombre = command.Nombre;
         area.Tipo = command.Tipo;
@@ -28,6 +28,6 @@ public class UpdateAreaHandler : IRequestHandler<UpdateAreaCommand, AreaDto>
         await _uow.Current.SaveAsync();
 
 
-        return Result<AreaDto>.Success(area.MapToDto());
+        return AppResult<AreaDto>.Success(area.MapToDto());
     }
 }

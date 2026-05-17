@@ -2,7 +2,7 @@
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Area.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Area.GetAll;
 
@@ -15,7 +15,7 @@ public class GetAllAreasSoftDeletedHandler:IRequestHandler<GetAllAreasSoftDelete
         _uow = uow;
     }
 
-    public async Task<Result<PagedResult<AreaDto>>> Handle(GetAllAreasSoftDeletedRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<PagedResult<AreaDto>>> Handle(GetAllAreasSoftDeletedRequest request, CancellationToken cancellationToken)
     {
         var (items, totalCount) = await _uow.Current.Area.GetPagedIncludingDeletedAsync(
             request.Page,
@@ -33,6 +33,6 @@ public class GetAllAreasSoftDeletedHandler:IRequestHandler<GetAllAreasSoftDelete
             TotalCount = totalCount
         };
 
-        return Result<PagedResult<AreaDto>>.Success(pagedResult);
+        return AppResult<PagedResult<AreaDto>>.Success(pagedResult);
     }
 }

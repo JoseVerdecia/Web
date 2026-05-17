@@ -2,7 +2,7 @@
 using WEB.Core.Result;
 using WEB.Data;
 using WEB.Features.Proceso.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Proceso.Assign;
@@ -20,26 +20,26 @@ public class AsignarResponsableProcesoHandler:IRequestHandler<AsignarResponsable
         _roleService = roleService;
     }
 
-    public async Task<Result<ProcesoDto>> Handle(AsignarResponsableProcesoRequest procesoRequest, CancellationToken cancellationToken)
+    public async Task<AppResult<ProcesoDto>> Handle(AsignarResponsableProcesoRequest procesoRequest, CancellationToken cancellationToken)
     {
         ProcesoModel? proceso = await _uow.Current.Proceso.Get(p => p.Id == procesoRequest.ProcesoId,cancellationToken);
         
         if (proceso is null)
-            return Result<ProcesoDto>.NotFound("Este proceso no existe");
+            return AppResult<ProcesoDto>.NotFound("Este proceso no existe");
         
         if (proceso.JefeProcesoId is not null)
-            return Result<ProcesoDto>.Fail("Este proceso ya tiene un responsable");
+            return AppResult<ProcesoDto>.Fail("Este proceso ya tiene un responsable");
         
-        Result<ApplicationUser> userResult = await _userService.EnsureUserIsAvailableForResponsibilityAsync(procesoRequest.UsuarioId,cancellationToken);
-        if (userResult.IsFailure) return Result<ProcesoDto>.Fail(userResult.Errors);
+        AppResult<ApplicationUser> userAppResult = await _userService.EnsureUserIsAvailableForResponsibilityAsync(procesoRequest.UsuarioId,cancellationToken);
+        if (userAppResult.IsFailure) return AppResult<ProcesoDto>.Fail(userAppResult.Errors);
 
-        Result roleResult = await _roleService.UpgradeToJefeProcesoAsync(procesoRequest.UsuarioId);
-        if (roleResult.IsFailure)
-            return Result<ProcesoDto>.Fail(roleResult.Errors);
+        AppResult roleAppResult = await _roleService.UpgradeToJefeProcesoAsync(procesoRequest.UsuarioId);
+        if (roleAppResult.IsFailure)
+            return AppResult<ProcesoDto>.Fail(roleAppResult.Errors);
         
         proceso.JefeProcesoId = procesoRequest.UsuarioId;
         _uow.Current.Proceso.Update(proceso);
         await _uow.Current.SaveAsync();
-        return Result<ProcesoDto>.Success(proceso.MapToDto());
+        return AppResult<ProcesoDto>.Success(proceso.MapToDto());
     }
 }

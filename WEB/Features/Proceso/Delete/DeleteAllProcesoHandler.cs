@@ -1,6 +1,6 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Proceso.Delete;
 
@@ -17,7 +17,7 @@ public class DeleteAllProcesoHandler:IRequestHandler<DeleteAllProcesoRequest,Uni
         _deleteService = deleteService;
     }
 
-    public async Task<Result<Unit>> Handle(DeleteAllProcesoRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<Unit>> Handle(DeleteAllProcesoRequest request, CancellationToken cancellationToken)
     {
         var procesos = await _uow.Current.Proceso.GetAllIncludingDeleted(cancellationToken);
 
@@ -26,7 +26,7 @@ public class DeleteAllProcesoHandler:IRequestHandler<DeleteAllProcesoRequest,Uni
             .ToList();
 
         if (!lista.Any())
-            return Result<Unit>.Fail("No hay procesos para eliminar");
+            return AppResult<Unit>.Fail("No hay procesos para eliminar");
 
         if (request.Permanent)
             _uow.Current.Proceso.DeleteRange(lista);
@@ -40,6 +40,6 @@ public class DeleteAllProcesoHandler:IRequestHandler<DeleteAllProcesoRequest,Uni
 
         await _uow.Current.SaveAsync();
 
-        return Result<Unit>.Success(Unit.Value);
+        return AppResult<Unit>.Success(Unit.Value);
     }
 }

@@ -3,7 +3,7 @@ using WEB.Common;
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Indicador.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Indicador.GetAll;
@@ -18,7 +18,7 @@ public class GetSoftDeletedIndicadoresByJefeProcesoHandler
         _uow = uow;
     }
 
-    public async Task<Result<PagedResult<IndicadorDto>>> Handle(
+    public async Task<AppResult<PagedResult<IndicadorDto>>> Handle(
         GetSoftDeletedIndicadoresByJefeProcesoRequest request, 
         CancellationToken cancellationToken)
     {
@@ -43,6 +43,6 @@ public class GetSoftDeletedIndicadoresByJefeProcesoHandler
             TotalCount = totalCount
         };
 
-        return Result<PagedResult<IndicadorDto>>.Success(pagedResult);
+        return AppResult<PagedResult<IndicadorDto>>.Success(pagedResult);
     }
 }

@@ -11,7 +11,7 @@ public class Mediator : IMediator
         _serviceProvider = serviceProvider;
     }
 
-    public async Task<Result<TResponse>> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
+    public async Task<AppResult<TResponse>> Send<TResponse>(IRequest<TResponse> request, CancellationToken cancellationToken = default)
     {
         
         var requestType = request.GetType();
@@ -34,7 +34,7 @@ public class Mediator : IMediator
             var handler = _serviceProvider.GetRequiredService(handlerType);
             var method = handlerType.GetMethod(nameof(IRequestHandler<IRequest<TResponse>, TResponse>.Handle))!;
 
-            return await (Task<Result<TResponse>>)method.Invoke(
+            return await (Task<AppResult<TResponse>>)method.Invoke(
                 handler,
                 new object[] { request, cancellationToken })!;
         };

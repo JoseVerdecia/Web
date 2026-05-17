@@ -2,7 +2,7 @@
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.IndicadorDeArea.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.IndicadorDeArea.Update;
 
@@ -15,11 +15,11 @@ public class UpdateEvaluacionIndicadorDeAreaHandler : IRequestHandler<UpdateEval
         _uow = uow;
     }
 
-    public async Task<Result<IndicadorDeAreaDto>> Handle(UpdateEvaluacionIndicadorDeAreaRequest request, CancellationToken ct)
+    public async Task<AppResult<IndicadorDeAreaDto>> Handle(UpdateEvaluacionIndicadorDeAreaRequest request, CancellationToken ct)
     {
         var area = await _uow.Current.IndicadorDeArea
             .Get(ia => ia.Id == request.Id, includeProperties: "Indicador,Area");
-        if (area == null) return Result<IndicadorDeAreaDto>.NotFound("Indicador de área no encontrado.");
+        if (area == null) return AppResult<IndicadorDeAreaDto>.NotFound("Indicador de área no encontrado.");
 
         if (request.NuevaEvaluacion.HasValue)
             area.Evaluacion = request.NuevaEvaluacion.Value;
@@ -35,10 +35,10 @@ public class UpdateEvaluacionIndicadorDeAreaHandler : IRequestHandler<UpdateEval
                 .GetAllBy(ia => ia.IndicadorId == area.IndicadorId);
             var recalculo = EvaluacionHelper.RecalcularIndicadorPadre(area.Indicador, todas.ToList());
             if (recalculo.IsFailure)
-                return Result<IndicadorDeAreaDto>.Fail(recalculo.Errors);
+                return AppResult<IndicadorDeAreaDto>.Fail(recalculo.Errors);
         }
 
         await _uow.Current.SaveAsync();
-        return Result<IndicadorDeAreaDto>.Success(area.MapToDto());
+        return AppResult<IndicadorDeAreaDto>.Success(area.MapToDto());
     }
 }

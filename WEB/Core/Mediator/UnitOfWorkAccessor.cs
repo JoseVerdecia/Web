@@ -1,5 +1,5 @@
 ﻿using WEB.Data.IRepository;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Core.Mediator;
 

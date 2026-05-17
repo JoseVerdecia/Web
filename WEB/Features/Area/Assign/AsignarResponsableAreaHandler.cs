@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Area.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Area.Assign;
@@ -19,29 +19,29 @@ public class AsignarResponsableAreaHandler:IRequestHandler<AsignarResponsableAre
         _roleService = roleService;
     }
 
-    public async Task<Result<AreaDto>> Handle(AsignarResponsableAreaRequest areaRequest, CancellationToken cancellationToken)
+    public async Task<AppResult<AreaDto>> Handle(AsignarResponsableAreaRequest areaRequest, CancellationToken cancellationToken)
     {
         AreaModel? area = await _uow.Current.Area.Get(p => p.Id == areaRequest.AreaId,cancellationToken);
         
         if (area is null)
-            return Result<AreaDto>.NotFound("Este area no existe");
+            return AppResult<AreaDto>.NotFound("Este area no existe");
         
         if(area.JefeAreaId is not null)
-            return Result<AreaDto>.Fail("Esta área ya tiene un responsable");
+            return AppResult<AreaDto>.Fail("Esta área ya tiene un responsable");
         
-        var userResult = await _userService.EnsureUserIsAvailableForResponsibilityAsync(areaRequest.UsuarioId,cancellationToken);
-        if (userResult.IsFailure) return Result<AreaDto>.Fail(userResult.Errors);
+        var userAppResult = await _userService.EnsureUserIsAvailableForResponsibilityAsync(areaRequest.UsuarioId,cancellationToken);
+        if (userAppResult.IsFailure) return AppResult<AreaDto>.Fail(userAppResult.Errors);
         
 
-        var roleResult = await _roleService.UpgradeToJefeAreaAsync(areaRequest.UsuarioId);
+        var roleAppResult = await _roleService.UpgradeToJefeAreaAsync(areaRequest.UsuarioId);
         
-        if (roleResult.IsFailure)
-            return Result<AreaDto>.Fail(roleResult.Errors);
+        if (roleAppResult.IsFailure)
+            return AppResult<AreaDto>.Fail(roleAppResult.Errors);
         
         area.JefeAreaId = areaRequest.UsuarioId;
         _uow.Current.Area.Update(area);
         await _uow.Current.SaveAsync();
         
-        return Result<AreaDto>.Success(area.MapToDto());
+        return AppResult<AreaDto>.Success(area.MapToDto());
     }
 }

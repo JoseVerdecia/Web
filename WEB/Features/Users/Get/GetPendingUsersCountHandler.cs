@@ -13,7 +13,7 @@ public class GetPendingUsersCountHandler : IRequestHandler<GetPendingUsersCountR
     public GetPendingUsersCountHandler(IDbContextFactory<ApplicationDbContext> contextFactory)
         => _contextFactory = contextFactory;
 
-    public async Task<Result<PendingCountDto>> Handle(GetPendingUsersCountRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<PendingCountDto>> Handle(GetPendingUsersCountRequest request, CancellationToken cancellationToken)
     {
         await using var context = await _contextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -25,11 +25,11 @@ public class GetPendingUsersCountHandler : IRequestHandler<GetPendingUsersCountR
             .FirstOrDefaultAsync(cancellationToken);
         
         if (normalRole == null)
-            return Result<PendingCountDto>.Success(new PendingCountDto { Count = 0 });
+            return AppResult<PendingCountDto>.Success(new PendingCountDto { Count = 0 });
         
         var count = await context.UserRoles
             .CountAsync(ur => ur.RoleId == normalRole, cancellationToken);
 
-        return Result<PendingCountDto>.Success(new PendingCountDto { Count = count });
+        return AppResult<PendingCountDto>.Success(new PendingCountDto { Count = count });
     }
 }

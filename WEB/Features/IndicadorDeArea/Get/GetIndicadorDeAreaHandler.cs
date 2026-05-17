@@ -3,7 +3,7 @@ using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data;
 using WEB.Features.IndicadorDeArea.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.IndicadorDeArea.Get;
@@ -19,11 +19,11 @@ public class GetIndicadorDeAreaHandler:IRequestHandler<GetIndicadorDeAreaRequest
         _currentUser = currentUser;
     }
 
-    public async Task<Result<IndicadorDeAreaDto>> Handle(GetIndicadorDeAreaRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<IndicadorDeAreaDto>> Handle(GetIndicadorDeAreaRequest request, CancellationToken cancellationToken)
     {
 
         ClaimsPrincipal? user = _currentUser.User;
-        if (user == null) return Result<IndicadorDeAreaDto>.Fail("Usuario no autenticado");
+        if (user == null) return AppResult<IndicadorDeAreaDto>.Fail("Usuario no autenticado");
 
         var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
         var roles = user.Claims.Where(c => c.Type == ClaimTypes.Role).Select(c => c.Value).ToList();
@@ -34,33 +34,33 @@ public class GetIndicadorDeAreaHandler:IRequestHandler<GetIndicadorDeAreaRequest
         );
 
         if (indicadorDeArea == null)
-            return Result<IndicadorDeAreaDto>.NotFound("Indicador de Área no encontrado");
+            return AppResult<IndicadorDeAreaDto>.NotFound("Indicador de Área no encontrado");
 
         bool isAdmin = roles.Contains(AppRoles.Administrador);
 
         if (isAdmin)
         {
-            return Result<IndicadorDeAreaDto>.Success(indicadorDeArea.MapToDto());
+            return AppResult<IndicadorDeAreaDto>.Success(indicadorDeArea.MapToDto());
         }
 
         if (roles.Contains(AppRoles.JefeProceso))
         {
             if (indicadorDeArea.Indicador?.Proceso?.JefeProcesoId == userId)
             {
-                return Result<IndicadorDeAreaDto>.Success(indicadorDeArea.MapToDto());
+                return AppResult<IndicadorDeAreaDto>.Success(indicadorDeArea.MapToDto());
             }
-            return Result<IndicadorDeAreaDto>.NotFound("Indicador de Área no encontrado");
+            return AppResult<IndicadorDeAreaDto>.NotFound("Indicador de Área no encontrado");
         }
         
         if (roles.Contains(AppRoles.JefeArea))
         {
             if (indicadorDeArea.Area?.JefeAreaId == userId)
             {
-                return Result<IndicadorDeAreaDto>.Success(indicadorDeArea.MapToDto());
+                return AppResult<IndicadorDeAreaDto>.Success(indicadorDeArea.MapToDto());
             }
-            return Result<IndicadorDeAreaDto>.NotFound("Indicador de Área no encontrado");
+            return AppResult<IndicadorDeAreaDto>.NotFound("Indicador de Área no encontrado");
         }
 
-        return Result<IndicadorDeAreaDto>.Fail("Acceso denegado");
+        return AppResult<IndicadorDeAreaDto>.Fail("Acceso denegado");
     } 
 }

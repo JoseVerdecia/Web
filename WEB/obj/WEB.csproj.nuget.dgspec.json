@@ -69,22 +69,6 @@
               "target": "Package",
               "version": "[1.8.23, )"
             },
-            "Hangfire.Dashboard.Authorization": {
-              "target": "Package",
-              "version": "[3.1.0, )"
-            },
-            "Hangfire.MySqlStorage": {
-              "target": "Package",
-              "version": "[2.0.3, )"
-            },
-            "Hangfire.MySqlStorage.MysqlConnector": {
-              "target": "Package",
-              "version": "[1.0.5.1, )"
-            },
-            "Hangfire.PostgreSql": {
-              "target": "Package",
-              "version": "[1.21.1, )"
-            },
             "Hangfire.SqlServer": {
               "target": "Package",
               "version": "[1.8.23, )"
@@ -108,14 +92,6 @@
               "version": "[10.0.5, )"
             },
             "Microsoft.AspNetCore.SignalR.Client.Core": {
-              "target": "Package",
-              "version": "[10.0.5, )"
-            },
-            "Microsoft.AspNetCore.SignalR.Common": {
-              "target": "Package",
-              "version": "[10.0.5, )"
-            },
-            "Microsoft.AspNetCore.SignalR.Protocols.Json": {
               "target": "Package",
               "version": "[10.0.5, )"
             },
@@ -156,10 +132,6 @@
             "PdfPig": {
               "target": "Package",
               "version": "[0.1.14, )"
-            },
-            "Pomelo.EntityFrameworkCore.MySql": {
-              "target": "Package",
-              "version": "[9.0.0, )"
             },
             "PuppeteerSharp": {
               "target": "Package",

@@ -2,7 +2,7 @@
 using WEB.Core.Result;
 using WEB.Core.Services;
 using WEB.Features.Indicador.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Indicador.Create;
@@ -18,9 +18,9 @@ public class CreateIndicadorHandler : IRequestHandler<CreateIndicadorCommand, In
       
     }
 
-    public async Task<Result<IndicadorDto>> Handle(CreateIndicadorCommand command, CancellationToken cancellationToken)
+    public async Task<AppResult<IndicadorDto>> Handle(CreateIndicadorCommand command, CancellationToken cancellationToken)
     {
-        return await Result<CreateIndicadorCommand>.Success(command)
+        return await AppResult<CreateIndicadorCommand>.Success(command)
             .BindAsync(ValidarProceso)
             .BindAsync(ValidarObjetivos)
             .BindAsync(ValidarAreas)
@@ -42,45 +42,45 @@ public class CreateIndicadorHandler : IRequestHandler<CreateIndicadorCommand, In
             indicador.Objetivos.Add(obj);
         }
     }
-    private async Task<Result<CreateIndicadorCommand>> ValidarProceso(CreateIndicadorCommand command)
+    private async Task<AppResult<CreateIndicadorCommand>> ValidarProceso(CreateIndicadorCommand command)
     {
         if (command.ProcesoId <= 0)
-            return Result<CreateIndicadorCommand>.Fail("El ID del proceso es inválido.");
+            return AppResult<CreateIndicadorCommand>.Fail("El ID del proceso es inválido.");
 
         ProcesoModel? proceso = await _uow.Current.Proceso.Get(p => p.Id == command.ProcesoId);
         return proceso == null
-            ? Result<CreateIndicadorCommand>.NotFound("Proceso no encontrado")
-            : Result<CreateIndicadorCommand>.Success(command);
+            ? AppResult<CreateIndicadorCommand>.NotFound("Proceso no encontrado")
+            : AppResult<CreateIndicadorCommand>.Success(command);
     }
 
-    private async Task<Result<CreateIndicadorCommand>> ValidarObjetivos(CreateIndicadorCommand command)
+    private async Task<AppResult<CreateIndicadorCommand>> ValidarObjetivos(CreateIndicadorCommand command)
     {
         if (command.ObjetivoIds == null || command.ObjetivoIds.Count == 0)
-            return Result<CreateIndicadorCommand>.Fail("Debe proporcionar al menos un objetivo.");
+            return AppResult<CreateIndicadorCommand>.Fail("Debe proporcionar al menos un objetivo.");
 
         IEnumerable<ObjetivoModel> objetivos = 
             await _uow.Current.Objetivo.GetAllByAsNoTracking(o => command.ObjetivoIds.Contains(o.Id));
 
         return objetivos.Count() != command.ObjetivoIds.Count
-            ? Result<CreateIndicadorCommand>.Fail("Uno o más objetivos no existen")
-            : Result<CreateIndicadorCommand>.Success(command);
+            ? AppResult<CreateIndicadorCommand>.Fail("Uno o más objetivos no existen")
+            : AppResult<CreateIndicadorCommand>.Success(command);
     }
 
-    private async Task<Result<CreateIndicadorCommand>> ValidarAreas(CreateIndicadorCommand command)
+    private async Task<AppResult<CreateIndicadorCommand>> ValidarAreas(CreateIndicadorCommand command)
     {
 
         if (command.MetaCumplirPorArea == null || command.MetaCumplirPorArea.Count == 0)
-            return Result<CreateIndicadorCommand>.Success(command);
+            return AppResult<CreateIndicadorCommand>.Success(command);
 
         List<int> areaIds = command.MetaCumplirPorArea.Keys.ToList();
         IEnumerable<AreaModel> areas = await _uow.Current.Area.GetAllBy(a => areaIds.Contains(a.Id));
 
         return areas.Count() != areaIds.Count
-            ? Result<CreateIndicadorCommand>.NotFound("Una o más áreas no existen")
-            : Result<CreateIndicadorCommand>.Success(command);
+            ? AppResult<CreateIndicadorCommand>.NotFound("Una o más áreas no existen")
+            : AppResult<CreateIndicadorCommand>.Success(command);
     }
 
-    private Result<IndicadorModel> CrearIndicador(CreateIndicadorCommand command)
+    private AppResult<IndicadorModel> CrearIndicador(CreateIndicadorCommand command)
     {
 
         return IndicadorDomainService.CrearIndicador(
@@ -95,13 +95,13 @@ public class CreateIndicadorHandler : IRequestHandler<CreateIndicadorCommand, In
             objetivoIds: command.ObjetivoIds, 
             metasPorArea: command.MetaCumplirPorArea ?? new Dictionary<int, string>());
     }
-    private async Task<Result<IndicadorModel>> RecargarRelaciones(IndicadorModel indicador)
+    private async Task<AppResult<IndicadorModel>> RecargarRelaciones(IndicadorModel indicador)
     {
         IndicadorModel? indicadorCompleto = await _uow.Current.Indicador.Get(
             i => i.Id == indicador.Id, 
             includeProperties: "Proceso,Objetivos,IndicadoresDeArea.Area"
         );
 
-        return Result<IndicadorModel>.Success(indicadorCompleto!);
+        return AppResult<IndicadorModel>.Success(indicadorCompleto!);
     }
 }

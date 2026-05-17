@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Objetivo.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Objetivo.Create;
@@ -19,9 +19,9 @@ public class CreateObjetivoHandler : IRequestHandler<CreateObjetivoCommand, Obje
         _hubContext = hubContext;*/
     }
 
-    public async Task<Result<ObjetivoDto>> Handle(CreateObjetivoCommand command, CancellationToken cancellationToken)
+    public async Task<AppResult<ObjetivoDto>> Handle(CreateObjetivoCommand command, CancellationToken cancellationToken)
     {
-        return await Result<ObjetivoModel>.Success(new ObjetivoModel
+        return await AppResult<ObjetivoModel>.Success(new ObjetivoModel
             {
                 Nombre = command.Nombre,
                 NumeroObjetivo = command.NumeroObjetivo,

@@ -1,6 +1,6 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Objetivo.Delete;
 
@@ -17,14 +17,14 @@ public class DeleteAllObjetivoHandler:IRequestHandler<DeleteAllObjetivoRequest,U
         _deleteService = deleteService;
     }
     
-    public async Task<Result<Unit>> Handle(DeleteAllObjetivoRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<Unit>> Handle(DeleteAllObjetivoRequest request, CancellationToken cancellationToken)
     {
         var objetivos = await _uow.Current.Objetivo.GetAllIncludingDeleted(cancellationToken);
 
         var lista = objetivos.Where(o => request.Permanent || !o.IsDeleted).ToList();
 
         if (!lista.Any())
-            return Result<Unit>.Fail("No hay objetivos para eliminar");
+            return AppResult<Unit>.Fail("No hay objetivos para eliminar");
 
         foreach (var objetivo in lista)
         {
@@ -36,6 +36,6 @@ public class DeleteAllObjetivoHandler:IRequestHandler<DeleteAllObjetivoRequest,U
 
         await _uow.Current.SaveAsync();
 
-        return Result<Unit>.Success(Unit.Value);
+        return AppResult<Unit>.Success(Unit.Value);
     }
 }

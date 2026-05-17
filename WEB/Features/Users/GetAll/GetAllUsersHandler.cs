@@ -16,7 +16,7 @@ public class GetAllUsersHandler : IRequestHandler<GetAllUsersRequest, PagedResul
         _dbContextFactory = dbContextFactory;
     }
 
-    public async Task<Result<PagedResult<UserDto>>> Handle(GetAllUsersRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<PagedResult<UserDto>>> Handle(GetAllUsersRequest request, CancellationToken cancellationToken)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
@@ -75,7 +75,7 @@ public class GetAllUsersHandler : IRequestHandler<GetAllUsersRequest, PagedResul
             .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
-        return Result<PagedResult<UserDto>>.Success(new PagedResult<UserDto>
+        return AppResult<PagedResult<UserDto>>.Success(new PagedResult<UserDto>
         {
             Items = items,
             Page = request.Page,

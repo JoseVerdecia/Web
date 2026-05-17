@@ -1,11 +1,11 @@
-﻿using WEB.Core.Result;
-using WEB.Interfaces;
+﻿using WEB.Core.Interfaces;
+using WEB.Core.Result;
 
 namespace WEB.Core.Helpers;
 
 public static class ErrorNotification
 {
-    public static void ErrorToast<T>(Result<T> result,INotificationService notificacion)
+    public static void ErrorToast<T>(AppResult<T> result,INotificationService notificacion)
     {
         if (result.Errors.Any())
         {

@@ -1,6 +1,6 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Area.Delete;
 
@@ -17,7 +17,7 @@ public class DeleteAllAreaHandler:IRequestHandler<DeleteAllAreaRequest,Unit>
         _deleteService = deleteService;
     }
 
-    public async Task<Result<Unit>> Handle(DeleteAllAreaRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<Unit>> Handle(DeleteAllAreaRequest request, CancellationToken cancellationToken)
     {
         var areas = await _uow.Current.Area.GetAllIncludingDeleted(cancellationToken);
 
@@ -26,7 +26,7 @@ public class DeleteAllAreaHandler:IRequestHandler<DeleteAllAreaRequest,Unit>
             .ToList();
 
         if (!lista.Any())
-            return Result<Unit>.Fail("No hay áreas para eliminar");
+            return AppResult<Unit>.Fail("No hay áreas para eliminar");
 
         if (request.Permanent)
             _uow.Current.Area.DeleteRange(lista);
@@ -39,6 +39,6 @@ public class DeleteAllAreaHandler:IRequestHandler<DeleteAllAreaRequest,Unit>
         }
         await _uow.Current.SaveAsync();
 
-        return Result<Unit>.Success(Unit.Value);
+        return AppResult<Unit>.Success(Unit.Value);
     }
 }

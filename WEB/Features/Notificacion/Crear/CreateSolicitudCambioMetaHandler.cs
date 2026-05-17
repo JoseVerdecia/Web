@@ -3,7 +3,7 @@ using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Enums;
 using WEB.Features.Notificacion.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Notificacion.Crear;
@@ -24,7 +24,7 @@ public class CrearSolicitudCambioMetaHandler : IRequestHandler<CrearSolicitudCam
         _logger = logger;
     }
 
-    public async Task<Result<NotificacionDto>> Handle(
+    public async Task<AppResult<NotificacionDto>> Handle(
         CrearSolicitudCambioMetaRequest request, 
         CancellationToken cancellationToken)
     {
@@ -35,18 +35,18 @@ public class CrearSolicitudCambioMetaHandler : IRequestHandler<CrearSolicitudCam
             "Area,Indicador,Indicador.Proceso");
 
         if (indicadorDeArea == null)
-            return Result<NotificacionDto>.NotFound("Indicador de área no encontrado");
+            return AppResult<NotificacionDto>.NotFound("Indicador de área no encontrado");
         
         if (indicadorDeArea.Area?.JefeAreaId != request.RemitenteId)
-            return Result<NotificacionDto>.Forbidden("No tienes permiso para modificar este indicador");
+            return AppResult<NotificacionDto>.Forbidden("No tienes permiso para modificar este indicador");
 
        
         if (string.IsNullOrEmpty(indicadorDeArea.Indicador?.Proceso?.JefeProcesoId))
-            return Result<NotificacionDto>.Fail("El indicador no tiene un jefe de proceso asignado");
+            return AppResult<NotificacionDto>.Fail("El indicador no tiene un jefe de proceso asignado");
 
        
         if (!MetaHelper.TryParsearMeta(request.NuevaMetaPropuesta, out var nuevaMetaDecimal, out var isNuevaMetaPorcentaje))
-            return Result<NotificacionDto>.Fail("El formato de la meta propuesta no es válido");
+            return AppResult<NotificacionDto>.Fail("El formato de la meta propuesta no es válido");
         
         var metaAnteriorFormateada = FormatearMetaParaUI(
             indicadorDeArea.MetaCumplirDecimal, 
@@ -80,7 +80,7 @@ public class CrearSolicitudCambioMetaHandler : IRequestHandler<CrearSolicitudCam
             indicadorDeArea.Id, metaAnteriorFormateada, nuevaMetaFormateada);
         _logger.LogInformation("Enviando a grupo: User_{id}", notificacion.DestinatarioId);
         
-        return Result<NotificacionDto>.Success(notificacion.MapToDto());
+        return AppResult<NotificacionDto>.Success(notificacion.MapToDto());
     }
 
     private static string FormatearMetaParaUI(decimal valor, bool esPorcentaje)

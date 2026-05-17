@@ -2,7 +2,7 @@
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Data.Hub;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Notificacion.MarcarLeida;
 
@@ -17,7 +17,7 @@ public class MarcarNotificacionLeidaHandler : IRequestHandler<MarcarNotificacion
         _hubContext = hubContext;
     }
 
-    public async Task<Result<bool>> Handle(MarcarNotificacionLeidaRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<bool>> Handle(MarcarNotificacionLeidaRequest request, CancellationToken cancellationToken)
     {
         await _uow.Current.Notificacion.MarcarComoLeidaAsync(request.NotificacionId, cancellationToken);
         await _uow.Current.SaveAsync();
@@ -27,6 +27,6 @@ public class MarcarNotificacionLeidaHandler : IRequestHandler<MarcarNotificacion
         await _hubContext.Clients.Group($"User_{request.UsuarioId}")
             .SendAsync("NotificacionLeida", count, cancellationToken);
 
-        return Result<bool>.Success(true);
+        return AppResult<bool>.Success(true);
     }
 }

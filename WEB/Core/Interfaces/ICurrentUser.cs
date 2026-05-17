@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using WEB.Data;
 
-namespace WEB.Interfaces;
+namespace WEB.Core.Interfaces;
 
 public interface ICurrentUser
 {

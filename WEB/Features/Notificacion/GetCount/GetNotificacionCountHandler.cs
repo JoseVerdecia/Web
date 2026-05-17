@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Notificacion.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Notificacion.GetCount;
 
@@ -14,7 +14,7 @@ public class GetNotificacionCountHandler : IRequestHandler<GetNotificacionCountR
         _uow = uow;
     }
 
-    public async Task<Result<NotificacionCountDto>> Handle(
+    public async Task<AppResult<NotificacionCountDto>> Handle(
         GetNotificacionCountRequest request, 
         CancellationToken cancellationToken)
     {
@@ -24,7 +24,7 @@ public class GetNotificacionCountHandler : IRequestHandler<GetNotificacionCountR
         var pendientes = await _uow.Current.Notificacion.GetPendientesByUsuarioAsync(
             request.UsuarioId, cancellationToken);
 
-        return Result<NotificacionCountDto>.Success(new NotificacionCountDto
+        return AppResult<NotificacionCountDto>.Success(new NotificacionCountDto
         {
             TotalNoLeidas = totalNoLeidas,
             SolicitudesPendientes = pendientes.Count()

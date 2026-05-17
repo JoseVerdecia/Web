@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Area.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Area.Create;
@@ -16,9 +16,9 @@ public class CreateAreaHandler : IRequestHandler<CreateAreaCommand, AreaDto>
         _uow = uow;
     }
 
-    public async Task<Result<AreaDto>> Handle(CreateAreaCommand command, CancellationToken cancellationToken)
+    public async Task<AppResult<AreaDto>> Handle(CreateAreaCommand command, CancellationToken cancellationToken)
     {
-        return await Result<AreaModel>.Success(new AreaModel 
+        return await AppResult<AreaModel>.Success(new AreaModel 
             { 
                 Nombre = command.Nombre,
                 Tipo = command.Tipo

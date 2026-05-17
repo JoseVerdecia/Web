@@ -4,7 +4,7 @@ using WEB.Core.Result;
 using WEB.Core.Services;
 using WEB.Features.Objetivo;
 using WEB.Features.Objetivo.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Evaluacion.Objetivo;
@@ -13,7 +13,7 @@ public class EvaluateObjetivoHandler(
     IUnitOfWorkAccessor _uow)
     :IRequestHandler<EvaluateObjetivoRequest,ObjetivoDto>
 {
-    public async Task<Result<ObjetivoDto>> Handle(EvaluateObjetivoRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<ObjetivoDto>> Handle(EvaluateObjetivoRequest request, CancellationToken cancellationToken)
     {
         ObjetivoModel? objetivo = await _uow.Current.Objetivo.Get(o => o.Id == request.id,includeProperties:"Indicadores");
         
@@ -27,6 +27,6 @@ public class EvaluateObjetivoHandler(
         objetivo.Evaluacion = evaluacionFinal;
         _uow.Current.Objetivo.Update(objetivo);
         await _uow.Current.SaveAsync();
-        return Result<ObjetivoDto>.Success(objetivo.MapToDto());
+        return AppResult<ObjetivoDto>.Success(objetivo.MapToDto());
     }
 }

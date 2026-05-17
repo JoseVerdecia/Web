@@ -1,6 +1,6 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Proceso.Restore;
@@ -14,17 +14,17 @@ public class RestoreProcesoHandler : IRequestHandler<RestoreProcesoRequest,Unit>
         _uow = uow;
     }
 
-    public async Task<Result<Unit>> Handle(RestoreProcesoRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<Unit>> Handle(RestoreProcesoRequest request, CancellationToken cancellationToken)
     {
         if (request.ProcesoIds == null || !request.ProcesoIds.Any())
-            return Result<Unit>.Fail("No se proporcionaron procesos para restaurar.");
+            return AppResult<Unit>.Fail("No se proporcionaron procesos para restaurar.");
 
         List<ProcesoModel> procesos = new List<ProcesoModel>();
         foreach (var id in request.ProcesoIds)
         {
             var proceso = await _uow.Current.Proceso.GetIncludingDeleted(p => p.Id == id, cancellationToken);
             if (proceso == null)
-                return Result<Unit>.Fail($"Proceso con ID {id} no encontrado.");
+                return AppResult<Unit>.Fail($"Proceso con ID {id} no encontrado.");
             procesos.Add(proceso);
         }
 
@@ -36,6 +36,6 @@ public class RestoreProcesoHandler : IRequestHandler<RestoreProcesoRequest,Unit>
         }
 
         await _uow.Current.SaveAsync();
-        return Result<Unit>.Success(Unit.Value);
+        return AppResult<Unit>.Success(Unit.Value);
     }
 }

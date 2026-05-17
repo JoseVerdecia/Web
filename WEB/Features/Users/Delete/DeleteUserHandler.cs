@@ -14,18 +14,18 @@ public class DeleteUserHandler : IRequestHandler<DeleteUserRequest,Unit>
         _dbContextFactory = dbContextFactory;
     }
 
-    public async Task<Result<Unit>> Handle(DeleteUserRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<Unit>> Handle(DeleteUserRequest request, CancellationToken cancellationToken)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync(cancellationToken);
 
         var user = await context.Users.FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
         if (user is null)
-            return Result<Unit>.Fail("Usuario no encontrado.");
+            return AppResult<Unit>.Fail("Usuario no encontrado.");
 
         
         context.Users.Remove(user);
         await context.SaveChangesAsync(cancellationToken);
 
-        return Result<Unit>.Success(Unit.Value);
+        return AppResult<Unit>.Success(Unit.Value);
     }
 }

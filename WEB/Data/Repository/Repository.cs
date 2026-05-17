@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using WEB.Data.IRepository;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Data.Repository;
 

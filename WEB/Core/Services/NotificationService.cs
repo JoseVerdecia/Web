@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.FluentUI.AspNetCore.Components;
+using WEB.Core.Interfaces;
 using WEB.Data;
 using WEB.Data.Hub;
 using WEB.Data.Repository;
-using WEB.Interfaces;
 using WEB.Models;
 
 namespace WEB.Core.Services;

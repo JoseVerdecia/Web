@@ -11,7 +11,7 @@ public class ProfilePictureService
 
     public async Task<string> SaveAsync(IBrowserFile file, string userId)
     {
-        var uploadPath = Path.Combine(_env.WebRootPath, UploadFolder);
+        var uploadPath = Path.Combine(_env.ContentRootPath, "..", "ArchivosDeUsuario", "avatars");
         Directory.CreateDirectory(uploadPath);
 
         var extension = Path.GetExtension(file.Name) ?? ".jpg";
@@ -34,7 +34,7 @@ public class ProfilePictureService
     
     public async Task<string> SaveFromLocalFileAsync(string tempFilePath, string originalFileName, string userId)
     {
-        var uploadPath = Path.Combine(_env.WebRootPath, UploadFolder);
+        var uploadPath = Path.Combine(_env.ContentRootPath, "..", "ArchivosDeUsuario", "avatars");
         Directory.CreateDirectory(uploadPath);
         
         var extension = Path.GetExtension(originalFileName);
@@ -50,10 +50,8 @@ public class ProfilePictureService
             await sourceStream.CopyToAsync(destStream);
         }
 
-    
-        try { File.Delete(tempFilePath); } catch { /* ignorar si falla, no es crítico */ }
+        try { File.Delete(tempFilePath); } catch { }
 
-     
         var oldFiles = Directory.GetFiles(uploadPath, $"{userId}_*");
         foreach (var oldFile in oldFiles)
         {

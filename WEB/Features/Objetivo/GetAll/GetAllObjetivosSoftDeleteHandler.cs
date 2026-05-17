@@ -2,7 +2,7 @@
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Objetivo.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Objetivo.GetAll;
 
@@ -15,7 +15,7 @@ public class GetAllObjetivosSoftDeleteHandler:IRequestHandler<GetAllObjetivosSof
         _uow = uow;
     }
 
-    public async Task<Result<PagedResult<ObjetivoDto>>> Handle(GetAllObjetivosSoftDeleteRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<PagedResult<ObjetivoDto>>> Handle(GetAllObjetivosSoftDeleteRequest request, CancellationToken cancellationToken)
     {
         var (items, totalCount) = await _uow.Current.Objetivo.GetPagedIncludingDeletedAsync(
             request.Page,
@@ -32,6 +32,6 @@ public class GetAllObjetivosSoftDeleteHandler:IRequestHandler<GetAllObjetivosSof
             TotalCount = totalCount
         };
         
-        return Result<PagedResult<ObjetivoDto>>.Success(pagedResult);
+        return AppResult<PagedResult<ObjetivoDto>>.Success(pagedResult);
     }
 }

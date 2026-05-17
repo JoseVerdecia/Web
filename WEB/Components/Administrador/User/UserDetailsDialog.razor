@@ -1,6 +1,6 @@
 ﻿@using WEB.Core.Mediator
 @using WEB.Data
-@using WEB.Interfaces
+@using WEB.Core.Interfaces
 @inject IDialogService DialogService
 @inject IMediator Mediator
 @inject INotificationService NotificationService
@@ -14,7 +14,7 @@
         <!-- Header con avatar y nombre -->
         <FluentStack Orientation="Orientation.Horizontal" VerticalGap="10" 
                       Style="padding-bottom: 16px; border-bottom: 1px solid var(--neutral-stroke-divider-rest);">
-            <FluentAvatar Size="AvatarSize.Size56" Color="Color.Accent" Name="@Content.FullName" />
+            @*<FluentAvatar Size="AvatarSize.Size56" Color="Color.Accent" Name="@Content.FullName" />*@
             <FluentStack Orientation="Orientation.Vertical" VerticalGap="4">
                 <FluentLabel Typo="Typography.H3">@Content.FullName</FluentLabel>
                 <FluentLabel Typo="Typography.Body" Style="color: var(--neutral-foreground-4);">@Content.Email</FluentLabel>

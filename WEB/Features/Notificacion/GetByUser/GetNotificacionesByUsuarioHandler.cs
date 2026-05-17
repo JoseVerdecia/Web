@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Notificacion.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Notificacion.GetByUser;
@@ -15,7 +15,7 @@ public class GetNotificacionesByUsuarioHandler : IRequestHandler<GetNotificacion
         _notificacionService = notificacionService;
     }
 
-    public async Task<Result<List<NotificacionDto>>> Handle(
+    public async Task<AppResult<List<NotificacionDto>>> Handle(
         GetNotificacionesByUsuarioRequest request, 
         CancellationToken cancellationToken)
     {
@@ -24,7 +24,7 @@ public class GetNotificacionesByUsuarioHandler : IRequestHandler<GetNotificacion
 
         var dtos = notificaciones.Select(MapToDto).ToList();
 
-        return Result<List<NotificacionDto>>.Success(dtos);
+        return AppResult<List<NotificacionDto>>.Success(dtos);
     }
 
     private static NotificacionDto MapToDto(NotificacionModel n)

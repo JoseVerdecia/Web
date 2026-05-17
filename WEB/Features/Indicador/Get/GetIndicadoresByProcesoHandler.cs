@@ -2,7 +2,7 @@
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Indicador.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Indicador.Get;
 
@@ -11,7 +11,7 @@ public class GetIndicadoresByProcesoHandler : IRequestHandler<GetIndicadoresByPr
     private readonly IUnitOfWorkAccessor _uow;
     public GetIndicadoresByProcesoHandler(IUnitOfWorkAccessor uow) => _uow = uow;
 
-    public async Task<Result<PagedResult<IndicadorDto>>> Handle(GetIndicadoresByProcesoRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<PagedResult<IndicadorDto>>> Handle(GetIndicadoresByProcesoRequest request, CancellationToken cancellationToken)
     {
         var (items, totalCount) = await _uow.Current.Indicador.GetPagedAsync(
             page: request.Page,
@@ -21,7 +21,7 @@ public class GetIndicadoresByProcesoHandler : IRequestHandler<GetIndicadoresByPr
             includeProperties: "Proceso,Objetivos,IndicadoresDeArea.Area");
 
         var dto = items.Select(i => i.MapToDto()).ToList();
-        return Result<PagedResult<IndicadorDto>>.Success(new PagedResult<IndicadorDto>
+        return AppResult<PagedResult<IndicadorDto>>.Success(new PagedResult<IndicadorDto>
         {
             Items = dto,
             Page = request.Page,

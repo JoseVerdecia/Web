@@ -2,7 +2,7 @@
 using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Proceso.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 
 namespace WEB.Features.Proceso.GetAll;
 
@@ -15,7 +15,7 @@ public class GetAllProcesosSoftDeletedHandler:IRequestHandler<GetAllProcesosSoft
         _uow = uow;
     }
 
-    public async Task<Result<PagedResult<ProcesoDto>>> Handle(GetAllProcesosSoftDeletedRequest request, CancellationToken cancellationToken)
+    public async Task<AppResult<PagedResult<ProcesoDto>>> Handle(GetAllProcesosSoftDeletedRequest request, CancellationToken cancellationToken)
     {
         var (items, totalCount) = await _uow.Current.Proceso.GetPagedIncludingDeletedAsync(
             request.Page,
@@ -33,6 +33,6 @@ public class GetAllProcesosSoftDeletedHandler:IRequestHandler<GetAllProcesosSoft
             TotalCount = totalCount
         };
 
-        return Result<PagedResult<ProcesoDto>>.Success(pagedResult);
+        return AppResult<PagedResult<ProcesoDto>>.Success(pagedResult);
     }
 }

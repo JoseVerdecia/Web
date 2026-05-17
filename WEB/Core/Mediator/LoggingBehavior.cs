@@ -13,7 +13,7 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         _logger = logger;
     }
 
-    public async Task<Result<TResponse>> Handle(
+    public async Task<AppResult<TResponse>> Handle(
         TRequest request,
         RequestHandlerDelegate<TResponse> next,
         CancellationToken cancellationToken)
@@ -25,11 +25,11 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         {
             _logger.LogInformation("Iniciando request {RequestName}", requestName);
 
-            var result = await next();
+            var AppResult = await next();
 
             stopwatch.Stop();
 
-            if (result.IsSuccess)
+            if (AppResult.IsSuccess)
             {
                 _logger.LogInformation(
                     "Request {RequestName} completado exitosamente en {ElapsedMilliseconds}ms",
@@ -42,10 +42,10 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
                     "Request {RequestName} completado con errores en {ElapsedMilliseconds}ms - {@Errors}",
                     requestName,
                     stopwatch.ElapsedMilliseconds,
-                    string.Join(" | ", result.Errors.Select(e => e.Message)));
+                    string.Join(" | ", AppResult.Errors.Select(e => e.Message)));
             }
 
-            return result;
+            return AppResult;
         }
         catch (Exception ex)
         {

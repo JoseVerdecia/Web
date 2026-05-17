@@ -1,7 +1,7 @@
 ﻿using WEB.Core.Mediator;
 using WEB.Core.Result;
 using WEB.Features.Indicador.Dto;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Models;
 
 namespace WEB.Features.Indicador.GetAll;
@@ -17,7 +17,7 @@ public class GetAllIndicadoresByProcesoHandler : IRequestHandler<GetAllIndicador
         _uow = uow;
     }
 
-    public async Task<Result<List<IndicadorDto>>> Handle(
+    public async Task<AppResult<List<IndicadorDto>>> Handle(
         GetAllIndicadoresByProcesoRequest request,
         CancellationToken cancellationToken)
     {
@@ -29,6 +29,6 @@ public class GetAllIndicadoresByProcesoHandler : IRequestHandler<GetAllIndicador
 
         List<IndicadorDto> dtos = indicadores.OrderBy(i=>i.Id).MapToDto().ToList();
 
-        return Result<List<IndicadorDto>>.Success(dtos);
+        return AppResult<List<IndicadorDto>>.Success(dtos);
     }
 }

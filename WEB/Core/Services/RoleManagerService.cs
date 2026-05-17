@@ -2,7 +2,8 @@
 using WEB.Common;
 using WEB.Data;
 using WEB.Enums;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
+using WEB.Core.Result;
 
 namespace WEB.Core.Services;
 
@@ -15,15 +16,15 @@ public class RoleManagementService : IRoleManagementService
         _userManager = userManager;
     }
 
-    public async Task<Result.Result> SetRoleAsync(string userId, string role)
+    public async Task<AppResult> SetRoleAsync(string userId, string role)
     {
         
         ApplicationUser? user = await _userManager.FindByIdAsync(userId);
-        if (user is null) return Result.Result.Fail("Usuario no encontrado");
+        if (user is null) return AppResult.Fail("Usuario no encontrado");
         
         IList<string> currentRoles = await _userManager.GetRolesAsync(user);
         
-        if (currentRoles.Contains(role)) return Result.Result.Success();
+        if (currentRoles.Contains(role)) return AppResult.Success();
         
         if (currentRoles.Any())
         {
@@ -32,21 +33,21 @@ public class RoleManagementService : IRoleManagementService
         }
         
         var addResult = await _userManager.AddToRoleAsync(user, role);
-        return addResult.Succeeded ? Result.Result.Success() : MapIdentityError(addResult);
+        return addResult.Succeeded ? AppResult.Success() : MapIdentityError(addResult);
     }
 
-    public async Task<Result.Result> ResetToDefaultRoleAsync(string userId)
+    public async Task<AppResult> ResetToDefaultRoleAsync(string userId)
     {
         return await SetRoleAsync(userId, AppRoles.UsuarioNormal);
     }
 
 
-    public Task<Result.Result> UpgradeToJefeProcesoAsync(string userId) => SetRoleAsync(userId, AppRoles.JefeProceso);
-    public Task<Result.Result> UpgradeToJefeAreaAsync(string userId) => SetRoleAsync(userId, AppRoles.JefeArea);
-    public Task<Result.Result> UpgradeToAdminAsync(string userId) => SetRoleAsync(userId, AppRoles.Administrador);
+    public Task<AppResult> UpgradeToJefeProcesoAsync(string userId) => SetRoleAsync(userId, AppRoles.JefeProceso);
+    public Task<AppResult> UpgradeToJefeAreaAsync(string userId) => SetRoleAsync(userId, AppRoles.JefeArea);
+    public Task<AppResult> UpgradeToAdminAsync(string userId) => SetRoleAsync(userId, AppRoles.Administrador);
 
    
-    private Result.Result MapIdentityError(IdentityResult result)
+    private AppResult MapIdentityError(IdentityResult result)
     {
         var errors = result.Errors.Select(e => new ErrorDetail
         {
@@ -55,6 +56,6 @@ public class RoleManagementService : IRoleManagementService
             Message = e.Description
         }).ToList();
 
-        return Result.Result.Fail(errors);
+        return AppResult.Fail(errors);
     }
 }

@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using WEB.Core.Interfaces;
 using WEB.Data;
-using WEB.Interfaces;
 
 namespace WEB.Core.Services;
 
@@ -13,7 +13,6 @@ public class CurrentUser:ICurrentUser
     private readonly IDbContextFactory<ApplicationDbContext> _factory;
     private readonly UserManager<ApplicationUser> _userManager;
     private ClaimsPrincipal? _cachedUser;
-    private ApplicationUser? _cachedAppUser;
     
     public CurrentUser(  IDbContextFactory<ApplicationDbContext> factory,AuthenticationStateProvider authStateProvider, UserManager<ApplicationUser> userManager)
     {

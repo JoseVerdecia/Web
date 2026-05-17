@@ -14,7 +14,7 @@ public class GetAllIndicadoresByObjetivoAndProcesoHandler
     public GetAllIndicadoresByObjetivoAndProcesoHandler(IDbContextFactory<ApplicationDbContext> dbFactory)
         => _dbFactory = dbFactory;
 
-    public async Task<Result<List<IndicadorDto>>> Handle(
+    public async Task<AppResult<List<IndicadorDto>>> Handle(
         GetAllIndicadoresByObjetivoAndProcesoRequest request, 
         CancellationToken ct)
     {
@@ -31,6 +31,6 @@ public class GetAllIndicadoresByObjetivoAndProcesoHandler
             .ToListAsync(ct);
 
         var dtos = indicadores.Select(i => i.MapToDto()).ToList();
-        return Result<List<IndicadorDto>>.Success(dtos);
+        return AppResult<List<IndicadorDto>>.Success(dtos);
     }
 }

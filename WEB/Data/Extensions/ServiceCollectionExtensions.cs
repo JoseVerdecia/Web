@@ -4,7 +4,7 @@ using Microsoft.FluentUI.AspNetCore.Components.Components.Tooltip;
 using WEB.Components;
 using WEB.Core.Mediator;
 using WEB.Core.Services;
-using WEB.Interfaces;
+using WEB.Core.Interfaces;
 using WEB.Data.Repository;
 using WEB.Data.IRepository;
 using WEB.Services;
@@ -46,7 +46,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<INotificationService, NotificationService>();
 
-        services.AddSignalR();
+        services.AddSignalR(options => options.MaximumReceiveMessageSize = 10 * 1024 * 1024);
         services.AddApexCharts();
 
         var assembly = typeof(Program).Assembly;
