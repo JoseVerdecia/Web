@@ -30,8 +30,6 @@ C:\Games\BlazorServerPublish\BouncyCastle.Cryptography.dll
 C:\Games\BlazorServerPublish\ClosedXML.dll
 C:\Games\BlazorServerPublish\ClosedXML.Parser.dll
 C:\Games\BlazorServerPublish\CsvHelper.dll
-C:\Games\BlazorServerPublish\Dapper.dll
-C:\Games\BlazorServerPublish\Dapper.AOT.dll
 C:\Games\BlazorServerPublish\DocumentFormat.OpenXml.dll
 C:\Games\BlazorServerPublish\DocumentFormat.OpenXml.Framework.dll
 C:\Games\BlazorServerPublish\ExcelNumberFormat.dll
@@ -40,10 +38,7 @@ C:\Games\BlazorServerPublish\FluentValidation.DependencyInjectionExtensions.dll
 C:\Games\BlazorServerPublish\Google.Protobuf.dll
 C:\Games\BlazorServerPublish\Hangfire.AspNetCore.dll
 C:\Games\BlazorServerPublish\Hangfire.Core.dll
-C:\Games\BlazorServerPublish\Hangfire.Dashboard.Authorization.dll
-C:\Games\BlazorServerPublish\Hangfire.MySql.dll
 C:\Games\BlazorServerPublish\Hangfire.NetCore.dll
-C:\Games\BlazorServerPublish\Hangfire.PostgreSql.dll
 C:\Games\BlazorServerPublish\Hangfire.SqlServer.dll
 C:\Games\BlazorServerPublish\Humanizer.dll
 C:\Games\BlazorServerPublish\K4os.Compression.LZ4.dll
@@ -107,11 +102,9 @@ C:\Games\BlazorServerPublish\Microsoft.Win32.SystemEvents.dll
 C:\Games\BlazorServerPublish\Mono.TextTemplating.dll
 C:\Games\BlazorServerPublish\MySql.Data.dll
 C:\Games\BlazorServerPublish\MySql.EntityFrameworkCore.dll
-C:\Games\BlazorServerPublish\MySqlConnector.dll
 C:\Games\BlazorServerPublish\Newtonsoft.Json.dll
 C:\Games\BlazorServerPublish\Npgsql.dll
 C:\Games\BlazorServerPublish\Npgsql.EntityFrameworkCore.PostgreSQL.dll
-C:\Games\BlazorServerPublish\Owin.dll
 C:\Games\BlazorServerPublish\UglyToad.PdfPig.Core.dll
 C:\Games\BlazorServerPublish\UglyToad.PdfPig.DocumentLayoutAnalysis.dll
 C:\Games\BlazorServerPublish\UglyToad.PdfPig.Fonts.dll
@@ -119,7 +112,6 @@ C:\Games\BlazorServerPublish\UglyToad.PdfPig.Package.dll
 C:\Games\BlazorServerPublish\UglyToad.PdfPig.Tokenization.dll
 C:\Games\BlazorServerPublish\UglyToad.PdfPig.Tokens.dll
 C:\Games\BlazorServerPublish\UglyToad.PdfPig.dll
-C:\Games\BlazorServerPublish\Pomelo.EntityFrameworkCore.MySql.dll
 C:\Games\BlazorServerPublish\PuppeteerSharp.dll
 C:\Games\BlazorServerPublish\QuestPDF.dll
 C:\Games\BlazorServerPublish\RBush.dll
